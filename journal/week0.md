@@ -17,7 +17,7 @@ For example, budget constraint to keep cost near $0 impacts how computing layer 
 As a solutions architect, I sketched a conceptual diagram on the napkin during first meeting with Cruddr investors (all right, it was part of the Week 0 lesson video).
 
 ### Contextual Diagram
-![Cruddur Contextual Diagram](../_docs/assets/)
+![Cruddur Contextual Diagram](../_docs/assets/E733D494-DA56-4EDA-8087-629EB3AC56EB.jpeg)
 
 ## CI/CD Pipeline
 This is the starting point for CI/CD pipeline as I see it for the Cruddur application
