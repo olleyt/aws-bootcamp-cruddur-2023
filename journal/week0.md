@@ -14,10 +14,13 @@ This week will reflect on:
 It was important to understand what Cruddr is envisioned to be and what constraints are in place before choosing specific AWS services. 
 For example, budget constraint to keep cost near $0 impacts how computing layer will be designed as not all AWS services such as Fargate have free tier.
 
-As a solutions architect, I sketched a conceptual diagram on the napkin during first meeting with Cruddr investors (all right, it was part of the Week 0 lesson video).
+
 
 ### Contextual Diagram
+As a solutions architect, I sketched a conceptual diagram on the napkin during first meeting with Cruddr investors (all right, it was part of the Week 0 lesson video).
 ![Cruddur Contextual Diagram](../_docs/assets/E733D494-DA56-4EDA-8087-629EB3AC56EB.jpeg)
+
+Ouch; as I progressed through the video, I've learned that napkin design shall not include specific services / technologies mentioned yet. That shall be depicted on a logical architecture diagram.
 
 ## CI/CD Pipeline
 This is the starting point for CI/CD pipeline as I see it for the Cruddur application
