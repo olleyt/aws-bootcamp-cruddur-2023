@@ -28,3 +28,6 @@ This is another version of the conceptual diagram on a napkin in a more abstract
 This is the starting point for CI/CD pipeline as I see it for the Cruddur application
 
 ![Cruddur CI/CD pipeline](../_docs/assets/DevSecOpsPipline.png)
+
+I also depicted a more detailed CI/CD pipeline inspired by 'Be a better Dev' YouTube video 'Ideal Pipeline':
+![Cruddur Advanced CI/CD pipeline](../_docs/assets/26720410-B3A6-4E5D-927E-B917419452D5.jpeg)
