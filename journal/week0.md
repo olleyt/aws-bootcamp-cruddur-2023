@@ -24,6 +24,17 @@ Ouch; as I progressed through the video, I've learned that napkin design shall n
 
 This is another version of the conceptual diagram on a napkin in a more abstracted way: 
 ![Cruddur Abstracted Contextual Diagram](../_docs/assets/A6EA9421-267A-41D1-BC50-562207923CD8.jpeg)
+
+## Logical Diagram
+
+The logical diagram was discusses during the class, however as diagramming practice we were tasked to recreated it.
+What can I say, working with LucidChart is a breeze, and I enjoyed this task. LucidChart is a lot easier to use compared to MS Visio and even Miro!
+
+Here is my digram after I spent ~30 mins on it:
+![Cruddur Recreated Logical Diagram](../_docs/assets/Cruddur_Logical_Diagram.png)
+
+
+
 ## CI/CD Pipeline
 This is the starting point for CI/CD pipeline as I see it for the Cruddur application
 
