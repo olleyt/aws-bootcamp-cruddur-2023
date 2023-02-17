@@ -32,6 +32,7 @@ What can I say, working with LucidChart is a breeze, and I enjoyed this task. Lu
 
 Here is my digram after I spent ~30 mins on it:
 ![Cruddur Recreated Logical Diagram](../_docs/assets/Cruddur_Logical_Diagram.png)
+This diagram is also accessible [here](https://lucid.app/lucidchart/4c21c5b9-51ae-4f6a-adab-1a8b6e42e715/edit?viewport_loc=-165%2C-39%2C2020%2C1090%2C0_0&invitationId=inv_4b9cba84-fd8d-4120-924f-7fea3f65b42f)
 
 
 
@@ -42,6 +43,7 @@ This is the starting point for CI/CD pipeline as I see it for the Cruddur applic
 
 I also depicted a more detailed CI/CD pipeline inspired by 'Be a better Dev' YouTube video 'Ideal Pipeline':
 ![Cruddur Advanced CI/CD pipeline](../_docs/assets/26720410-B3A6-4E5D-927E-B917419452D5.jpeg)
+
 
 ## Congiguring GitPod
 
