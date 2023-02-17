@@ -45,6 +45,33 @@ I also depicted a more detailed CI/CD pipeline inspired by 'Be a better Dev' You
 ![Cruddur Advanced CI/CD pipeline](../_docs/assets/26720410-B3A6-4E5D-927E-B917419452D5.jpeg)
 
 
+## Set Up AWS Organisation and Accounts
+
+### AWS Organisation
+As I have previously setup an AWS Organisation, I have also created an account for this bootcamp as part of the existing organistaion.
+My organisation looks like this:
+
+```
+Root (Management Account)/
+│
+└── Production OU /
+└── Development OU /
+└── Test OU /
+    └── Cruddur Account /
+      └── Cruddur Admin
+      └── Cruddur Root
+```
+
+### Securing Access to AWS Accounts
+In addition to enabling MFA on all root and other users in my accounts, I also attached an SCP on the Root so that root users in member accounts denying them any API call. 
+This is one of the AWS security best practices I previosly found experimenting with AWS Config and AWS Security Hub.      
+
+### Creating AWS Credentials for Programmatic and GitPod access
+The Bootcamp prescribes creation of the API keys and making them as environment variables in GitPod.
+I am a bit uncomfortable with this while travelling so will try to use aws-sso-util with short term credentials instead as my stretch challenege for the next 2 weeks.
+AWS SSO is already enabled in my AWS Organisation and aws-sso-util installed on my lapotop. 
+
+
 ## Congiguring GitPod
 
 ### Installing AWS CLI
