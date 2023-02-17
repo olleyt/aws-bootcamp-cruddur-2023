@@ -71,8 +71,16 @@ The Bootcamp prescribes creation of the API keys and making them as environment 
 I am a bit uncomfortable with this while travelling so will try to use aws-sso-util with short term credentials instead as my stretch challenege for the next 2 weeks.
 AWS SSO is already enabled in my AWS Organisation and aws-sso-util installed on my lapotop. 
 
+### Budgets and Billing Alerts
+My AWS organistaion has consolidated billing on all of the accounts within it.
+I have previously created zero spending and cost based budgets as well as enabled free tier alerts and alert on the cost exceeding $5 a month.
+The SNS topic was also configured so that I am receiving alerts when I either out of the Free Tier limits or exceed spending threshold.
+
+However, as part of this bootcamp, I will generate JSONs for budget and alerts and set up GitPod environment with AWS programmatic access when get stable access to the Internet.
 
 ## Congiguring GitPod
+
+This section is still work in progress as per requested accommodations and considerations.
 
 ### Installing AWS CLI
 The task below will install AWS CLI each time GitPod spins up an environment.
