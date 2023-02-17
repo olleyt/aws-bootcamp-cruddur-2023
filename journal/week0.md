@@ -42,3 +42,21 @@ This is the starting point for CI/CD pipeline as I see it for the Cruddur applic
 
 I also depicted a more detailed CI/CD pipeline inspired by 'Be a better Dev' YouTube video 'Ideal Pipeline':
 ![Cruddur Advanced CI/CD pipeline](../_docs/assets/26720410-B3A6-4E5D-927E-B917419452D5.jpeg)
+
+## Congiguring GitPod
+
+### Installing AWS CLI
+The task below will install AWS CLI each time GitPod spins up an environment.
+The task code was copied from Andrew's blog for week0:
+```
+tasks:
+  - name: aws-cli
+    env:
+      AWS_CLI_AUTO_PROMPT: on-partial
+    init: |
+      cd /workspace
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
+      cd $THEIA_WORKSPACE_ROOT
+```
