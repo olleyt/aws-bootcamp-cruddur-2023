@@ -158,6 +158,9 @@ Then I created AWS User and assigned AWS policies to follow principle of the lea
 ```
 However, the budget policy did not work properly, so I temporarily assigned AWS Managed policy _AWSBudgetsActionsWithAWSResourceControlAccess_ .
 
+Then API key was created to use with GitPod.
+I'll be modifying policies of the Cruddur user to keep minimal access to AWS for security reasons.
+
 ## Congiguring GitPod
 
 GitPod is a great alternative to Cloud9 as its free tier is more generous. 
@@ -179,3 +182,31 @@ tasks:
       cd $THEIA_WORKSPACE_ROOT
 ```
 
+### Creating SNS topic
+1. followed @omenking and created SNS topic as: 
+```
+aws sns create-topic --name billing-alarm
+```
+
+2. subscribed to the topic copying Andrew's command:
+```
+aws sns subscribe \
+    --topic-arn TopicARN \
+    --protocol email \
+    --notification-endpoint your@email.com
+```    
+### Creating a CloudWatch Alarm
+
+Copied from @omenking command and the file in his repo:
+```
+aws cloudwatch put-metric-alarm --cli-input-json file://aws/json/alarm_config.json
+```
+
+### Creating a Spend Budget via CLI
+Copied from @omenking command and changed to my email address:
+```
+aws budgets create-budget \
+    --account-id AccountID \
+    --budget file://aws/json/budget.json \
+    --notifications-with-subscribers file://aws/json/budget-notifications-with-subscribers.json
+```    
