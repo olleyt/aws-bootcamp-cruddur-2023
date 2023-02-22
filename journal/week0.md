@@ -156,6 +156,7 @@ Then I created AWS User and assigned AWS policies to follow principle of the lea
     ]
 }
 ```
+However, the budget policy did not work properly, so I temporarily assigned AWS Managed policy _AWSBudgetsActionsWithAWSResourceControlAccess_ .
 
 ## Congiguring GitPod
 
