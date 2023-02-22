@@ -71,6 +71,8 @@ The Bootcamp prescribes creation of the API keys and making them as environment 
 I am a bit uncomfortable with this while travelling so will try to use aws-sso-util with short term credentials instead as my stretch challenege for the next 2 weeks.
 AWS SSO is already enabled in my AWS Organisation and aws-sso-util installed on my lapotop. 
 
+
+
 ### Budgets and Billing Alerts
 My AWS organistaion has consolidated billing on all of the accounts within it.
 I have previously created zero spending and cost based budgets as well as enabled free tier alerts and alert on the cost exceeding $5 a month.
@@ -78,9 +80,87 @@ The SNS topic was also configured so that I am receiving alerts when I either ou
 
 However, as part of this bootcamp, I will generate JSONs for budget and alerts and set up GitPod environment with AWS programmatic access when get stable access to the Internet.
 
+### Setting Up AWS User with Least Priviledge Access
+Then I created AWS User and assigned AWS policies to follow principle of the least privillege:
+
+1. STS get caller identity 
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "sts:GetCallerIdentity",
+            "Resource": "*"
+        }
+    ]
+}
+```
+2. create and subscribe SNS topic
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "sns:TagResource",
+                "sns:CreateTopic",
+                "sns:Subscribe",
+                "sns:UntagResource"
+            ],
+            "Resource": "arn:aws:sns:*:ACCOUNT_ID:*"
+        }
+    ]
+}
+```
+3. create a billing metric for the alarm if daily spending exceeds $1
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:PutMetricAlarm",
+                "cloudwatch:TagResource"
+            ],
+            "Resource": "arn:aws:cloudwatch:*:ACCOUNT_ID:alarm:*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "cloudwatch:ListMetrics",
+            "Resource": "*"
+        }
+    ]
+}
+```
+4. create budget
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "budgets:CreateBudgetAction",
+                "budgets:DescribeBudgetAction"
+            ],
+            "Resource": "arn:aws:budgets::ACCOUNT_ID:budget/*/action/*"
+        }
+    ]
+}
+```
+
 ## Congiguring GitPod
 
-This section is still work in progress as per requested accommodations and considerations.
+GitPod is a great alternative to Cloud9 as its free tier is more generous. 
+It is also noce to learn another cloud agnostic tool that some companies might use in their DevOps stack.
 
 ### Installing AWS CLI
 The task below will install AWS CLI each time GitPod spins up an environment.
@@ -97,3 +177,4 @@ tasks:
       sudo ./aws/install
       cd $THEIA_WORKSPACE_ROOT
 ```
+
