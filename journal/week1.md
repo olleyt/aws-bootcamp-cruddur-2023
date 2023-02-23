@@ -71,6 +71,23 @@ Expected outcome: the cruddur_dev user shall have 5 policies attached directly a
 4. cruddur_put_cloud_watch_alarm_metric
 5. cruddur-sts-get-caller-identity
       
+### Confirmed that DynamoDB is accessible locally on the Docker container
+
+At this point local DynamoDB accessibility can be check with AWS CLI commands. This [list of commands](https://dynobase.dev/dynamodb-cli-query-examples/) can be useful for smoke tests.
+      
+As we will start interact with DynamoDB in a few weeks, it is enough to list tables for a smoke test with this command: 
+```bash
+      aws dynamodb list-tables
+```      
+Expected result as there are no tables at this point:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ aws dynamodb list-tables
+{
+    "TableNames": []
+}
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
+```      
+      
 ## My learnings for this week
 This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
 
