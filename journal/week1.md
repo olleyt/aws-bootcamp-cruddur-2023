@@ -32,3 +32,15 @@ gitpod /workspace $
 ### GitPod did not have Docker extension preinstalled
 
 This can be probably rectified with .gitpod.yml by adding ms-azuretools.vscode-docker into extensions
+
+### Docker compose file was in incorrect folder
+
+When I ran compose up first time from the left navigation pane, Docker did not produce working containers and both containers were in red status. 
+* _Trobleshooting steps:_
+    * I looked into the logs and the error was saying that FLASK_APP variable is not set and some files are not found. 
+
+* _Solution:_
+    * The problem was that I created docker-compose not on the root but inside the the front-end folder when clicked adding file on the left side pane! Sometimes I love bash commands better than point & click approach. It was such a baffling and silly error to create file in a wrong place. 
+
+* _Status:_
+    * It's all working now. 
