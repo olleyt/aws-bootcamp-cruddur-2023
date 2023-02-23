@@ -1,5 +1,20 @@
 # Week 1 — App Containerization
 
+## New Learnings
+
+### Docker Compose
+### GitPod Custom Image
+This week I learned from [article posted by Jason Paul](https://www.linuxtek.ca/2023/02/21/diving-deeper-gitpod-cloud-development-environment/) that GitPod persists only /workspace and managing dependencies and longer running installations shall be done via customizing docker file for GitPod: .gitpod.Dockerfile
+
+That helped to resolved missing AWS CLI after each stop / start of my GitPod environment.
+
+### Open API
+This week was a great opportunity to learn how to design and document REST APIs with OpenAPI specification (former Swagger).
+The OpenAPI spec advatntage are:
+* it can be easily loaded into AWS API Gateway and used in CloudFormation which in turn can save a ton of development effort
+* it is a unified format that different teams / developers can learn and follow and be on the same page
+* it has wonderful apps such as Readme to create interactive visual documentation 
+
 ## Challenges I faced and how I overcome them
 
 ### GitPod not persisting AWS CLI installations between start stops
