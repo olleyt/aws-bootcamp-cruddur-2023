@@ -3,19 +3,40 @@
 
 ## Mandatory Tasks - Completed
 
+### Watched videos required for self-improvement
+These videos are excellent source how to be a better Cloud engineer and a team member in general:
+* Watched [How to Ask for Technical Help](https://www.youtube.com/watch?v=tDPqmwKMP7Y&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=29)
+* Watched [Grading Homework Summaries](https://www.youtube.com/watch?v=FKAScachFgk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=25)
+    * *Notes*:
+    * the summary shall be plain text
+    * shall not go into details
+    * shall not include links; reserve them for the journal
+    * being concise might be hard bit it respects everyone's time and it is a valuable skill for any workplace
+
+### Commiting Code
+Watched [Remember to Commit Your Code](https://www.youtube.com/watch?v=b-idMgFFcpg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=23)
+
+#### Notes:
+* preferably use git commands in terminal rather than VSCode GUI in GitPod. 
+    * It helps to understand better what is git status is, what are untracked / staged changes are and allow to see git's feedback on ```git push``` command in case the local main branch diverted from the remote origin in GitHub. 
+* make small frequent changes
+* make commits atomic - it will save time on troubleshooting and reverting problematic code
+* do fetch before push if working on the same branch in different code spaces such as GitHub for journaling and GitPod for the code changes
+   * alternatively work on journal in a separate branch but don't forget to merge into main before submitting week's work   
+
 ### Spending Considerations
 Watcked Chirag's Week 1 - [Spending Considerations](https://www.youtube.com/watch?v=OAMHu1NiYoI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=24)
 
-Notes: 
+#### Notes: 
 * remember to stop a workspace when not used to keep under the free tier
 * check billing page for remaining credits regularly
-* delete unused workspaces to reduce clatter
+* delete unused workspaces to reduce clatter and cost
 
 ### Container Security Considerations
 Watched Ashish's Week 1 - [Container Security Considerations](https://www.youtube.com/watch?v=OjZz4D0B-cA&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=25)
 
-Notes: 
-* running Snyk on Cruddur repository identified 6 critical vulnerabilities related mostly to outdated openssl and Node. More on that in 'Stretch Challenges' section 
+#### Notes: 
+* running Snyk on Cruddur repository identified 6 critical vulnerabilities related mostly to outdated openssl and Node. More on that in 'Stretch Challenges' section. I have asked Ashish and Andrew if we were to attempt to fix these vulnerabilities. 
 * try to run Snyk on container images as a stretch challenge
 * try Inspector when we progress pushing Docker impages to ECR
 
@@ -24,6 +45,7 @@ Notes:
 These tasks were completed without issues following along the videos and committing code changes from GitPod.
 The commits can be found in the git history for the main branch.
 
+* Watched Week 1 - [Live Streamed Video](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=22)
 * [Containerized Application (Dockerfiles, Docker Compose)](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=22)
 * [Documented the Notification Endpoint for the OpenAI Document](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
 * [Wrote a Flask Backend Endpoint for Notifications](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
@@ -116,35 +138,6 @@ gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ aws dynamodb list-tables
 }
 gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
 ```      
-      
-## My learnings for this week
-This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
-
-### Time management and personal efficiency
-* The most efficient way to slice and dice and understand material _for me_ was writing it down on a paper in a small achievable tasks.
-* Story telling in personal voice keep me a lot more engaged with the project as it is a fun activity to do. 
-* Self reflecting increases depth of understanding and makes new material more digestable. 
-      
-### Spelling of the word priviledge
-Had to make it fun to memorise spelling of this word:
-      ```Remember first two vowels are i and last 2 are e.```
-      
-### Docker and Docker Compose
-      I am fairly new to Docker and it was my first experience with creating Docker files and composing images. 
-      I realised that more learnings required for me to progress with stretch challenges for this week.
-      Nevertheless, I was able to finish all the mandatory assignments without issues from the first time
-
-### GitPod Custom Image
-This week I learned from [article posted by Jason Paul](https://www.linuxtek.ca/2023/02/21/diving-deeper-gitpod-cloud-development-environment/) that GitPod persists only /workspace and managing dependencies and longer running installations shall be done via customizing docker file for GitPod: .gitpod.Dockerfile
-
-That helped to resolved missing AWS CLI after each stop / start of my GitPod environment.
-
-### Open API
-This week was a great opportunity to learn how to design and document REST APIs with OpenAPI specification (former Swagger).
-The OpenAPI spec advatntage are:
-* it can be easily loaded into AWS API Gateway and used in CloudFormation which in turn can save a ton of development effort
-* it is a unified format that different teams / developers can learn and follow and be on the same page
-* it has wonderful apps such as Readme to create interactive visual documentation 
 
 ## Challenges I faced and how I overcome them
 
@@ -190,3 +183,35 @@ When I ran compose up first time from the left navigation pane, Docker did not p
 
 * _Status:_
     * It's all working now. 
+
+## Stretch Challenges      
+
+      
+## This week I learned:
+This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
+
+### Time management and personal efficiency
+* The most efficient way to slice and dice and understand material _for me_ was writing it down on a paper in a small achievable tasks.
+* Story telling in personal voice keep me a lot more engaged with the project as it is a fun activity to do. 
+* Self reflecting increases depth of understanding and makes new material more digestable. 
+      
+### Spelling of the word priviledge
+Had to make it fun to memorise spelling of this word:
+      ```Remember first two vowels are i and last 2 are e.```
+      
+### Docker and Docker Compose
+      I am fairly new to Docker and it was my first experience with creating Docker files and composing images. 
+      I realised that more learnings required for me to progress with stretch challenges for this week.
+      Nevertheless, I was able to finish all the mandatory assignments without issues from the first time
+
+### GitPod Custom Image
+This week I learned from [article posted by Jason Paul](https://www.linuxtek.ca/2023/02/21/diving-deeper-gitpod-cloud-development-environment/) that GitPod persists only /workspace and managing dependencies and longer running installations shall be done via customizing docker file for GitPod: .gitpod.Dockerfile
+
+That helped to resolved missing AWS CLI after each stop / start of my GitPod environment.
+
+### Open API
+This week was a great opportunity to learn how to design and document REST APIs with OpenAPI specification (former Swagger).
+The OpenAPI spec advatntage are:
+* it can be easily loaded into AWS API Gateway and used in CloudFormation which in turn can save a ton of development effort
+* it is a unified format that different teams / developers can learn and follow and be on the same page
+* it has wonderful apps such as Readme to create interactive visual documentation 
