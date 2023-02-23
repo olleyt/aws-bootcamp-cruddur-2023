@@ -1,8 +1,32 @@
 # Week 1 — App Containerization
 
+## Mandatory Tasks - Completed 
+
+### Confirmed that PostgreSQL Container Works as expected
+
+Use command  ``` psql -Upostgres -h localhost``` where -U<username> for the username and -h as localhost parameters   to check if the PostreSQL client is up and working.
+
+The expected output:
+
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ psql -Upostgres -h localhost
+Password for user postgres: 
+psql (13.10 (Ubuntu 13.10-1.pgdg20.04+1))
+Type "help" for help.
+
+postgres=# \dl
+      Large objects
+ ID | Owner | Description 
+----+-------+-------------
+(0 rows)
+
+postgres=# \q
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
+```
+
 ## New Learnings
 
-### Docker Compose
+### Docker and Docker Compose
 ### GitPod Custom Image
 This week I learned from [article posted by Jason Paul](https://www.linuxtek.ca/2023/02/21/diving-deeper-gitpod-cloud-development-environment/) that GitPod persists only /workspace and managing dependencies and longer running installations shall be done via customizing docker file for GitPod: .gitpod.Dockerfile
 
