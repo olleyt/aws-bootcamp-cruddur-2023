@@ -3,20 +3,33 @@
 
 ## Mandatory Tasks - Completed
 
+### Spending Considerations
+Watcked Chirag's Week 1 - [Spending Considerations](https://www.youtube.com/watch?v=OAMHu1NiYoI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=24)
 
-### [Containerized Application (Dockerfiles, Docker Compose)](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=22)
+Notes: 
+* remember to stop a workspace when not used to keep under the free tier
+* check billing page for remaining credits regularly
+* delete unused workspaces to reduce clatter
+
+### Container Security Considerations
+Watched Ashish's Week 1 - [Container Security Considerations](https://www.youtube.com/watch?v=OjZz4D0B-cA&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=25)
+
+Notes: 
+* running Snyk on Cruddur repository identified 6 critical vulnerabilities related mostly to outdated openssl and Node. More on that in 'Stretch Challenges' section 
+* try to run Snyk on container images as a stretch challenge
+* try Inspector when we progress pushing Docker impages to ECR
+
+
+### Completed Technical Tasks - Code Changes Committed
 These tasks were completed without issues following along the videos and committing code changes from GitPod.
+The commits can be found in the git history for the main branch.
 
-### [Documented the Notification Endpoint for the OpenAI Document](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
-These tasks were completed without issues following along the videos and committing code changes from GitPod.
+* [Containerized Application (Dockerfiles, Docker Compose)](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=22)
+* [Documented the Notification Endpoint for the OpenAI Document](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
+* [Wrote a Flask Backend Endpoint for Notifications](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
+* [Wrote a React Page for Notifications](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
 
-### [Wrote a Flask Backend Endpoint for Notifications](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
-These tasks were completed without issues following along the videos and committing code changes from GitPod.
-
-### [Wrote a React Page for Notifications](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
-These tasks were completed without issues following along the videos and committing code changes from GitPod.
-
-
+These additional tasks for PostgreSQL and DynamoDB contrainers verification are discussed in the two sections below.
 ### [Confirmed that PostgreSQL Container Works as expected](https://www.youtube.com/watch?v=CbQNMaa6zTg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=28)
 
 Use command  ``` psql -Upostgres -h localhost``` where -U<username> for the username and -h as localhost parameters   to check if the PostreSQL client is up and working.
