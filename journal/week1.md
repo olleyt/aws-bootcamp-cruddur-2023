@@ -1,8 +1,23 @@
 # Week 1 — App Containerization
 
-## Mandatory Tasks - Completed 
 
-### Confirmed that PostgreSQL Container Works as expected
+## Mandatory Tasks - Completed
+
+
+### [Containerized Application (Dockerfiles, Docker Compose)](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=22)
+These tasks were completed without issues following along the videos and committing code changes from GitPod.
+
+### [Documented the Notification Endpoint for the OpenAI Document](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
+These tasks were completed without issues following along the videos and committing code changes from GitPod.
+
+### [Wrote a Flask Backend Endpoint for Notifications](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
+These tasks were completed without issues following along the videos and committing code changes from GitPod.
+
+### [Wrote a React Page for Notifications](https://www.youtube.com/watch?v=k-_o0cCpksk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=27)
+These tasks were completed without issues following along the videos and committing code changes from GitPod.
+
+
+### [Confirmed that PostgreSQL Container Works as expected](https://www.youtube.com/watch?v=CbQNMaa6zTg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=28)
 
 Use command  ``` psql -Upostgres -h localhost``` where -U<username> for the username and -h as localhost parameters   to check if the PostreSQL client is up and working.
 
@@ -24,8 +39,8 @@ postgres=# \q
 gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
 ```
 
-### Confirmed that DynamoDB Container Works
-
+### [Confirmed that DynamoDB Container Works](https://www.youtube.com/watch?v=CbQNMaa6zTg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=28)
+      
 As the Cruddur AWS user was configured with explicit polocies for the required actions only, a new policy *cruddur_dynamodb_policy_cli* to interact with DynamoDB had to be added first:
 ```json
    {
@@ -70,8 +85,9 @@ Expected outcome: the cruddur_dev user shall have 5 policies attached directly a
 3. cruddur_dynamodb_policy_cli
 4. cruddur_put_cloud_watch_alarm_metric
 5. cruddur-sts-get-caller-identity
+
       
-### Confirmed that DynamoDB is accessible locally on the Docker container
+#### Confirmed that DynamoDB is accessible locally on the Docker container
 
 At this point local DynamoDB accessibility can be check with AWS CLI commands. This [list of commands](https://dynobase.dev/dynamodb-cli-query-examples/) can be useful for smoke tests.
       
