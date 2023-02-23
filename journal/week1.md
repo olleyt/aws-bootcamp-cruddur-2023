@@ -29,3 +29,6 @@ aws-cli/2.10.2 Python/3.9.11 Linux/5.15.0-47-generic exe/x86_64.ubuntu.20 prompt
 gitpod /workspace $ 
 ```
 
+### GitPod did not have Docker extension preinstalled
+
+This can be probably rectified with .gitpod.yml by adding ms-azuretools.vscode-docker into extensions
