@@ -24,9 +24,70 @@ postgres=# \q
 gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
 ```
 
-## New Learnings
+### Confirmed that DynamoDB Container Works
 
+As the Cruddur AWS user was configured with explicit polocies for the required actions only, a new policy *cruddur_dynamodb_policy_cli* to interact with DynamoDB had to be added first:
+```json
+   {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "dynamodb:GetRecords",
+            "Resource": "arn:aws:dynamodb:*:<ACCOUNT_ID>:table/*/stream/*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:CreateTable",
+                "dynamodb:PutItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteTable",
+                "dynamodb:UpdateTable"
+            ],
+            "Resource": "arn:aws:dynamodb:*:<ACCOUNT_ID>:table/*"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": "dynamodb:ListTables",
+            "Resource": "*"
+        }
+    ]
+}
+```      
+
+Then this policy was attached by Cruddur AWS Admin to the AWS CLI user using IAM console.
+Expected outcome: the cruddur_dev user shall have 5 policies attached directly as we follow the principal of least priviledge:
+1. cruddur_create_budget
+2. cruddur_create_sns_topic
+3. cruddur_dynamodb_policy_cli
+4. cruddur_put_cloud_watch_alarm_metric
+5. cruddur-sts-get-caller-identity
+      
+## My learnings for this week
+This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
+
+### Time management and personal efficiency
+* The most efficient way to slice and dice and understand material _for me_ was writing it down on a paper in a small achievable tasks.
+* Story telling in personal voice keep me a lot more engaged with the project as it is a fun activity to do. 
+* Self reflecting increases depth of understanding and makes new material more digestable. 
+      
+### Spelling of the word priviledge
+Had to make it fun to memorise spelling of this word:
+      ```Remember first two vowels are i and last 2 are e.```
+      
 ### Docker and Docker Compose
+      I am fairly new to Docker and it was my first experience with creating Docker files and composing images. 
+      I realised that more learnings required for me to progress with stretch challenges for this week.
+      Nevertheless, I was able to finish all the mandatory assignments without issues from the first time
+
 ### GitPod Custom Image
 This week I learned from [article posted by Jason Paul](https://www.linuxtek.ca/2023/02/21/diving-deeper-gitpod-cloud-development-environment/) that GitPod persists only /workspace and managing dependencies and longer running installations shall be done via customizing docker file for GitPod: .gitpod.Dockerfile
 
@@ -70,7 +131,7 @@ gitpod /workspace $
 
 ### GitPod did not have Docker extension preinstalled
 
-This can be probably rectified with .gitpod.yml by adding ms-azuretools.vscode-docker into extensions
+This was rectified in .gitpod.yml by adding ms-azuretools.vscode-docker into extensions
 
 ### Docker compose file was in incorrect folder
 
