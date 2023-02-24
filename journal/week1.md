@@ -280,7 +280,11 @@ python3 -m flask run --host=0.0.0.0 --port=4567
    ```bash
    chmod +x run_flask_app.sh.sh
    ```
-  
+   4. change CMD command in /backend-flask/Dockerfile from ```CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]``` to ```CMD [ "./run_flask_app.sh"]```
+   5. commit code changes to the repository
+   6. run docker compose up
+   7. open exposed ports on the GitPod ports terminal tab
+   8. test the app from frontend link
       
 ## This week I learned:
 This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
