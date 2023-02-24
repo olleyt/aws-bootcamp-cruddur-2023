@@ -317,7 +317,103 @@ python3 -m flask run --host=0.0.0.0 --port=4567
    63b3cf45ece8: Mounted from library/python 
    1: digest: sha256:d124ef065b7c6217aef1dba412492382437e6e68aa287cebedd179a6d34e91e4 size: 2203
    ```
-   5. Sanity check: login into Docker Hub on the desktop and check that the image was uploaded like on [this screenshot](../_docs/assets/DockerDesktop-cruddur-backend-flask.png)  
+   5. Sanity check: login into Docker Hub on the desktop and check that the image was uploaded like on [this screenshot](../_docs/assets/DockerDesktop-cruddur-backend-flask.png)
+
+####   
+1. As Docker was already installed on my local machine prior the bootcamp while doing Adrian's Cantrill Docker course, we can proceed to the next step. We will use the same container pushed into Docker hub that was built for tag/push challenge ```  olleyt/backend-flask:1 ```
+2. Firstly, a container needs to be pulled to local machine. This can be achieved by running this command in the terminal:
+   ``` docker pull olleyt/backend-flask:1 ```
+   Expected result (see that SHA is matching to the pushed image):
+   ```bash
+   ~ $ docker pull olleyt/backend-flask:1
+   1: Pulling from olleyt/backend-flask
+   29cd48154c03: Pull complete 
+   2c59e55cfd71: Pull complete 
+   3b4b58298de0: Pull complete 
+   6239e464c1ab: Pull complete 
+   047dd5665bb1: Pull complete 
+   e91f6c455615: Pull complete 
+   805848c55aec: Pull complete 
+   7e9a866e7ad6: Pull complete 
+   8add47a00289: Pull complete 
+   Digest: sha256:d124ef065b7c6217aef1dba412492382437e6e68aa287cebedd179a6d34e91e4
+   Status: Downloaded newer image for olleyt/backend-flask:1
+   docker.io/olleyt/backend-flask:1
+   ```
+ 3. next run the Docker container with following command: 
+   ```docker run --rm -p 4567:4567 -it -e FRONTEND_URL='*' -e BACKEND_URL='*' olleyt/backend-flask:1```
+   expected result: the container is running and stdout also provides a link to access the running Flask app. don't forget to append with /api/activities/home:
+   ```bash
+   ~ $ docker run --rm -p 4567:4567 -it -e FRONTEND_URL='*' -e BACKEND_URL='*' olleyt/backend-flask:1
+      WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+      'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+      'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+      'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+       * Debug mode: on
+      WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+       * Running on all addresses (0.0.0.0)
+       * Running on http://127.0.0.1:4567
+       * Running on http://172.17.0.2:4567
+      Press CTRL+C to quit
+       * Restarting with stat
+      'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+      'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+      'FLASK_ENV' is deprecated and will not be used in Flask 2.3. Use 'FLASK_DEBUG' instead.
+       * Debugger is active!
+       * Debugger PIN: 893-092-020
+      172.17.0.1 - - [24/Feb/2023 05:57:28] "GET / HTTP/1.1" 404 -
+      172.17.0.1 - - [24/Feb/2023 05:57:28] "GET /favicon.ico HTTP/1.1" 404 -
+      172.17.0.1 - - [24/Feb/2023 05:57:39] "GET /activities/home HTTP/1.1" 404 -
+      172.17.0.1 - - [24/Feb/2023 05:58:38] "GET /api/activities/home HTTP/1.1" 200 -
+   ```
+  4.  the container is running and stdout also provides a link to access the running Flask app. don't forget to append with /api/activities/home in the browser:
+   ```http://127.0.0.1:4567/api/activities/home```
+   expected result: JSON response will appear like so:
+   ```json
+   [
+  {
+    "created_at": "2023-02-22T05:58:38.636165+00:00",
+    "expires_at": "2023-03-01T05:58:38.636165+00:00",
+    "handle": "Andrew Brown",
+    "likes_count": 5,
+    "message": "Cloud is fun!",
+    "replies": [
+      {
+        "created_at": "2023-02-22T05:58:38.636165+00:00",
+        "handle": "Worf",
+        "likes_count": 0,
+        "message": "This post has no honor!",
+        "replies_count": 0,
+        "reply_to_activity_uuid": "68f126b0-1ceb-4a33-88be-d90fa7109eee",
+        "reposts_count": 0,
+        "uuid": "26e12864-1c26-5c3a-9658-97a10f8fea67"
+      }
+    ],
+    "replies_count": 1,
+    "reposts_count": 0,
+    "uuid": "68f126b0-1ceb-4a33-88be-d90fa7109eee"
+  },
+  {
+    "created_at": "2023-02-17T05:58:38.636165+00:00",
+    "expires_at": "2023-03-05T05:58:38.636165+00:00",
+    "handle": "Worf",
+    "likes": 0,
+    "message": "I am out of prune juice",
+    "replies": [],
+    "uuid": "66e12864-8c26-4c3a-9658-95a10f8fea67"
+  },
+  {
+    "created_at": "2023-02-24T04:58:38.636165+00:00",
+    "expires_at": "2023-02-24T17:58:38.636165+00:00",
+    "handle": "Garek",
+    "likes": 0,
+    "message": "My dear doctor, I am just simple tailor",
+    "replies": [],
+    "uuid": "248959df-3079-4947-b847-9e0892d1bab4"
+  }
+]
+   ```
+   
 ## This week I learned:
 This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
 
