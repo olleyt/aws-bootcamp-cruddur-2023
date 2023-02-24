@@ -1,5 +1,5 @@
 image:
-  file: .gitpod.Dockerfile
+  file: .gitpod.dockerfile
 
 # copied from GitPodify guide: https://www.gitpod.io/guides/gitpodify#accelerating-startup-with-prebuilt-workspaces
 github:
