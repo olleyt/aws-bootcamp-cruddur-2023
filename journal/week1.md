@@ -161,15 +161,19 @@ I followed [article posted by Jason Paul](https://www.linuxtek.ca/2023/02/21/div
    
 The following code was copied to .gitpod.yml from the Jason Paul blog to offload libraries installations during prebuild:   
 ```bash
+# copied from GitPodify guide: https://www.gitpod.io/guides/gitpodify#accelerating-startup-with-prebuilt-workspaces
 github:
-  prebuilds:    
-    master: true    
-    branches: true    
-    pullRequests: true    
-    pullRequestsFromForks: false    
-    addCheck: true    
-    addComment: false    
-    addBadge: false
+  prebuilds:
+    # enable for the master/default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: false
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # add a check to pull requests (defaults to true)
+    addCheck: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
+    addComment: false
 ```
 
 In addition, AWS CLI and PostgreSQL client installation were moved to the .gitpod.Dockerfile as GitPod runs on a Docker container but customisation is required to persist tools installed outside of /workspace folder. The [Gitpodify](https://www.gitpod.io/guides/gitpodify) guide talks about this in more details and also provides examples how to write commands for the .gitpod.Dockerfile.
@@ -205,14 +209,13 @@ tasks:
     env:
       AWS_CLI_AUTO_PROMPT: on-partial
     init: |
-      # install Python libraries for Flask backend app
+      # install Python libraries for Flask backend app on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/backend-flask
       pip3 install -r requirements.txt
-      # install npm libraries for frontend
+      # install npm libraries for frontend on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/frontend-react-js
       npm i
-      cd $THEIA_WORKSPACE_ROOT
-   
+      cd $THEIA_WORKSPACE_ROOT   
 ```  
 Expected result: GitPod will persist Python and Node libraries as they were installed inside /workspace folder between environment restarts. 
 Actual result: matches expected result.   
