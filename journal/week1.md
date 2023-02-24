@@ -286,7 +286,36 @@ python3 -m flask run --host=0.0.0.0 --port=4567
    6. run docker compose up
    7. open exposed ports on the GitPod ports terminal tab
    8. test the app from frontend link
-      
+
+#### 3.2 Push and tag an image to DockerHub
+   1. The general command to build an image with a tag for DockeHub:
+   ```docker build -t <your-dockerhub-username>/<your-image-name>:<version-number> ```
+   
+   For this challenge, backend-flask container image will be tagged and pushed to Docker Hub like so:
+   ```
+   docker build -t  olleyt/backend-flask:1 ./backend-flask
+
+   ```
+   2. login to Docker from GitPod instance with ``` docker login``` command
+   3. push the image like so:
+   ```bash
+   docker push  olleyt/backend-flask:1
+   ```
+   4. Expected result shall look similar to the snipped below:
+   ```bash
+   gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ docker push  olleyt/backend-flask:1
+   The push refers to repository [docker.io/olleyt/backend-flask]
+   42c37f51f3a3: Pushed 
+   0634a93e7070: Pushed 
+   f2ce57a5fa3d: Pushed 
+   c7c5c5260b32: Pushed 
+   223e3b83550e: Mounted from library/python 
+   53b2529dfca9: Mounted from library/python 
+   5be8f6899d42: Mounted from library/python 
+   8d60832b730a: Mounted from library/python 
+   63b3cf45ece8: Mounted from library/python 
+   1: digest: sha256:d124ef065b7c6217aef1dba412492382437e6e68aa287cebedd179a6d34e91e4 size: 2203
+   ```
 ## This week I learned:
 This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
 
