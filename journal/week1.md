@@ -178,8 +178,9 @@ In addition, AWS CLI and PostgreSQL client installation were moved to the .gitpo
    * use '&&' for running subsequent commands on different lines. I guess it has to do with Docker RUN command syntax. Will need to investigate later.
    * use '\' for line break for longer commands
    * watch Andrew's full Gitpod course [here](https://www.youtube.com/watch?v=XcjqapXfrhk) to address GitPod knowledge gaps
+   * credits: looked up and copied most of the gitpod.Dockerfile from Jason Paul resources and messages on Discord
    
-At this point .gitpod.Dockerfile shall look like this (looked up and copied from Jason Paul resources and messages on Discord):
+At this point .gitpod.Dockerfile shall look like this:
 ```yml
 FROM gitpod/workspace-full:latest
 
