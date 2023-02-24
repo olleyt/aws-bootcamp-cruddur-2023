@@ -269,9 +269,10 @@ When I ran compose up first time from the left navigation pane, Docker did not p
 #### 3.1 Run the dockerfile CMD as an external script
 This challenge will solve how to run the command in CMD statement for backend.   
    Steps:
-   1. Instead of ```CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]`` create a shell script run_flask_app.sh to run the command that will run flask application as follows:
+   1. Instead of 
+   ``` CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]``` create a shell script run_flask_app.sh to run the command that will run flask application as follows:
 
-```
+```bash
 #!/bin/bash
 python3 -m flask run --host=0.0.0.0 --port=4567
 ```
