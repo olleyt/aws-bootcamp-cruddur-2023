@@ -182,25 +182,32 @@ In addition, AWS CLI and PostgreSQL client installation were moved to the .gitpo
    * use '&&' for running subsequent commands on different lines. I guess it has to do with Docker RUN command syntax. Will need to investigate later.
    * use '\' for line break for longer commands
    * watch Andrew's full Gitpod course [here](https://www.youtube.com/watch?v=XcjqapXfrhk) to address GitPod knowledge gaps
-   * credits: looked up and copied most of the gitpod.Dockerfile from Jason Paul resources and messages on Discord
+   * credits: looked up and copied most of the gitpod.Dockerfile from Jason Paul resources and messages on Discord while I was figuring out Docker commands and Gitpod but then created my own .gitpod.dockerfile from scratch to avoid plagiarism.
    
-At this point .gitpod.Dockerfile shall look like this:
+At this point .gitpod.dockerfile shall look like this:
 ```yml
 FROM gitpod/workspace-full:latest
 
-# Install AWS CLI tool
+# installs AWS CLI on a local GitPod env (not container)
+# the code copied from Jason's Paul blog: https://www.linuxtek.ca/2023/02/21/diving-deeper-gitpod-cloud-development-environment/
 RUN cd /workspace \
     && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
     && unzip awscliv2.zip \
     && sudo /workspace/aws/install
-
-# Install PostgreSQL Client into Gitpod
+    
+# installs PostreSQL on a local GitPod env (not container)
+# command is adopted to Docker RUN command from Andrew's Brown week1.md instructions
 RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
-    && echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee -a /etc/apt/sources.list.d/pgdg.list \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list \
     && sudo apt update \
     && sudo apt install -y postgresql-client-13 libpq-dev
 ```   
-
+Don't forget to add these lines at the top of .gitpod.yml file:
+```yml
+image:
+  file: .gitpod.dockerfile   
+```   
+   
 ### Installing Python libraries and npm on init stage
 In order to have a new fully functioning GitPod environment with everything required being installed in workspace, Python libraries need to be installed in the backend-flask folder and npm needs to be installed in the frontend-react-js folder during the init task as specified in .gitpod.yml:
 ```yml
