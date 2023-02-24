@@ -10,4 +10,4 @@ COPY . .
 ENV FLASK_ENV=development
 
 EXPOSE ${PORT}
-CMD [ "./run_flask_app"]
+CMD [ "./run_flask_app.sh"]
