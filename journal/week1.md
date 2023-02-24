@@ -317,6 +317,7 @@ python3 -m flask run --host=0.0.0.0 --port=4567
    63b3cf45ece8: Mounted from library/python 
    1: digest: sha256:d124ef065b7c6217aef1dba412492382437e6e68aa287cebedd179a6d34e91e4 size: 2203
    ```
+   5. Sanity check: login into Docker Hub on the desktop and check that the image was uploaded like on [this screenshot](../_docs/assets/DockerDesktop-cruddur-backend-flask.png)  
 ## This week I learned:
 This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
 
