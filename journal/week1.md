@@ -179,7 +179,7 @@ In addition, AWS CLI and PostgreSQL client installation were moved to the .gitpo
    * use '\' for line break for longer commands
    * watch Andrew's full Gitpod course [here](https://www.youtube.com/watch?v=XcjqapXfrhk) to address GitPod knowledge gaps
    
-At this point .gitpod.Dockerfile shall look like this (looked up Jason Paul resources and messages at Discord):
+At this point .gitpod.Dockerfile shall look like this (looked up and copied from Jason Paul resources and messages on Discord):
 ```yml
 FROM gitpod/workspace-full:latest
 
