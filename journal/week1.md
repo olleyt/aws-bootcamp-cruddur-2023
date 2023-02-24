@@ -427,9 +427,18 @@ Had to make it fun to memorise spelling of this word:
       ```Remember first two vowels are i and last 2 are e.```
       
 ### Docker and Docker Compose
-      I am fairly new to Docker and it was my first experience with creating Docker files and composing images. 
-      I realised that more learnings required for me to progress with stretch challenges for this week.
-      Nevertheless, I was able to finish all the mandatory assignments without issues from the first time
+I am fairly new to Docker and it was my first experience with creating Docker files and composing images. 
+   
+However, learning time is required to complete these challenges for this week:
+* Use multi-stage building for a Dockerfile build
+* Implement a healthcheck in the V3 Docker compose file
+* Research best practices of Dockerfiles and attempt to implement it in your Dockerfile
+* Launch an EC2 instance that has docker installed, and pull a container to demonstrate you can run your own docker processes
+      
+On the bright side, I was able to finish all the mandatory assignments without issues and these homework challenges:
+* Run the dockerfile CMD as an external script
+* Push and tag a image to DockerHub (they have a free tier)
+* Learn how to install Docker on your localmachine and get the same containers running outside of Gitpod / Codespaces
 
 ### GitPod Custom Image
 This week I learned from [article posted by Jason Paul](https://www.linuxtek.ca/2023/02/21/diving-deeper-gitpod-cloud-development-environment/) that GitPod persists only /workspace and managing dependencies and longer running installations shall be done via customizing docker file for GitPod: .gitpod.Dockerfile
