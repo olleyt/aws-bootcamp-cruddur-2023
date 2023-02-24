@@ -1,25 +1,29 @@
 image:
   file: .gitpod.Dockerfile
 
+# copied from GitPodify guide: https://www.gitpod.io/guides/gitpodify#accelerating-startup-with-prebuilt-workspaces
 github:
-  prebuilds:    
-    master: true    
-    branches: true    
-    pullRequests: true    
-    pullRequestsFromForks: false    
-    addCheck: true    
-    addComment: false    
-    addBadge: false
+  prebuilds:
+    # enable for the master/default branch (defaults to true)
+    master: true
+    # enable for all branches in this repo (defaults to false)
+    branches: false
+    # enable for pull requests coming from this repo (defaults to true)
+    pullRequests: true
+    # add a check to pull requests (defaults to true)
+    addCheck: true
+    # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
+    addComment: false
 
 tasks:
-  - name: Custosing Workspace
+  - name: Customising Workspace
     env:
       AWS_CLI_AUTO_PROMPT: on-partial
     init: |
-      # install Python libraries for Flask backend app
+      # install Python libraries for Flask backend app on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/backend-flask
       pip3 install -r requirements.txt
-      # install npm libraries for frontend
+      # install npm libraries for frontend on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/frontend-react-js
       npm i
       cd $THEIA_WORKSPACE_ROOT
