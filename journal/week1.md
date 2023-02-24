@@ -258,15 +258,29 @@ When I ran compose up first time from the left navigation pane, Docker did not p
 
 ## Stretch Challenges      
 
-* 1. Cruddur AWS user access is following least priviledge principle:
+### 1. Cruddur AWS user access is following least priviledge principle:
    * Specific policies were added directly to a user. 
    * This user does not have console access, but Admin user does for managing IAM users, roles, and policies
    * the DynamoDB policy was described above
-* 2. Ran Snyk scan on my Cruddur repo:
+### 2. Ran Snyk scan on my Cruddur repo:
    * Snyk identified 6 critical vulnerabilities recommending to upgrade openssl and npm
    * There are more than 400 unfixiable low priority vulnerabilities as well
-* 3. Homework Challenges for week1
-   * perhaps will attempt later as I don't have enough Docker knowledge to complete them now
+### 3. Homework Challenges for week1
+#### 3.1 Run the dockerfile CMD as an external script
+This challenge will solve how to run the command in CMD statement for backend.   
+   Steps:
+   1. Instead of ```CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]`` create a shell script run_flask_app.sh to run the command that will run flask application as follows:
+
+```
+#!/bin/bash
+python3 -m flask run --host=0.0.0.0 --port=4567
+```
+   2. commit the file to the repository
+   3. make the shell script executable:
+   ```bash
+   chmod +x run_flask_app.sh.sh
+   ```
+  
       
 ## This week I learned:
 This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
