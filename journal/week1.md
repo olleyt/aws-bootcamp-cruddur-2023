@@ -139,11 +139,27 @@ gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ aws dynamodb list-tables
 gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
 ```      
 
-## Challenges I faced and how I overcome them
+## Mandatory task challenges I faced and how I overcame them
 
 ### GitPod not persisting AWS CLI installations between start stops
-
-Prebuild was added to .gitpod.yml
+   
+#### Workaround
+AWS CLI needed to be reinstalled even with activating prebuild on GitPod like so:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ aws --version
+bash: aws: command not found
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ cd ..
+gitpod /workspace $ sudo ./aws/install
+You can now run: /usr/local/bin/aws --version
+gitpod /workspace $ aws --version
+aws-cli/2.10.2 Python/3.9.11 Linux/5.15.0-47-generic exe/x86_64.ubuntu.20 prompt/off
+gitpod /workspace $ 
+```   
+#### The proper solution with prebuilds and custom .gitpod.Dockerfile
+This was quite a stretch challenge to comprehend why AWS CLI was not available after a GitPod environment restarted.
+I followed [article posted by Jason Paul](https://www.linuxtek.ca/2023/02/21/diving-deeper-gitpod-cloud-development-environment/) to understand what are GitPod tasks, what is before block and what is init block and how they are different from each other.
+   
+The following code was copied to .gitpod.yml from the Jason Paul blog to offload libraries installations during prebuild:   
 ```bash
 github:
   prebuilds:    
@@ -156,21 +172,66 @@ github:
     addBadge: false
 ```
 
-AWS CLI needed to be reinstalled even with activating prebuild on GitPod like so:
-```bash
-gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ aws --version
-bash: aws: command not found
-gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ cd ..
-gitpod /workspace $ sudo ./aws/install
-You can now run: /usr/local/bin/aws --version
-gitpod /workspace $ aws --version
-aws-cli/2.10.2 Python/3.9.11 Linux/5.15.0-47-generic exe/x86_64.ubuntu.20 prompt/off
-gitpod /workspace $ 
-```
+In addition, AWS CLI and PostgreSQL client installation were moved to the .gitpod.Dockerfile as GitPod runs on a Docker container but customisation is required to persist tools installed outside of /workspace folder. The [Gitpodify](https://www.gitpod.io/guides/gitpodify) guide talks about this in more details and also provides examples how to write commands for the .gitpod.Dockerfile.
+   
+*Notes:* 
+   * use '&&' for running subsequent commands on different lines. I guess it has to do with Docker RUN command syntax. Will need to investigate later.
+   * use '\' for line break for longer commands
+   * watch Andrew's full Gitpod course [here](https://www.youtube.com/watch?v=XcjqapXfrhk) to address GitPod knowledge gaps
+   
+At this point .gitpod.Dockerfile shall look like this:
+```yml
+FROM gitpod/workspace-full:latest
 
+# Install AWS CLI tool
+RUN cd /workspace \
+    && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+    && unzip awscliv2.zip \
+    && sudo /workspace/aws/install
+
+# Install PostgreSQL Client into Gitpod
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg \
+    && echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee -a /etc/apt/sources.list.d/pgdg.list \
+    && sudo apt update \
+    && sudo apt install -y postgresql-client-13 libpq-dev
+```   
+
+### Installing Python libraries and npm on init stage
+In order to have a new fully functioning GitPod environment with everything required being installed in workspace, Python libraries need to be installed in the backend-flask folder and npm needs to be installed in the frontend-react-js folder during the init task as specified in .gitpod.yml:
+```yml
+tasks:
+  - name: Customising Workspace
+    env:
+      AWS_CLI_AUTO_PROMPT: on-partial
+    init: |
+      # install Python libraries for Flask backend app
+      cd $THEIA_WORKSPACE_ROOT/backend-flask
+      pip3 install -r requirements.txt
+      # install npm libraries for frontend
+      cd $THEIA_WORKSPACE_ROOT/frontend-react-js
+      npm i
+      cd $THEIA_WORKSPACE_ROOT
+   
+```  
+Expected result: GitPod will persist Python and Node libraries as they were installed inside /workspace folder between environment restarts. 
+Actual result: matches expected result.   
+   
+   
 ### GitPod did not have Docker extension preinstalled
 
-This was rectified in .gitpod.yml by adding ms-azuretools.vscode-docker into extensions
+This was rectified in .gitpod.yml by adding ms-azuretools.vscode-docker into extensions like so:
+```yml
+   vscode:
+     extensions:
+       - 42Crunch.vscode-openapi
+       - ms-azuretools.vscode-docker
+       - cweijan.vscode-postgresql-client2
+```  
+#### Instruction how to add extensions to .gitpod.yml:
+1. go to VSCode marketplace
+2. find the missing extension
+3. click on the cog icon and select 'add to .gitpod.yaml'
+4. commit .gitpod.yaml to the repository
 
 ### Docker compose file was in incorrect folder
 
@@ -186,6 +247,15 @@ When I ran compose up first time from the left navigation pane, Docker did not p
 
 ## Stretch Challenges      
 
+* 1. Cruddur AWS user access is following least priviledge principle:
+   * Specific policies were added directly to a user. 
+   * This user does not have console access, but Admin user does for managing IAM users, roles, and policies
+   * the DynamoDB policy was described above
+* 2. Ran Snyk scan on my Cruddur repo:
+   * Snyk identified 6 critical vulnerabilities recommending to upgrade openssl and npm
+   * There are more than 400 unfixiable low priority vulnerabilities as well
+* 3. Homework Challenges for week1
+   * perhaps will attempt later as I don't have enough Docker knowledge to complete them now
       
 ## This week I learned:
 This part is written in a story telling mode to bore you less as you read it and reflect on my personal experiences and challenges.
