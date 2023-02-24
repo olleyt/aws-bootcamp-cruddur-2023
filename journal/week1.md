@@ -265,6 +265,7 @@ When I ran compose up first time from the left navigation pane, Docker did not p
 ### 2. Ran Snyk scan on my Cruddur repo:
    * Snyk identified 6 critical vulnerabilities recommending to upgrade openssl and npm
    * There are more than 400 unfixiable low priority vulnerabilities as well
+   * [Snyk screenshot](../_docs/assets/Snyk_report_cruddur.png)
 ### 3. Homework Challenges for week1
 #### 3.1 Run the dockerfile CMD as an external script
 This challenge will solve how to run the command in CMD statement for backend.   
