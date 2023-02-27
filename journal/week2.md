@@ -23,3 +23,22 @@ honeycomb is not in our cloud environment, rather our cloud environment sends da
 tagging:
 created tag: ```git tag -a week2 -m "my week-2 commits"```
 pushed tag: ```git push origin week2```
+
+added these to ```requirements.txt```
+```
+opentelemetry-api 
+opentelemetry-sdk 
+opentelemetry-exporter-otlp-proto-http 
+opentelemetry-instrumentation-flask 
+opentelemetry-instrumentation-requests
+```
+Added these lines in backend-flask/app.py
+```
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+```
+```
