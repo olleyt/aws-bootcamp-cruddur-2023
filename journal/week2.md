@@ -113,7 +113,8 @@ XRayMiddleware(app, xray_recorder)
   }
 }
 ```
-5. added X-Ray group:
+5. added new policy to give access to X-Ray to my AWS CLI user
+6. added X-Ray group:
 ```
 aws xray create-group \
    --group-name "Cruddur" \
@@ -134,6 +135,8 @@ gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ aws xray crea
     }
 }
 ```
+7. verified that X-Ray group was created:
+![X-Ray Group](../_docs/assets/XRay_group.png)
 
 ## Stretch Challenges
 - saved the query created during the class: [Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
