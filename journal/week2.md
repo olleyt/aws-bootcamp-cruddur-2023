@@ -2,8 +2,8 @@
 
 ### HoneyComb
 
-Draft of steps taken with HoneyComb.io
-
+#### Instrumented Honeycomb with OTEL
+As I watched [Lesson on HoneyComb], the following steps were completed:
 1. created an anvironment for cruddur
 2. set HoneyComb API keys as GitPod environment variables: 
 ```bash
@@ -12,24 +12,17 @@ export HONEYCOMB_SERVICE_NAME="Cruddur"
 gp env HONEYCOMB_API_KEY=""
 gp env HONEYCOMB_SERVICE_NAME="Cruddur"
 ```
-Jessica advised to set honeycomb servoce name in docker compose file instead so service name for multiple services would be different
+3. However, Jessica advised to set honeycomb service name in docker-compose file uniquely for each service instead.
+Hence, I unset HONEYCOMB_SERVICE_NAME like so:
+``` unset HONEYCOMB_SERVICE_NAME ```
 
-then these OTEL (open telemetry) variables were added to docker compose for back-end service:
+4. Then as per the class instructions, these OTEL (open telemetry) variables were added to docker compose for back-end service:
 ```bash
 OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
 OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
-OTEL_SERVICE_NAME: "${HONEYCOMB_SERVICE_NAME}"
+OTEL_SERVICE_NAME: "backend-flask"
 ```
-honeycomb is not in our cloud environment, rather our cloud environment sends data to HoneyComb.
-Hence I changed HONEYCOMB_SERVICE_NAME to ```backend-flask``` same way as Andrew did during life stream.
-
-Open Cloud Foundation and Open Telemetry project are worth exploring further.
-
-tagging:
-created tag: ```git tag -a week2 -m "my week-2 commits"```
-pushed tag: ```git push origin week2```
-
-added these to ```requirements.txt```
+5. Added open telemetry libraries to ```requirements.txt```
 ```
 opentelemetry-api 
 opentelemetry-sdk 
@@ -37,7 +30,7 @@ opentelemetry-exporter-otlp-proto-http
 opentelemetry-instrumentation-flask 
 opentelemetry-instrumentation-requests
 ```
-Added these lines in backend-flask/app.py
+6. Added these lines in backend-flask/app.py
 ```
 from opentelemetry import trace
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
@@ -46,15 +39,28 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 ```
+7. Then added a tracer for a new span for home activities following [HoneyComb documentation](https://docs.honeycomb.io/getting-data-in/opentelemetry/python/) and live stream between 1hr:25min and 1hr:34min.
+8. Next I ran custom query grouped by trace.trace_id and chose a trace with 2 spans and evidenced that trace has expected custom attributes. 
+![Two span trace](../_docs/assets/honeycomb_trace_two_spans_attributes.png?raw=true)
+9. Following instructions from Jessica, I learnt how to create a heatmap on duration(ms) for 90 percentile of requests and how to zoom in on the visialisation for a particular time frame
+![Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
 
-Then added a tracer for a new span for home activities.
-Docs: https://docs.honeycomb.io/getting-data-in/opentelemetry/python/
-Live stream point 1hr:25min - 1:34
+   
+#### Further Learning on HoneyComb  
+  Insightful notes from Jessica:
+  * Honeycomb is not in our cloud environment, rather our cloud environment sends data to HoneyComb.
+  * We can customise WHERE clause. For example, we can add condition app.result exists and then chose spans with max(app.result).
+  
+  Insightful note from Andrew:
+  Open Cloud Foundation and Open Telemetry project are worth exploring further.
 
-ran custom query grouped by trace.trace_id and chose a trace with 2 spans and evidenced that trace has expected custom attributes.
-<insert screenshot>
-  
-  we can customise WHERE clause like app.result exists
-  
-  then Jessica taught us how to zoom in 90 percentile and duration ms heatmap
-  <insert second screenshot>
+#### Tagging Week 2 work:
+created tag: ```git tag -a week2 -m "my week-2 commits"```
+pushed tag: ```git push origin week2```
+
+However, the tag shall be added after week 2 finished, so I would need to rename this tag:
+```bash
+git tag week2-start week2
+git tag -d week2
+git push origin new :week2
+```   
