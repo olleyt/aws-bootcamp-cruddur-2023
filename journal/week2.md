@@ -18,7 +18,10 @@ OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
 OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
 OTEL_SERVICE_NAME: "${HONEYCOMB_SERVICE_NAME}"
 ```
-honeycomb is not in our cloud environment, rather our cloud environment sends data to HoneyComb
+honeycomb is not in our cloud environment, rather our cloud environment sends data to HoneyComb.
+Hence I changed HONEYCOMB_SERVICE_NAME to ```backend-flask``` same way as Andrew did during life stream.
+
+Open Cloud Foundation and Open Telemetry project are worth exploring further.
 
 tagging:
 created tag: ```git tag -a week2 -m "my week-2 commits"```
