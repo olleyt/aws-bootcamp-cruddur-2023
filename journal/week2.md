@@ -1,5 +1,7 @@
 # Week 2 — Distributed Tracing
 
+### HoneyComb
+
 Draft of steps taken with HoneyComb.io
 
 1. created an anvironment for cruddur
@@ -44,4 +46,15 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 ```
-```
+
+Then added a tracer for a new span for home activities.
+Docs: https://docs.honeycomb.io/getting-data-in/opentelemetry/python/
+Live stream point 1hr:25min - 1:34
+
+ran custom query grouped by trace.trace_id and chose a trace with 2 spans and evidenced that trace has expected custom attributes.
+<insert screenshot>
+  
+  we can customise WHERE clause like app.result exists
+  
+  then Jessica taught us how to zoom in 90 percentile and duration ms heatmap
+  <insert second screenshot>
