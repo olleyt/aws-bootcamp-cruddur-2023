@@ -76,3 +76,34 @@ To https://github.com/olleyt/aws-bootcamp-cruddur-2023.git
  * [new tag]         week2-start -> week2-start
 gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
 ```
+## Stretch Challenges
+- saved the query created during the class: [Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
+
+## Career Homework
+
+### Lou's template completed
+*I am good at:*
+* designing new solutions, seeing potential for automation
+* version control
+* troubleshooting and debugging
+* Python
+* learning new technologies
+* helping and guiding others to overcome their struggles
+* stakeholder management, liasing with technical and non-technical audiences
+* presentation, diagraming
+* documentating how-to guides, operational procedures
+
+Given my talents and participation in the AWS Community Builder Program (Machine Learning) I think Cloud Engineer shall be my target role with progression to MLOps / machine learning engineer.
+
+Hence:
+| I will know      | I will not get distracted by | 
+| :---          |    :----:    | 
+| Python       | Social Media               |
+| AWS (broadly) | Comparing myself to others | 
+| SageMaker     | Web Development           |
+| DeepLearning Fundamentals | Terraform |
+| Containers                | Linux system administration, Ansible|
+
+In addition:
+* I have applied to 4 Cloud Engineer roles and also for bootcamp placement my mentor recommened.
+* I have combatted fear of rejection and messaged to the company from whom I have never received feedback on my application
