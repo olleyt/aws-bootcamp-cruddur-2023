@@ -3,6 +3,7 @@
 ## Completed Required Homework
 1. [HoneyComb](#honeycomb)
 2. [Tagging week2 work](#tagging-week-2-work)
+3. [XRay](#xray)
 
 ## HoneyComb
 
@@ -76,6 +77,16 @@ To https://github.com/olleyt/aws-bootcamp-cruddur-2023.git
  * [new tag]         week2-start -> week2-start
 gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
 ```
+## XRay
+
+Following along Andrew's instructions, these changes were impleneted:
+1. added ```aws-xray-sdk``` into backend-flask/requirements.txt
+2. installed Python dependencies: 
+```bash
+cd backend-flask
+pip install -r requirements.tx
+```
+
 ## Stretch Challenges
 - saved the query created during the class: [Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
 
