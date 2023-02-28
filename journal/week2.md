@@ -113,6 +113,27 @@ XRayMiddleware(app, xray_recorder)
   }
 }
 ```
+5. added X-Ray group:
+```
+aws xray create-group \
+   --group-name "Cruddur" \
+   --filter-expression "service(\"backend-flask\")"
+```
+got response:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ aws xray create-group    --group-name "Cruddur"    --filter-expression "service(\"backend-flask\")"
+{
+    "Group": {
+        "GroupName": "Cruddur",
+        "GroupARN": "arn:aws:xray:us-east-1:<ACCOUNT_ID>:group/Cruddur/<GROUP_ID>",
+        "FilterExpression": "service(\"backend-flask\")",
+        "InsightsConfiguration": {
+            "InsightsEnabled": false,
+            "NotificationsEnabled": false
+        }
+    }
+}
+```
 
 ## Stretch Challenges
 - saved the query created during the class: [Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
