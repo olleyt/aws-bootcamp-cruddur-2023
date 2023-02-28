@@ -137,6 +137,10 @@ gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ aws xray crea
 ```
 7. verified that X-Ray group was created:
 ![X-Ray Group](../_docs/assets/XRay_group.png)
+8. created sampling rule with this command: 
+```bash
+aws xray create-sampling-rule --cli-input-json file://aws/json/xray.json
+```
 
 ## Stretch Challenges
 - saved the query created during the class: [Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
