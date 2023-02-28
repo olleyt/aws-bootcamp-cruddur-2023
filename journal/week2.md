@@ -68,3 +68,11 @@ git tag week2-start week2
 git tag -d week2
 git push origin new :week2
 ```   
+result:
+```bash
+Total 0 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/olleyt/aws-bootcamp-cruddur-2023.git
+ - [deleted]         week2
+ * [new tag]         week2-start -> week2-start
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
+```
