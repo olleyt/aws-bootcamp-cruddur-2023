@@ -1,8 +1,12 @@
 # Week 2 — Distributed Tracing
 
-### HoneyComb
+## Completed Required Homework
+1. [HoneyComb](#honeycomb)
+2. [Tagging week2 work](#tagging-week-2-work)
 
-#### Instrumented Honeycomb with OTEL
+## HoneyComb
+
+### Instrumented Honeycomb with OTEL
 As I watched [Lesson on HoneyComb], the following steps were completed:
 1. created an anvironment for cruddur
 2. set HoneyComb API keys as GitPod environment variables: 
@@ -46,7 +50,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 ![Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
 
    
-#### Further Learning on HoneyComb  
+### Further Learning on HoneyComb  
   Insightful notes from Jessica:
   * Honeycomb is not in our cloud environment, rather our cloud environment sends data to HoneyComb.
   * We can customise WHERE clause. For example, we can add condition app.result exists and then chose spans with max(app.result).
@@ -54,7 +58,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
   Insightful note from Andrew:
   Open Cloud Foundation and Open Telemetry project are worth exploring further.
 
-#### Tagging Week 2 work:
+## Tagging Week 2 work:
 created tag: ```git tag -a week2 -m "my week-2 commits"```
 pushed tag: ```git push origin week2```
 
