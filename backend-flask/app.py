@@ -36,7 +36,7 @@ tracer = trace.get_tracer(__name__)
 
 # XRAY recorder
 xray_url = os.getenv("AWS_XRAY_URL")
-xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
+xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url, sampling=False)
 
 
 # Initialize automatic instrumentation with Flask
@@ -102,7 +102,9 @@ def data_notifications():
 
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
 def data_handle(handle):
-  model = UserActivities.run(handle)
+  user_activities = UserActivities(xray_recorder, request)
+  model = user_activities.run(handle)
+    
   if model['errors'] is not None:
     return model['errors'], 422
   else:

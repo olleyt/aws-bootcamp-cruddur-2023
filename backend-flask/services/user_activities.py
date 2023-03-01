@@ -6,18 +6,22 @@ from aws_xray_sdk.core import patch_all
 from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 
 # Initialize the X-Ray recorder
-xray_url = os.getenv("AWS_XRAY_URL")
-xray_recorder.configure(service='user-activities-service', dynamic_naming=xray_url)
+#xray_url = os.getenv("AWS_XRAY_URL")
+#xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 #xray_recorder.configure(service='user-activities-service')
-patch_all()
+#patch_all()
 #XRayMiddleware(app, xray_recorder)
 
 
 class UserActivities:
-  def run(user_handle):
+  def __init__(self, xray_recorder, request):
+        self.xray_recorder = xray_recorder
+        self.request = request
+
+  def run(self, user_handle):
     try:
       # Start a segment
-      segment = xray_recorder.begin_segment('user_activities_segment')
+      segment = self.xray_recorder.begin_segment('user_activities_start')
       
       model = {
         'errors': None,
@@ -27,13 +31,14 @@ class UserActivities:
       now = datetime.now(timezone.utc).astimezone()
       # Add metadata or annotation here if necessary
       xray_dict = {'now': now.isoformat()}
-      segment.put_metadata('now', xray_dict, 'namespace')
-
+      segment.put_metadata('now', xray_dict, 'user_activities')
+      segment.put_metadata('method', self.request.method, 'http')
+      segment.put_metadata('url', self.request.url, 'http')
       if user_handle == None or len(user_handle) < 1:
         model['errors'] = ['blank_user_handle']
       else:
         # Start a subsegment
-        subsegment = xray_recorder.begin_subsegment('user_activities_subsegment')
+        subsegment = self.xray_recorder.begin_subsegment('user_activities')
         now = datetime.now()
         results = [{
           'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
@@ -44,8 +49,8 @@ class UserActivities:
         }]
         model['data'] = results
         xray_dict['results'] = len(model['data'])
-        subsegment.put_metadata('results', xray_dict, 'user_activities_results_ns')
+        subsegment.put_metadata('results', xray_dict, 'user_activities')
     finally:  
       # Close the segment
-      xray_recorder.end_subsegment()
+      self.xray_recorder.end_subsegment()
     return model
