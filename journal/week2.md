@@ -154,6 +154,20 @@ aws xray create-sampling-rule --cli-input-json file://aws/json/xray.json
     ports:
       - 2000:2000/udp
 ```
+10. moved line ```XRayMiddleware(app, xray_recorder)``` after the app was defined in backend-flask/app.py
+11. ran docker compose up
+12. evidenced in doscker container for X-Ray logs that segment was sent to X-Ray:
+```bash
+2023-03-01T00:18:19Z [Info] HTTP Proxy server using X-Ray Endpoint : https://xray.us-east-1.amazonaws.com
+2023-03-01T00:18:19Z [Info] Starting proxy http server on 0.0.0.0:2000
+2023-03-01T00:20:54Z [Info] Successfully sent batch of 1 segments (1.104 seconds)
+2023-03-01T00:20:59Z [Info] Successfully sent batch of 1 segments (0.085 seconds)
+2023-03-01T00:31:13Z [Info] Successfully sent batch of 1 segments (0.087 seconds)
+2023-03-01T00:33:10Z [Info] Successfully sent batch of 1 segments (0.082 seconds)
+2023-03-01T00:33:11Z [Info] Successfully sent batch of 1 segments (0.086 seconds)
+```
+13. evidenced that X-Ray trace appeared in AWS X-Ray console when clicked on Traces:
+
 
 ## Stretch Challenges
 - saved the query created during the class: [Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
