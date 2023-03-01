@@ -5,13 +5,6 @@ from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch_all
 from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 
-# Initialize the X-Ray recorder
-#xray_url = os.getenv("AWS_XRAY_URL")
-#xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
-#xray_recorder.configure(service='user-activities-service')
-#patch_all()
-#XRayMiddleware(app, xray_recorder)
-
 
 class UserActivities:
   def __init__(self, xray_recorder, request):
@@ -22,7 +15,7 @@ class UserActivities:
     try:
       # Start a segment
       segment = self.xray_recorder.begin_segment('user_activities_start')
-      
+      segment.put_annotation('url', self.request.url)
       model = {
         'errors': None,
         'data': None
@@ -38,7 +31,7 @@ class UserActivities:
         model['errors'] = ['blank_user_handle']
       else:
         # Start a subsegment
-        subsegment = self.xray_recorder.begin_subsegment('user_activities')
+        subsegment = self.xray_recorder.begin_subsegment('user_activities_nested_subsegment')
         now = datetime.now()
         results = [{
           'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
