@@ -167,6 +167,7 @@ aws xray create-sampling-rule --cli-input-json file://aws/json/xray.json
 2023-03-01T00:33:11Z [Info] Successfully sent batch of 1 segments (0.086 seconds)
 ```
 13. evidenced that X-Ray trace appeared in AWS X-Ray console when clicked on Traces:
+![X-Ray trace Home](../_docs/assets/xray_trace_home.png)
 
 
 ## Stretch Challenges
