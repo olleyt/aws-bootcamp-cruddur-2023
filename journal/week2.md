@@ -359,6 +359,8 @@ Followed Andrew's instructions from the video
 ### X-Ray Subsegments
 The main challenge here was figuring out how to pass context and xray recorder and request details to a backend service that is implemented in a separate script in its own class.
 
+I also wrote an [article](https://olley.hashnode.dev/aws-free-cloud-bootcamp-instrumenting-aws-x-ray-subsegments) about this challenge.
+
 I chose to complete the challenge on user_activities.py
 
 The steps required for enabling segment and subsegments on this service:
