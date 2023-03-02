@@ -5,6 +5,9 @@
 2. [Tagging week2 work](#tagging-week-2-work)
 3. [XRay](#xray)
 4. [CloudWatch Logs](#cloudwatch-logs)
+5. [Rollbar](#rollbar)
+6. [Stretch Challenges](#stretch-challenges)
+7. [Career Homework](#career-homework)
 
 ## HoneyComb
 
@@ -171,80 +174,6 @@ aws xray create-sampling-rule --cli-input-json file://aws/json/xray.json
 ![X-Ray trace Home](../_docs/assets/xray_trace_home.png)
 
 
-## Stretch Challenges
-
-### HoneyComb Save Queries
-- saved the query created during the class: [Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
-
-### X-Ray Subsegments
-The main challenge here was figuring out how to pass context and xray recorder and request details to a backend service that is implemented in a separate script in its own class.
-
-I chose to complete the challenge on user_activities.py
-
-The steps required for enabling segment and subsegments on this service:
-1. in the app.py:
-1.1.  lines 104-111, change the data_handle function to create user_activities instance of UserActivities class explicitly.
-1.2.  pass xray_recorder, request as input values to constructor so that xray recorder will be propagated and available for the user_activities run function:
-```python
-def data_handle(handle):
-# changes start ----->
-  user_activities = UserActivities(xray_recorder, request)
-  model = user_activities.run(handle)
-# changes end <------    
-  if model['errors'] is not None:
-    return model['errors'], 422
-  else:
-    return model['data'], 200
-```
-2. in services/user_activities.py:
-2.1.  create constructor with __init__ method:
-```python
-def __init__(self, xray_recorder, request):
-        self.xray_recorder = xray_recorder
-        self.request = request
-```
-2.2. change run function to create a segment inside try - fnally block as closing segment is important for the trace to be sent to X-Ray
-```python
-def run(self, user_handle):
-    try:
-      # Start a segment
-      segment = self.xray_recorder.begin_segment('user_activities_start')
-      segment.put_annotation('url', self.request.url)
-      model = {
-        'errors': None,
-        'data': None
-      }
-
-      now = datetime.now(timezone.utc).astimezone()
-      # Add metadata or annotation here if necessary
-      xray_dict = {'now': now.isoformat()}
-      segment.put_metadata('now', xray_dict, 'user_activities')
-      segment.put_metadata('method', self.request.method, 'http')
-      segment.put_metadata('url', self.request.url, 'http')
-      if user_handle == None or len(user_handle) < 1:
-        model['errors'] = ['blank_user_handle']
-      else:
-        # Start a subsegment
-        subsegment = self.xray_recorder.begin_subsegment('user_activities_nested_subsegment')
-        now = datetime.now()
-        results = [{
-          'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
-          'handle':  'Andrew Brown',
-          'message': 'Cloud is fun!',
-          'created_at': (now - timedelta(days=1)).isoformat(),
-          'expires_at': (now + timedelta(days=31)).isoformat()
-        }]
-        model['data'] = results
-        xray_dict['results'] = len(model['data'])
-        subsegment.put_metadata('results', xray_dict, 'user_activities')
-    finally:  
-      # Close the segment
-      self.xray_recorder.end_subsegment()
-    return model
-```
-*Note:* the trace has no clear labels on the trace visiual, but when clicking on Raw Data or segments on the timeline, metadata and annotations provide necessary information.
-This is the trace example for user_activities.py service that was called via back-end by appending the link with ```/api/activities/@andrewbrown```:
-![X-Ray Subsegments Trace](../_docs/assets/xray_trace_user_activities.png)
 
 ## CloudWatch Logs
 Following the official instructions, completed homework without issues.
@@ -346,6 +275,84 @@ As a quick test that CloudWatch logging works as expected, I completed following
 ![Home activities response](../_docs/assets/home_activities_endpoint_CW_result.png)
 3. acessed CloudWatch console and evidenced that both messages from app.py and home_activities.py are present in the log:
 ![CloudWatch record](../_docs/assets/CloudWatch_log_result.png)
+
+## Rollbar
+
+## Stretch Challenges
+
+### HoneyComb Save Queries
+- saved the query created during the class: [Heatmap saved query](../_docs/assets/honeycomb_heatmap_saved_query.png)
+
+### X-Ray Subsegments
+The main challenge here was figuring out how to pass context and xray recorder and request details to a backend service that is implemented in a separate script in its own class.
+
+I chose to complete the challenge on user_activities.py
+
+The steps required for enabling segment and subsegments on this service:
+1. in the app.py:
+1.1.  lines 104-111, change the data_handle function to create user_activities instance of UserActivities class explicitly.
+1.2.  pass xray_recorder, request as input values to constructor so that xray recorder will be propagated and available for the user_activities run function:
+```python
+def data_handle(handle):
+# changes start ----->
+  user_activities = UserActivities(xray_recorder, request)
+  model = user_activities.run(handle)
+# changes end <------    
+  if model['errors'] is not None:
+    return model['errors'], 422
+  else:
+    return model['data'], 200
+```
+2. in services/user_activities.py:
+2.1.  create constructor with __init__ method:
+```python
+def __init__(self, xray_recorder, request):
+        self.xray_recorder = xray_recorder
+        self.request = request
+```
+2.2. change run function to create a segment inside try - fnally block as closing segment is important for the trace to be sent to X-Ray
+```python
+def run(self, user_handle):
+    try:
+      # Start a segment
+      segment = self.xray_recorder.begin_segment('user_activities_start')
+      segment.put_annotation('url', self.request.url)
+      model = {
+        'errors': None,
+        'data': None
+      }
+
+      now = datetime.now(timezone.utc).astimezone()
+      # Add metadata or annotation here if necessary
+      xray_dict = {'now': now.isoformat()}
+      segment.put_metadata('now', xray_dict, 'user_activities')
+      segment.put_metadata('method', self.request.method, 'http')
+      segment.put_metadata('url', self.request.url, 'http')
+      if user_handle == None or len(user_handle) < 1:
+        model['errors'] = ['blank_user_handle']
+      else:
+        # Start a subsegment
+        subsegment = self.xray_recorder.begin_subsegment('user_activities_nested_subsegment')
+        now = datetime.now()
+        results = [{
+          'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
+          'handle':  'Andrew Brown',
+          'message': 'Cloud is fun!',
+          'created_at': (now - timedelta(days=1)).isoformat(),
+          'expires_at': (now + timedelta(days=31)).isoformat()
+        }]
+        model['data'] = results
+        xray_dict['results'] = len(model['data'])
+        subsegment.put_metadata('results', xray_dict, 'user_activities')
+    finally:  
+      # Close the segment
+      self.xray_recorder.end_subsegment()
+    return model
+```
+*Note:* the trace has no clear labels on the trace visiual, but when clicking on Raw Data or segments on the timeline, metadata and annotations provide necessary information.
+This is the trace example for user_activities.py service that was called via back-end by appending the link with ```/api/activities/@andrewbrown```:
+![X-Ray Subsegments Trace](../_docs/assets/xray_trace_user_activities.png)
+
 
 ## Career Homework
 
