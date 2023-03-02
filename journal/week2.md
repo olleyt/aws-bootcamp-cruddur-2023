@@ -4,6 +4,7 @@
 1. [HoneyComb](#honeycomb)
 2. [Tagging week2 work](#tagging-week-2-work)
 3. [XRay](#xray)
+4. [CloudWatch Logs](#cloudwatch-logs)
 
 ## HoneyComb
 
@@ -244,6 +245,107 @@ def run(self, user_handle):
 *Note:* the trace has no clear labels on the trace visiual, but when clicking on Raw Data or segments on the timeline, metadata and annotations provide necessary information.
 This is the trace example for user_activities.py service that was called via back-end by appending the link with ```/api/activities/@andrewbrown```:
 ![X-Ray Subsegments Trace](../_docs/assets/xray_trace_user_activities.png)
+
+## CloudWatch Logs
+Following the official instructions, completed homework without issues.
+All code changes can be seen in this [commit](https://github.com/olleyt/aws-bootcamp-cruddur-2023/commit/11ee3113e59d36f8ab8ab2e9c45a962f8aea4945) 
+
+Same changes discussed in details below to add context why they were introduced:
+### Libraries Setup
+1. added watchtower lib in backend-flask/requirements.txt: 
+```
+watchtower
+```
+2. run the following command in the terminal:
+```bash
+pip install -r requirements.txt
+```
+### app.py
+3. made changes to backend-flask/app.py:
+3.1. added these libraries to import section at the top:
+```python
+import watchtower
+import logging
+from time import strftime
+```
+3.2. added lines before HoneyComb tracing (lines 29-43)
+```python
+# Configuring Logger to Use CloudWatch
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+console_handler = logging.StreamHandler()
+cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
+LOGGER.addHandler(console_handler)
+LOGGER.addHandler(cw_handler)
+LOGGER.info("Hello Cruddur!")
+```
+3.3. added logging after each request in lines 73-78:
+```python
+@app.after_request
+def after_request(response):
+    timestamp = strftime('[%Y-%b-%d %H:%M]')
+    LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    return response
+```
+3.4. passed logger to run function for home activities (line 116)
+```python  
+  data = HomeActivities.run(logger=LOGGER)
+```
+### Changes to home_activities.py
+Changed run function to accept logger parameter and added a test logging message (lines 7-8):
+```python
+def run(logger):
+    logger.info('Hello Cloudwatch! from  /api/activities/home')
+```
+### Changes to docker-compose.yml
+Added following environmental variables for CloudWatch logging in lines 12-14
+```yml
+      AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+```
+### New IAM Policy for CloudWatch
+As I continue to follow the principle of least priviledge, new policy ```cruddur_cloudwatch_dev_policy``` was created and attached to my development AWS user:
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "logs:GetLogEvents",
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-east-1:<ACCOUNT_ID>:log-group:cruddur:log-stream:*",
+                "arn:aws:logs:*:*:log-group:/aws/*/*:log-stream:*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:PutRetentionPolicy",
+                "logs:CreateLogGroup"
+            ],
+            "Resource": [
+                "arn:aws:logs:us-east-1:<ACCOUNT_ID>:log-group:cruddur:log-stream:*",
+                "arn:aws:logs:*:*:log-group:/aws/*/*:log-stream:*"
+            ]
+        }
+    ]
+}
+```
+### Ran Docker Compose & Evidenced CloudWatch Logging
+As a quick test that CloudWatch logging works as expected, I completed following steps:
+1. ran docker compose up
+2. accessed home activities endpoint and got a valid response:
+![Home activities response](../_docs/assets/home_activities_endpoint_CW_result.png)
+3. acessed CloudWatch console and evidenced that both messages from app.py and home_activities.py are present in the log:
+![CloudWatch record](../_docs/assets/CloudWatch_log_result.png)
 
 ## Career Homework
 
