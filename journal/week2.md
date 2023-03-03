@@ -8,6 +8,8 @@
 5. [Rollbar](#rollbar)
 6. [Stretch Challenges](#stretch-challenges)
 7. [Career Homework](#career-homework)
+8. Watched Security Considerations and completed security quiz
+
 
 ## HoneyComb
 
@@ -277,6 +279,77 @@ As a quick test that CloudWatch logging works as expected, I completed following
 ![CloudWatch record](../_docs/assets/CloudWatch_log_result.png)
 
 ## Rollbar
+Rollbar is a troubleshooting and debugging cloud tool that I hope will help me to analyse errors, especially when documentation for X-Ray SDK is so limited.
+### Rollbar Setup
+Steps completed for Rollbar enabling also seen in this [commit](https://github.com/olleyt/aws-bootcamp-cruddur-2023/commit/ed60b7d07c191fc9ef661d5a6fd41275e6127b30):
+1. Added blinker and rollbar libraries to backedn-flask/requirements.txt:
+```
+blinker
+rollbar
+```
+2. ran pip install in the terminal:
+```sh
+pip install -r requirements.txt
+```
+3. acquired token from Rollbar setup page and set it as an environment variable in the terminal: 
+```bash
+export ROLLBAR_ACCESS_TOKEN=""
+gp env ROLLBAR_ACCESS_TOKEN=""
+```
+4. added `ROLLBAR_ACCESS_TOKEN` enviroment variable to backend-flask service in `docker-compose.yml`
+
+```yml
+ROLLBAR_ACCESS_TOKEN: "${ROLLBAR_ACCESS_TOKEN}"
+```
+### Code Changes
+
+5. Completed code changes in backend-flask/app.py for Rollbar instrumentation:
+
+5.1. imported required libraries
+```py
+import rollbar
+import rollbar.contrib.flask
+from flask import got_request_exception
+```
+5.2. set up a Rollbar listener:
+```py
+rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
+@app.before_first_request
+def init_rollbar():
+    """init rollbar module"""
+    rollbar.init(
+        # access token
+        rollbar_access_token,
+        # environment name
+        'production',
+        # server root directory, makes tracebacks prettier
+        root=os.path.dirname(os.path.realpath(__file__)),
+        # flask already sets up logging
+        allow_logging_basic_config=False)
+
+    # send exceptions from `app` to rollbar, using flask's signal system.
+    got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+```
+5.3. added a test endpoint for Rollbar:
+```py
+@app.route('/rollbar/test')
+def rollbar_test():
+    rollbar.report_message('Hello World!', 'warning')
+    return "Hello World!"
+```
+5.4. hit endpoint from the backend and got the message as expected:
+![Rollbar Test Endpoint](../docs/assets/rollbar_test_endpoint_browser.png)
+5.5.logged in Rollbar, went to items and found warnings recorded:
+![Rollbar Warning](../_docs/assets/rollbar_recorded_warning.png) 
+
+### Rollbar Test on Error
+Followed Andrew's instructions from the video
+1. Followed along the video instructions and deleted `return` word at the end of backend-flask/home_activities.py
+2. hit the endpont from the back-end service by appending url with `/api/activities/home`
+3. got an error in the browser
+4. switched back to Rollbar and evidenced that the error and stack trace were recorded:
+![Rollbar error](../_docs/assets/rollbar_recorded_error.png) 
+5. reverted the code change in backend-flask/home_activities.py   
 
 ## Stretch Challenges
 
@@ -285,6 +358,8 @@ As a quick test that CloudWatch logging works as expected, I completed following
 
 ### X-Ray Subsegments
 The main challenge here was figuring out how to pass context and xray recorder and request details to a backend service that is implemented in a separate script in its own class.
+
+I also wrote an [article](https://olley.hashnode.dev/aws-free-cloud-bootcamp-instrumenting-aws-x-ray-subsegments) about this challenge.
 
 I chose to complete the challenge on user_activities.py
 
