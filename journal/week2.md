@@ -365,6 +365,14 @@ This is the trace example for user_activities.py service that was called via fro
 
 ![X-Ray Subsegments Trace](../_docs/assets/xray_trace_nested_subsegments.png)
 
+### Rollbar - Intentionally Break Code to Capture and Investigate Errors
+While I was enhancing X-Ray subsegments change, I forgot to rename some of variables in user_activities.py
+The X-Ray trace showed error with 500 status, which we know is not CORS:
+![X-Ray 500 error](../_docs/assets/xray_500_error.png)
+This was a good exercise to see how well Rollbar performs recording error stack traces and getting me right to the error root cause:
+![Rollbar 500 error](../_docs/assets/rollbar_500_error_trace.png)
+
+I can now see that Rollbar will be indeed a helpful troubleshooting tool when we deploy and scale Cruddur on ECS.
 
 ## Career Homework
 
