@@ -30,20 +30,25 @@ class UserActivities:
       if user_handle == None or len(user_handle) < 1:
         model['errors'] = ['blank_user_handle']
       else:
-        # Start a subsegment
-        subsegment = xray_recorder.begin_subsegment('user_activities_nested_subsegment')
-        now = datetime.now()
-        results = [{
-          'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
-          'handle':  'Andrew Brown',
-          'message': 'Cloud is fun!',
-          'created_at': (now - timedelta(days=1)).isoformat(),
-          'expires_at': (now + timedelta(days=31)).isoformat()
-        }]
-        model['data'] = results
-        xray_dict['results'] = len(model['data'])
-        subsegment.put_metadata('results', xray_dict, 'user_activities')
-        xray_recorder.end_subsegment()
+        try:
+          # Start a subsegment
+          subsegment = xray_recorder.begin_subsegment('user_activities_nested_subsegment')
+          now = datetime.now()
+          results = [{
+            'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
+            'handle':  'Andrew Brown',
+            'message': 'Cloud is fun!',
+            'created_at': (now - timedelta(days=1)).isoformat(),
+            'expires_at': (now + timedelta(days=31)).isoformat()
+          }]
+          model['data'] = results
+          xray_dict['results'] = len(model['data'])
+          subsegment.put_metadata('results', xray_dict, 'user_activities')
+        except Exception as e:
+          # Raise the error in the segment
+          raise e
+        finally:  
+          xray_recorder.end_subsegment()
     except Exception as e:
       # Raise the error in the segment
       raise e
