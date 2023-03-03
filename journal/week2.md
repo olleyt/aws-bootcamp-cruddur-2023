@@ -41,6 +41,10 @@ opentelemetry-exporter-otlp-proto-http
 opentelemetry-instrumentation-flask 
 opentelemetry-instrumentation-requests
 ```
+installed these libraries with 
+```bash
+pip install -r requirements.txt
+```
 6. Added these lines in backend-flask/app.py
 ```
 from opentelemetry import trace
@@ -90,7 +94,7 @@ Following along Andrew's instructions, these changes were impleneted:
 2. installed Python dependencies: 
 ```bash
 cd backend-flask
-pip install -r requirements.tx
+pip install -r requirements.txt
 ```
 3. Added the following lines in backend-flask/app.py
 ```python
