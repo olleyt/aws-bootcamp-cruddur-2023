@@ -139,18 +139,21 @@ def data_create_message():
   return
 
 @app.route("/api/activities/home", methods=['GET'])
+@xray_recorder.capture('home_trace')
 def data_home():
   data = HomeActivities.run(logger=LOGGER)
   return data, 200
 
 @app.route("/api/activities/notifications", methods=['GET'])
+@xray_recorder.capture('notifications')
 def data_notifications():
   data = NotificationsActivities.run()
   return data, 200  
 
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
+@xray_recorder.capture('user_activities')
 def data_handle(handle):
-  user_activities = UserActivities(xray_recorder, request)
+  user_activities = UserActivities(request)
   model = user_activities.run(handle)
     
   if model['errors'] is not None:
