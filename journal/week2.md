@@ -8,8 +8,8 @@
 5. [Rollbar](#rollbar)
 6. [Stretch Challenges](#stretch-challenges)
 7. [Career Homework](#career-homework)
-8. Watched Security Considerations and completed security quiz
-
+8. Watched [Security Considerations](https://www.youtube.com/watch?v=bOf4ITxAcXc&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=31) and completed security quiz
+9. Watched [Spending Considerations](https://www.youtube.com/watch?v=2W3KeqCjtDY) and completed pricing quiz
 
 ## HoneyComb
 
@@ -400,9 +400,9 @@ Hence:
 | :---          |    :----:    | 
 | Python       | Social Media               |
 | AWS (broadly) | Comparing myself to others | 
-| SageMaker     | Web Development           |
-| DeepLearning Fundamentals | Terraform |
-| Containers                | Linux system administration, Ansible|
+| Terraform    | Web Development           |
+| DeepLearning Fundamentals | IoT (not yet) |
+| Containers                | Enterprise Architecture (not yet)|
 
 In addition:
 * I have applied to 4 Cloud Engineer roles and also for bootcamp placement my mentor recommened.
