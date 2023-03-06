@@ -31,3 +31,18 @@ Create user pool
    - Don't generate a client secret (it's client side but it is for back-end); we will be using JWT token 
    - click next 
 - Review & create user pool       
+
+## Amplify GitPod
+We use Amplify Identity SDK library to use Cognito User Pool
+
+GitPod: make a command
+cd frontend-react-js
+npm i aws-amplify --save
+
+add task into gitpod.yml:
+```
+  - name: react-js
+    command: |
+      cd frontend-react-js
+      npm i
+```
