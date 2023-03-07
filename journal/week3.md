@@ -35,14 +35,41 @@ Create user pool
 ## Amplify GitPod
 We use Amplify Identity SDK library to use Cognito User Pool
 
-GitPod: make a command
-cd frontend-react-js
-npm i aws-amplify --save
+### Installation
+GitPod: add to init phase:
+```npm i aws-amplify --save```
 
-add task into gitpod.yml:
+or add command into gitpod.yml:
 ```
   - name: react-js
     command: |
       cd frontend-react-js
-      npm i
+      npm i aws-amplify --save
+```
+### Configure Amplify
+1. add code in App.js as in Andrew's instructions but we don't need identity pool!
+```js
+import { Amplify } from 'aws-amplify';
+
+Amplify.configure({
+  "AWS_PROJECT_REGION": process.env.REACT_APP_AWS_PROJECT_REGION,
+  "aws_cognito_region": process.env.REACT_APP_AWS_COGNITO_REGION,
+  "aws_user_pools_id": process.env.REACT_APP_AWS_USER_POOLS_ID,
+  "aws_user_pools_web_client_id": process.env.REACT_APP_CLIENT_ID,
+  "oauth": {},
+  Auth: {
+    // We are not using an Identity Pool
+    // identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID, // REQUIRED - Amazon Cognito Identity Pool ID
+    region: process.env.REACT_AWS_PROJECT_REGION,           // REQUIRED - Amazon Cognito Region
+    userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,         // OPTIONAL - Amazon Cognito User Pool ID
+    userPoolWebClientId: process.env.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID,   // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
+  }
+});
+```
+2. add these env variables to frontend-js service in docker-compose.yml
+```yml
+      REACT_APP_AWS_PROJECT_REGION: "${AWS_DEFAULT_REGION}"
+      REACT_APP_AWS_COGNITO_REGION: "${AWS_DEFAULT_REGION}"
+      REACT_APP_AWS_USER_POOLS_ID: "<get from AWS Console>"
+      REACT_APP_CLIENT_ID: "<get from AWS Console, App Intergration tab>"
 ```
