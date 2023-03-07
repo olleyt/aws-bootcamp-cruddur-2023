@@ -26,6 +26,7 @@ tasks:
       # install npm libraries for frontend on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/frontend-react-js
       npm i
+      npm i aws-amplify --save
       cd $THEIA_WORKSPACE_ROOT
 
 vscode:
