@@ -13,7 +13,8 @@ export default function SigninPage() {
   const [errors, setErrors] = React.useState('');
 
   const onsubmit = async (event) => {
-    setErrors('')
+    //setErrors('')
+    setCognitoErrors('')
     event.preventDefault();
     try {
       Auth.signIn(email, password)
