@@ -9,7 +9,7 @@ Create user pool
 - choose cognito user pool (default)
 - Cognito user pool sign-in options, check the following:
     - email
-    - username
+    - username , preferred name
 - Click Next button
 - on the 'Configure security requirements' page:
     - leave default  password policy although 16 character password length is better. Consider friction for your users
@@ -30,7 +30,9 @@ Create user pool
    - App Client Name: Cruddur
    - Don't generate a client secret (it's client side but it is for back-end); we will be using JWT token 
    - click next 
-- Review & create user pool       
+- Review & create user pool   
+
+ADD SCRIBE instruction here.   
 
 ## Amplify GitPod
 We use Amplify Identity SDK library to use Cognito User Pool
@@ -73,3 +75,7 @@ Amplify.configure({
       REACT_APP_AWS_USER_POOLS_ID: "<get from AWS Console>"
       REACT_APP_CLIENT_ID: "<get from AWS Console, App Intergration tab>"
 ```
+
+### Sign In Page
+HomeFeedPage.js, DesktopNavigation.js, ProfileInfo.js, DesktopSidebar.js and Signin Page changes - take from commot history
+
