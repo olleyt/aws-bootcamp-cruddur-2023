@@ -142,7 +142,7 @@ def data_create_message():
 @xray_recorder.capture('home_trace')
 def data_home():
   app.logger.debug('AUTH HEADER')
-  print(request.headers.get('Authorization'))
+  app.logger.debug(request.headers.get('Authorization')
   
   data = HomeActivities.run(logger=LOGGER)
   return data, 200
