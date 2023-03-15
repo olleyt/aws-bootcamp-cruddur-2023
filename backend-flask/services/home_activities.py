@@ -52,6 +52,7 @@ class HomeActivities:
 
       # inserts an extra crud if a user was authenticated and authorized 
       if cognito_user_id != None:
+        logger.info('Hey Cloudwatch! I am authorized to access /api/activities/home')
         extra_crud = {
           'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
           'handle':  'Lore',
