@@ -59,7 +59,7 @@ class HomeActivities:
           'message': 'My dear brother, it the humans that are the problem',
           'created_at': (now - timedelta(hours=1)).isoformat(),
           'expires_at': (now + timedelta(hours=12)).isoformat(),
-          'likes': 1042,
+          'likes_count': 1042,
           'replies': []
         }
         results.insert(0,extra_crud)
