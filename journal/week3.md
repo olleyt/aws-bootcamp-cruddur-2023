@@ -4,6 +4,7 @@
 1. [Setup Cognito User Pool](#setup-cognito-user-pool)
 2. [Instrument Amplify](#instrument-amplify)
 3. [Implement Custom Signin Page](#implement-custom-signin-page)
+4. [Implement Custom Signup Page](#implement-custom-signup-page)
 
 ## Setup Cognito User Pool
 This is part was completed by following along [main lesson video for week 3](https://www.youtube.com/watch?v=9obl7rVgzJw&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=40):
@@ -118,23 +119,43 @@ to this:
 ```python
     setErrors('')
     event.preventDefault();
-    try {
-      Auth.signIn(username, password)
-        .then(user => {
-          localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken)
-          window.location.href = "/"
-        })
-        .catch(err => { console.log('Error!', err) });
-    } catch (error) {
+    Auth.signIn(email, password)
+    .then(user => {
+      localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken)
+      window.location.href = "/"
+    })
+    .catch (error =>  { catch (error) {
       if (error.code == 'UserNotConfirmedException') {
         window.location.href = "/confirm"
       }
-      setCognitoErrors(error.message)
+      setErrors(error.message)
 ```
 
-HomeFeedPage.js, DesktopNavigation.js, ProfileInfo.js, DesktopSidebar.js and Signin Page changes - take from commot history
+## Implement Custom Signup Page
+Required changes for correct implementation can be seen through this [commit](https://github.com/olleyt/aws-bootcamp-cruddur-2023/commit/7384fbb6e7566339274cabdba2047af711ca3fdb)
 
-## JWT Token Verification
+## Implement Custom Confirmation Page
+Required changes for correct implementationcan be seen through this [commit](https://github.com/olleyt/aws-bootcamp-cruddur-2023/commit/11f9809ee92383f81f7728ef72bd5bb02e1f4c3b)
+
+## Implement Custom Recovery Page
+Required changes for correct implementation can be seen through this [commit](https://github.com/olleyt/aws-bootcamp-cruddur-2023/commit/5755b2e5358637108824a7b85cf6aed28b6dd4f0)
+
+## Verify JWT token server side
+The JWT token is stored in browser's local storage, which will be used in authorization headers from the home page.
+
+### Home Feed Page Changes 
+HomeFeedPage.js: [commit](https://github.com/olleyt/aws-bootcamp-cruddur-2023/commit/ba68e3830d70808a7faab6e3d751ca37c690f0fc)
+
+### CORS headers update
+Back-end needs to be able to be able to accept correct CORS headers.
+The required changes can be seen in this [commit](https://github.com/olleyt/aws-bootcamp-cruddur-2023/commit/bc9110bdd4ff4d7e523457ac545d06ccb88ca6d0)
+
+
+
+DesktopNavigation.js, 
+ProfileInfo.js, 
+DesktopSidebar.js 
+
 
 ### Python Code Cleanup
 | Code Unit  |     Before      |  After |
