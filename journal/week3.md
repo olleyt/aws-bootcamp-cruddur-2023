@@ -1,15 +1,23 @@
 # Week 3 — Decentralized Authentication
 
-## Cognito User Pool
-Main lesson video:
-Login into AWS Console (GUI)
-Go to Cognito
-On the left hand side choose User Pools
-Create user pool
+## Completed Required Homework
+1. [Setup Cognito User Pool](#setup-cognito-user-pool)
+2. [Instrument Amplify](#instrument-amplify)
+3. [Implement Custom Signin Page](#implement-custom-signin-page)
+
+## Setup Cognito User Pool
+This is part was completed by following along [main lesson video for week 3](https://www.youtube.com/watch?v=9obl7rVgzJw&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=40):
+
+Setting up a Cognito pool will be done in AWS console as it is the most reliable and easiest way to provision the pool for this project.
+
+### AWS Console Steps for Creating a Cognito User Pool
+1. Login into AWS Console (GUI)
+2. Go to Cognito service
+3. On the left hand side choose User Pools
+4. Click on 'Create user pool' and then follow these steps for competing wizard steps:
 - choose cognito user pool (default)
 - Cognito user pool sign-in options, check the following:
     - email
-    - username , preferred name
 - Click Next button
 - on the 'Configure security requirements' page:
     - leave default  password policy although 16 character password length is better. Consider friction for your users
@@ -21,24 +29,27 @@ Create user pool
     - keep 'Allow Cognito to automatically send messages to verify and confirm)
     - keep verifying via email, SMS will cost money
     - keep original attribute value active when update is pending
-    - for required attributes choose: name
-- Configure Message Delivery: choose 'Send email with Cognito' (for now)
+    - for required attributes choose: name, preferred name
+- Configure Message Delivery: choose 'Send email with Cognito' (for now, we will implement integration with SES later)
 - Integrate your app:
-   - user pool name: cruddur-user-pool-ot (in case it is unique)
+   - user pool name: cruddur-user-pool
    - keep Cognito hosted UI checkbox unchecked
-   - App type: public client
-   - App Client Name: Cruddur
-   - Don't generate a client secret (it's client side but it is for back-end); we will be using JWT token 
+   - application type: public client
+   - application client name: Cruddur
+   - don't generate a client secret. It's useful for client side but we will be using JWT token verification by Cruddur back-end  
    - click next 
 - Review & create user pool   
 
-ADD SCRIBE instruction here.   
+I have also created a step by step guide with screenshots that can be accessed [here](https://olley.hashnode.dev/how-to-create-aws-cognito-user-pool) 
 
-## Amplify GitPod
-We use Amplify Identity SDK library to use Cognito User Pool
+Then create a test user that will be used to implement and test authentication and authorization for this stage of the Cruddur project
 
-### Installation
-GitPod: add to init phase:
+## Instrument Amplify
+We use Amplify Identity SDK library to use Cognito User Pool.
+
+### GitPod Updates 
+
+gitpod.yml: add to init phase:
 ```npm i aws-amplify --save```
 
 or add command into gitpod.yml:
@@ -48,7 +59,7 @@ or add command into gitpod.yml:
       cd frontend-react-js
       npm i aws-amplify --save
 ```
-### Configure Amplify
+### Front-end changes to instrument Amplify
 1. add code in App.js as in Andrew's instructions but we don't need identity pool!
 ```js
 import { Amplify } from 'aws-amplify';
@@ -75,13 +86,7 @@ Amplify.configure({
       REACT_APP_AWS_USER_POOLS_ID: "<get from AWS Console>"
       REACT_APP_CLIENT_ID: "<get from AWS Console, App Intergration tab>"
 ```
-
-### Sign In Page
-HomeFeedPage.js, DesktopNavigation.js, ProfileInfo.js, DesktopSidebar.js and Signin Page changes - take from commot history
-
-change the error handling on sign in page
-token error
-so need to set password in CLI:
+3. set password for the created Cognito user in CLI:
 ```
 aws cognito-idp admin-set-user-password \
   --user-pool-id <your-user-pool-id> \
@@ -89,4 +94,21 @@ aws cognito-idp admin-set-user-password \
   --password <password> \
   --permanent
 ```
+
+### Implement Custom Signin Page
+
+
+HomeFeedPage.js, DesktopNavigation.js, ProfileInfo.js, DesktopSidebar.js and Signin Page changes - take from commot history
+
+## JWT Token Verification
+
+### Python Code Cleanup
+| Code Unit  |     Before      |  After |
+|----------|:-------------:|------:|
+| backend-flask/services/home_activities.py|  if cognito_user_id != None: | if cognito_user_id is not None: |
+| col 2 is |    centered   |   $12 |
+| col 3 is | right-aligned |    $1 |
+
+## Resources used this week
+[Comparing things to None the wrong way](https://docs.quantifiedcode.com/python-anti-patterns/readability/comparison_to_none.html)
 
