@@ -95,8 +95,42 @@ aws cognito-idp admin-set-user-password \
   --permanent
 ```
 
-### Implement Custom Signin Page
+## Implement Custom Signin Page
 
+1. change cookie authentication to Amplify in line 7:
+
+| Code Unit  | Line Number     |     Before      |  After  |
+|------------|:---------------:|:---------------:|:-------:|
+| frontend-react-js/src/pages/SigninPage.js|7|```import Cookies from 'js-cookie'```|``` import { Auth } from 'aws-amplify'; ```|
+
+2. change block from line 16 from this:
+```python
+    event.preventDefault();
+    setErrors('')
+    console.log('onsubmit')
+    if (Cookies.get('user.email') === email && Cookies.get('user.password') === password){
+      Cookies.set('user.logged_in', true)
+      window.location.href = "/"
+    } else {
+      setErrors("Email and password is incorrect or account doesn't exist")
+```
+to this:
+```python
+    setErrors('')
+    event.preventDefault();
+    try {
+      Auth.signIn(username, password)
+        .then(user => {
+          localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken)
+          window.location.href = "/"
+        })
+        .catch(err => { console.log('Error!', err) });
+    } catch (error) {
+      if (error.code == 'UserNotConfirmedException') {
+        window.location.href = "/confirm"
+      }
+      setCognitoErrors(error.message)
+```
 
 HomeFeedPage.js, DesktopNavigation.js, ProfileInfo.js, DesktopSidebar.js and Signin Page changes - take from commot history
 
