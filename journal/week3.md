@@ -17,6 +17,12 @@
     * [Instrument JWT token verification with custom library](#instrument-jwt-token-verification-with-custom-library)
     * [Add JWT verification to home activities](#add-jwt-verification-to-home-activities)
     * [Python Code Cleanup](#python-code-cleanup)
+8. [Create Cruddur CSS theme](create-cruddur-css-theme)
+9. [Watched Ashish's Week 3 - Decenteralized Authentication](https://www.youtube.com/watch?v=tEJIeII66pY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=39)
+10.[Watched about different approaches to verifying JWTs](https://www.youtube.com/watch?v=nJjbI4BbasU&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=43
+)
+
+However, I would need to learn more about JWT before attempting any challenges
 
 ## Setup Cognito User Pool
 This is part was completed by following along [main lesson video for week 3](https://www.youtube.com/watch?v=9obl7rVgzJw&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=40):
@@ -242,7 +248,9 @@ If you paid close attention you'd noticed that we need update 'likes' to 'likes_
 
 
 
+## Create Cruddur CSS theme
 
+Followed [the CSS video](https://www.youtube.com/watch?v=m9V4SmJWoJU&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=44) from the bootcamp playlist and copied Andrew's changes from his repository
 
 
 
