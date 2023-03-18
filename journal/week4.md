@@ -49,3 +49,8 @@ aws rds create-db-instance \
   --performance-insights-retention-period 7 \
   --no-deletion-protection
 ```
+
+Then go to Gitpod, run docker-compose up and check that we can still connect to PostreSQL instance from PostgreSQL container:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ psql -Upostgres -h localhost
+```
