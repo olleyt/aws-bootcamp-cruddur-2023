@@ -202,3 +202,11 @@ db-schema load
 NOTICE:  extension "uuid-ossp" already exists, skipping
 CREATE EXTENSION
 gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
+
+follow the commit history - add if statement for if statement and pretty colors
+
+Next creating tables inside schema.sql
+
+we add public in front of table names as default schema name for PostgreSQL
+
+the table definition was based what was specified in Cruddur Open API and the mocked  data
