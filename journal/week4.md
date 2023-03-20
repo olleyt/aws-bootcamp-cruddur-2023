@@ -226,3 +226,41 @@ cruddur=# \dt
  public | activities | table | postgres
  public | users      | table | postgres
 ```
+
+create seed files, correct schema, re-run schema and then seed our data:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        db/seed.sql
+
+nothing added to commit but untracked files present (use "git add" to track)
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ chmod u+x db/seed.sql
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db-schema-load 
+== db-schema-load
+db-schema load
+/workspace/aws-bootcamp-cruddur-2023/backend-flask/db/schema.sql
+this is dev
+NOTICE:  extension "uuid-ossp" already exists, skipping
+CREATE EXTENSION
+DROP TABLE
+CREATE TABLE
+DROP TABLE
+CREATE TABLE
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db-seed
+bash: ./bin/db-seed: Permission denied
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ chmod u+x ./bin/db-seed
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db-seed
+== db-seed
+db-seed
+/workspace/aws-bootcamp-cruddur-2023/backend-flask/db/seed.sql
+this is dev
+INSERT 0 2
+INSERT 0 1
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
+```
+
+reminder that production connection url is not yet set.
