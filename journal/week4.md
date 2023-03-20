@@ -183,3 +183,22 @@ db-schema load
 CREATE EXTENSION
 gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
 ```
+or work from backend-flask directory:
+```bash
+#! /usr/bin/bash
+echo "db-schema load"
+
+schema_path=$(realpath .)/db/schema.sql
+echo $schema_path
+psql $CONNECTION_URL cruddur < $schema_path
+```
+
+response:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ cd backend-flask/
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db-schema-load
+db-schema load
+/workspace/aws-bootcamp-cruddur-2023/backend-flask/db/schema.sql
+NOTICE:  extension "uuid-ossp" already exists, skipping
+CREATE EXTENSION
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
