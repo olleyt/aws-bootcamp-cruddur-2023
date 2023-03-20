@@ -1,5 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+DROP TABLE IF EXISTS public.users;
 CREATE TABLE public.users (
   uuid UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   display_name text,
@@ -8,6 +9,7 @@ CREATE TABLE public.users (
   created_at TIMESTAMP default current_timestamp NOT NULL
 );
 
+DROP TABLE IF EXISTS public.activities;
 CREATE TABLE public.activities (
   uuid UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   message text NOT NULL,
