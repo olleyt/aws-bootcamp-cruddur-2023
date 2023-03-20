@@ -210,3 +210,19 @@ Next creating tables inside schema.sql
 we add public in front of table names as default schema name for PostgreSQL
 
 the table definition was based what was specified in Cruddur Open API and the mocked  data
+
+create db-connect file:
+```
+#! /usr/bin/bash
+
+psql $CONNECTION_URL
+```
+check that tables are present:
+```
+cruddur=# \dt
+           List of relations
+ Schema |    Name    | Type  |  Owner   
+--------+------------+-------+----------
+ public | activities | table | postgres
+ public | users      | table | postgres
+```
