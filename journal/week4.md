@@ -115,5 +115,13 @@ set gitpod env variable:
 ```
 gp env CONNECTION_URL="postgresql://postgres:password@localhost:5432/cruddur"
 ```
+ 
+ THOSE STEPS ARE NOT EXECUTED:
 
 set PROD_CONNECTION_URL at 1:05:00 - main video
+
+create folder bin inside backend-flask
+inside create 3 files without extensions:
+- db-create
+- db-drop
+- db-schema-load
