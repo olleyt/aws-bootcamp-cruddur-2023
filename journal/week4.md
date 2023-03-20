@@ -1,7 +1,30 @@
 # Week 4 — Postgres and RDS
 
 Mandatory Tasks
-1. [Provision RDS Instance in CLI](#provision-rds-instance-in-cli)
+1. [RDS Security Best Practice](rds-security-best-practice)
+2. [Provision RDS Instance in CLI](#provision-rds-instance-in-cli)
+3. 
+
+## RDS Security Best Practice
+Watched Ashish's [video](https://www.youtube.com/watch?v=UourWxz7iQg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=46)
+Noted best practices for RDS:
+1.create database in the region where data is compliant to be stored (e.g. GDPR)
+2. master username is the database name to connect to
+3. change default no encryption to encrypted database
+4. endponit and port are parts of the connection URL
+5. better to set 'publicly accessible' field to 'No', however there are challenges for bootcamp with it, so will make it publically accessible
+6. default security group inbound rule allows the database to talk only to itself. Later on we need to identify resources that will be allowed to connect to it. For bootcamp purposes, choose My IP
+7. enable deletion protection
+8. enable multi-AZ for production workloads 
+9. delete database if you are not using it or create a snapshot and restore database from it
+10. create SCP to deny production database modifications / deletion, region lock, encryption
+11. prod environment - enable GuarDuty to protect against malicious activities
+12. prod environment - enable CloudTrail
+13. use apporopriate authentofication 
+14. encryption in transit between the app and db
+15. use secret manager for database master password and automatically rotate secrets with it
+
+
 
 ## Provision RDS Instance in CLI
 
