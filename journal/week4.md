@@ -54,3 +54,25 @@ Then go to Gitpod, run docker-compose up and check that we can still connect to 
 ```bash
 gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ psql -Upostgres -h localhost
 ```
+
+### Create and drop Cruddur database
+
+create database from psql command line:
+```sql CREATE database cruddur; ```
+
+run \l command and observe the database was created:
+```
+postgres=# CREATE database cruddur;
+CREATE DATABASE
+postgres=# \l
+                                 List of databases
+   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges   
+-----------+----------+----------+------------+------------+-----------------------
+ cruddur   | postgres | UTF8     | en_US.utf8 | en_US.utf8 | 
+ postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 | 
+ template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+(4 rows)
+```
