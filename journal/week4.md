@@ -76,3 +76,44 @@ postgres=# \l
            |          |          |            |            | postgres=CTc/postgres
 (4 rows)
 ```
+
+create db/schema.sql file inside backend-flask folder and paste this line inside the file to add UUUID extension for PostgreSQL:
+```
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+
+run the schema:
+```
+psql cruddur < db/schema.sql -h localhost -U postgres
+```
+
+if successful the command line will look like:
+ ```
+ gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ psql cruddur < db/schema.sql -h localhost -U postgres
+Password for user postgres: 
+CREATE EXTENSION
+ ```
+
+form a connection URL for postgreSQL:
+```
+export CONNECTION_URL="postgresql://postgres:password@localhost:5432/cruddur"
+```
+set the environmental variable and test it works:
+```
+export CONNECTION_URL="postgresql://postgres:password@localhost:5432/cruddur"
+psql $CONNECTION_URL
+```
+response sjall look like:
+```
+psql (13.10 (Ubuntu 13.10-1.pgdg20.04+1))
+Type "help" for help.
+
+cruddur=# 
+```
+
+set gitpod env variable:
+```
+gp env CONNECTION_URL="postgresql://postgres:password@localhost:5432/cruddur"
+```
+
+set PROD_CONNECTION_URL at 1:05:00 - main video
