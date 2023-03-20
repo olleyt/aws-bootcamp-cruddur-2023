@@ -125,3 +125,61 @@ inside create 3 files without extensions:
 - db-create
 - db-drop
 - db-schema-load
+
+add ```#! /usr/bin/bash``` to the files and then make them executable for the user:
+```bash
+chmod u+x db-create db-drop db-schema-load 
+```
+
+run command in the terminal:
+```bash
+./bin/db-drop
+```
+expected response:
+```bash
+itpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db-drop
+db-drop
+DROP DATABASE
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
+```
+
+edit db-create file like so:
+```bash
+#! /usr/bin/bash
+
+echo "db-create"
+
+NO_DB_CONNECTION_URL=$(sed 's/\/cruddur//g' <<<"$CONNECTION_URL")
+psql $NO_DB_CONNECTION_URL -c "create database cruddur;"
+```
+run command ``` ./bin/db-create ```
+expected response:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db-create
+db-create
+CREATE DATABASE
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
+```
+
+edit file db-schema-load. Note that I had to add backend-flask folder into schema_path :
+```
+#! /usr/bin/bash
+echo "db-schema load"
+
+schema_path=$(realpath .)/backend-flask/db/schema.sql
+echo $schema_path
+psql $CONNECTION_URL cruddur < $schema_path
+```
+run command from the workspace/aws-bootcamp-cruddur-2023:
+```
+./backend-flask/bin/db-schema-load
+```
+
+response shall be:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ ./backend-flask/bin/db-schema-load
+db-schema load
+/workspace/aws-bootcamp-cruddur-2023/backend-flask/db/schema.sql
+CREATE EXTENSION
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
+```
