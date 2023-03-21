@@ -8,9 +8,10 @@ Mandatory Tasks
 ## RDS Security Best Practice
 Watched Ashish's [video](https://www.youtube.com/watch?v=UourWxz7iQg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=46)
 Noted best practices for RDS:
-1.create database in the region where data is compliant to be stored (e.g. GDPR)
-2. master username is the database name to connect to
-3. change default no encryption to encrypted database
+
+1. create database in the region where data is compliant to be stored (e.g. GDPR)
+2.master username is the database name to connect to
+3.change default no encryption to encrypted database
 4. endponit and port are parts of the connection URL
 5. better to set 'publicly accessible' field to 'No', however there are challenges for bootcamp with it, so will make it publically accessible
 6. default security group inbound rule allows the database to talk only to itself. Later on we need to identify resources that will be allowed to connect to it. For bootcamp purposes, choose My IP
