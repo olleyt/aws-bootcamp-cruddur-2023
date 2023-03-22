@@ -309,3 +309,46 @@ SELECT
       LEFT JOIN public.users ON users.uuid = activities.user_uuid
       ORDER BY activities.created_at DESC
 ```      
+
+
+create script db-connections
+
+create script db-setup
+
+the output on my new GitPod instance; the GitPod instance I created :
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db-setup 
+./bin/db-setup: line 2: -e: command not found
+==== db-setup
+== db-drop
+db-drop
+ERROR:  database "cruddur" does not exist
+== db-create
+db-create
+CREATE DATABASE
+== db-schema-load
+db-schema load
+/workspace/aws-bootcamp-cruddur-2023/backend-flask/db/schema.sql
+this is dev
+CREATE EXTENSION
+NOTICE:  table "users" does not exist, skipping
+DROP TABLE
+CREATE TABLE
+NOTICE:  table "activities" does not exist, skipping
+DROP TABLE
+CREATE TABLE
+== db-seed
+db-seed
+/workspace/aws-bootcamp-cruddur-2023/backend-flask/db/seed.sql
+this is dev
+INSERT 0 2
+INSERT 0 1
+```
+
+install psotrgres client
+
+add to requirements.txt
+```
+psycopg[binary]
+psycopg[pool]
+```
