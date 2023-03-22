@@ -439,7 +439,13 @@ command: |
 
 stop and start GitPod environment and check that rds-update-sg-rule executed successfully and then navigate to AWS RDS console and check that IP adress was updated on the incoming rule for the security group.
 
+Update ./bin/db-connect to have a conditional statement for prod parameter.
+
 Then we can check connectivity to the production database by running our connectivity script from backend-flask:
 ```
 ./bin/db-connect prod
 ```
+
+check that we can see the databases with \l command.
+
+However, we are still not able to connect to production database as we need to load the schema to the production instance. 
