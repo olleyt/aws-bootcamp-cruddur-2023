@@ -434,5 +434,12 @@ update gitpod.yml by adding command:
 ```yml
 command: |
       export GITPOD_IP=$(curl ifconfig.me)
-      source  "$THEIA_WORKSPACE_ROOT/backend-flask/db-update-sg-rule"
+      source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds-update-sg-rule"
+```
+
+stop and start GitPod environment and check that rds-update-sg-rule executed successfully and then navigate to AWS RDS console and check that IP adress was updated on the incoming rule for the security group.
+
+Then we can check connectivity to the production database by running our connectivity script from backend-flask:
+```
+./bin/db-connect prod
 ```
