@@ -360,3 +360,14 @@ psycopg[pool]
  ```
  add lib/db.py (commit)
  instrument home activities with PostgreSQL pooling (commit)
+ 
+Andrew explained that for Cruddur project it would be best to return json in the app and pass it for further parsing rather than fetching all rows through cursor fetchall().
+
+after making all the changes, we can see the first crud imported from seed data:
+[screenshot]()
+
+it's time to connect to AWS RDS now 
+set PROD_CONNECTION_URL env variable in GitPod in this format:
+```
+export PROD_CONNECTION_URL="postgresql://<user>:<password>@<RDS endpoint>:5432/<master database name>"
+```
