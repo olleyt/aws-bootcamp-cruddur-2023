@@ -345,7 +345,9 @@ INSERT 0 2
 INSERT 0 1
 ```
 
-install psotrgres client
+## Install PostgreSQL Client
+
+We will implement pooling withing the app.
 
 add to requirements.txt
 ```
