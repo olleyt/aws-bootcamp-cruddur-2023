@@ -371,3 +371,13 @@ set PROD_CONNECTION_URL env variable in GitPod in this format:
 ```
 export PROD_CONNECTION_URL="postgresql://<user>:<password>@<RDS endpoint>:5432/<master database name>"
 ```
+
+if we are trying to connect with ```psql $PROD_CONNECTION_URL```, the command will just hang.
+
+Go back to AWS RDS console and adjust security group inbound rules to allow Gitpod IP address to connect to our database 
+
+Get the GitPod IP address with this command:
+```
+GITPOD_IP=$(curl ifconfig.me)
+```
+add allow rule on the RDS security group for the address that $GITPOD_IP holds.
