@@ -407,3 +407,32 @@ gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ aws ec2 modify-security-gro
     "Return": true
 }
 ```
+
+create rds-update-sg-rule script inside bin folder:
+```bash
+#! /usr/bin/bash
+
+CYAN='\033[1;36m'
+NO_COLOR='\033[0m'
+LABEL="rds-modify-inbound-rule"
+printf "${CYAN}==== ${LABEL}${NO_COLOR}\n"
+
+aws ec2 modify-security-group-rules \
+    --group-id $DB_SG_ID \
+    --security-group-rules "SecurityGroupRuleId=$DB_SG_RULE_ID,SecurityGroupRule={Description=GITPOD,IpProtocol=tcp,FromPort=5432,ToPort=5432,CidrIpv4=$GITPOD_IP/32}"
+    
+execute : 
+```bash 
+chmod u+x rds-update-sg-rule
+export GITPOD_IP=$(curl ifconfig.me)
+./rds-update-sg-rule
+```
+
+check that the security group got updated in the AWS RDS console.
+
+update gitpod.yml by adding command:
+```yml
+command: |
+      export GITPOD_IP=$(curl ifconfig.me)
+      source  "$THEIA_WORKSPACE_ROOT/backend-flask/db-update-sg-rule"
+```
