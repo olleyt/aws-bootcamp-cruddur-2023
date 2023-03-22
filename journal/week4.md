@@ -354,3 +354,9 @@ add to requirements.txt
 psycopg[binary]
 psycopg[pool]
 ```
+ install libraries:
+ ```
+ pip install -r requirements.txt
+ ```
+ add lib/db.py (commit)
+ instrument home activities with PostgreSQL pooling (commit)
