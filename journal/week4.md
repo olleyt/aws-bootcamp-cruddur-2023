@@ -381,3 +381,29 @@ Get the GitPod IP address with this command:
 GITPOD_IP=$(curl ifconfig.me)
 ```
 add allow rule on the RDS security group for the address that $GITPOD_IP holds.
+
+run ```psql $PROD_CONNECTION_URL```:
+
+then run \l and you shall see the list of databases .
+
+Now to make our life easier, we will set environment variables for the security group and the inbound rule:
+```
+export DB_SG_ID=""
+gp env DB_SG_ID=""
+export DB_SG_RULE_ID=""
+gp env DB_SG_RULE_ID=""
+```
+
+then we can utilise this CLI script below 
+```
+aws ec2 modify-security-group-rules \
+    --group-id $DB_SG_ID \
+    --security-group-rules "SecurityGroupRuleId=$DB_SG_RULE_ID,SecurityGroupRule={Description=GITPOD,IpProtocol=tcp,FromPort=5432,ToPort=5432,CidrIpv4=$GITPOD_IP/32}"
+```    
+the expected response from the terminal:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ aws ec2 modify-security-group-rules     --group-id $DB_SG_ID     --security-group-rules "SecurityGroupRuleId=$DB_SG_RULE_ID,SecurityGroupRule={Description=GITPOD,IpProtocol=tcp,FromPort=5432,ToPort=5432,CidrIpv4=$GITPOD_IP/32}"
+{
+    "Return": true
+}
+```
