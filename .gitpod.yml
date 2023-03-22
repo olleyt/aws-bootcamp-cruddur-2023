@@ -28,6 +28,9 @@ tasks:
       npm i
       npm i aws-amplify --save
       cd $THEIA_WORKSPACE_ROOT
+    command: |
+      export GITPOD_IP=$(curl ifconfig.me)
+      source  "$THEIA_WORKSPACE_ROOT/backend-flask/db-update-sg-rule"  
 
 vscode:
   extensions:
