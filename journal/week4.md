@@ -449,3 +449,20 @@ Then we can check connectivity to the production database by running our connect
 check that we can see the databases with \l command.
 
 However, we are still not able to connect to production database as we need to load the schema to the production instance. 
+
+then go and load the schema from backend-flask folder:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db-schema-load prod
+== db-schema-load
+db-schema load
+/workspace/aws-bootcamp-cruddur-2023/backend-flask/db/schema.sql
+this is prod
+CREATE EXTENSION
+NOTICE:  table "users" does not exist, skipping
+DROP TABLE
+CREATE TABLE
+NOTICE:  table "activities" does not exist, skipping
+DROP TABLE
+CREATE TABLE
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
+```
