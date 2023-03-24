@@ -22,7 +22,7 @@ export default function RecoverPage() {
     setErrors('')
     Auth.forgotPassword(username)
     .then((data) => setFormState('confirm_code') )
-    .catch((err) => setCognitoErrors(err.message) );
+    .catch((err) => setErrors(err.message) );
     return false
   }
   
@@ -32,9 +32,9 @@ export default function RecoverPage() {
     if (password == passwordAgain){
       Auth.forgotPasswordSubmit(username, code, password)
       .then((data) => setFormState('success'))
-      .catch((err) => setCognitoErrors(err.message) );
+      .catch((err) => setErrors(err.message) );
     } else {
-      setCognitoErrors('Passwords do not match')
+      setErrors('Passwords do not match')
     }
     return false
   }

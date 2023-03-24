@@ -24,7 +24,7 @@ export default function SignupPage() {
         password: password,
         attributes: {
             name: name,
-            email: username,
+            email: email,
             preferred_username: username,
         },
         autoSignIn: { // optional - enables auto sign in after user is confirmed
@@ -35,7 +35,7 @@ export default function SignupPage() {
       window.location.href = `/confirm?email=${email}`
   } catch (error) {
       console.log(error);
-      setCognitoErrors(error.message)
+      setErrors(error.message)
   }
   return false
 }
