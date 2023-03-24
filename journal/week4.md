@@ -466,3 +466,14 @@ DROP TABLE
 CREATE TABLE
 gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
 ```
+
+## Setup Cognito post confirmation lambda
+
+### Create the Lamba function
+1. Create Lambda with boiler plate code in AWS management console, name it 'cruddur-confirmation-function' and choose Python 3.8 as runtime. Leave other settings with default values
+2. assign default execution role and add AWS managed policy AWSLambdaVPCAccessExecutionRole to this role. See details why we need it [here](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html#vpc-permissions) 
+4. attach the lambda function to VPC following this [guide from AWS](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html)
+5 rewrite boiler plate code for Lambda function to insert a user into PostgreSQL AWS RDS on user sign up:
+```python
+```
+6. add Lambda layer for psycopg2
