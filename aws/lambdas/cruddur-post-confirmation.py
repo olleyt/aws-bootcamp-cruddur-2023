@@ -10,10 +10,16 @@ def lambda_handler(event, context):
     
     sql = f"""
       INSERT INTO public.users(
-        display_name, 
+        display_name,
+        email, 
         handle, 
         cognito_user_id)
-      VALUES (%s, %s, %s, %s)
+      VALUES (
+        '{user_display_name}',
+        '{user_email}',
+        '{user_handle}',
+        '{user_cognito_id}'
+        )
     """
     try:
         conn = psycopg2.connect(os.getenv('CONNECTION_URL'))
