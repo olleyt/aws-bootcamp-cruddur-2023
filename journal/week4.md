@@ -471,9 +471,57 @@ gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $
 
 ### Create the Lamba function
 1. Create Lambda with boiler plate code in AWS management console, name it 'cruddur-confirmation-function' and choose Python 3.8 as runtime. Leave other settings with default values
-2. assign default execution role and add AWS managed policy AWSLambdaVPCAccessExecutionRole to this role. See details why we need it [here](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html#vpc-permissions) 
+2. assign default execution role and add AWS managed policy AWSLambdaVPCAccessExecutionRole to this role to give permission to create ENI. See details why we need it [here](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html#vpc-permissions) 
 4. attach the lambda function to VPC following this [guide from AWS](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html)
 5 rewrite boiler plate code for Lambda function to insert a user into PostgreSQL AWS RDS on user sign up:
 ```python
+import json
+import psycopg2
+
+def lambda_handler(event, context):
+    user = event['request']['userAttributes']
+    user_display_name  = user['name']
+    user_email         = user['email']
+    user_handle        = user['preferred_username']
+    user_cognito_id    = user['sub']
+    
+    sql = f"""
+      INSERT INTO public.users(
+        display_name,
+        email, 
+        handle, 
+        cognito_user_id)
+      VALUES (
+        {user_display_name},
+        {user_email},
+        {user_handle},
+        {user_cognito_id}
+        )
+    """
+    try:
+        conn = psycopg2.connect(os.getenv('CONNECTION_URL'))
+        cur = conn.cursor()
+        cur.execute(sql)
+        conn.commit() 
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        
+    finally:
+        if conn is not None:
+            cur.close()
+            conn.close()
+            print('Database connection closed.')
+
+    return event
 ```
-6. add Lambda layer for psycopg2
+6. add Lambda layer for psycopg2 : ```arn:aws:lambda:us-east-1:898466741470:layer:psycopg2-py38:2``` . Note it's not verifiable and can pose a security risk but can be good enough for our learning project
+7. add AWS Lambda environment variable CONNECTION_URL from GitPod by env | grep PROD
+8. add trigger on lambda from our Cognito user pool. Go to the AWS Cognito, choose cruddur user pool and go to 'user pool properties' tab
+9. trigger type 'Sign Up', Sign Up option 'post confirmation trigger', choose the created lambda function in 'Assign Lambda function' drop down list 
+10. deploy lambda code in the AWS Lambda console by clicking on 'Deploy' button.
+
+Test lambda handler by signing up a new user:
+1. run docker-compose up on GitPod
+2. update the schema on production database
+3. go to the Cruddur web app and sign up a new user
