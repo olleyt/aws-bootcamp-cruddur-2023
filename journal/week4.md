@@ -523,5 +523,26 @@ def lambda_handler(event, context):
 
 Test lambda handler by signing up a new user:
 1. run docker-compose up on GitPod
-2. update the schema on production database
+2. update the schema on production database with ```./bin/db-schema-load prod```
 3. go to the Cruddur web app and sign up a new user
+4. check that CloudWatch logs had no errors
+5. check database table contains a user: ```./bin/db-connect prod```
+```
+\x on
+select * from users
+```
+Response:
+```bash
+cruddur=> \x on
+Expanded display is on.
+cruddur=> select * from users;
+-[ RECORD 1 ]---+-------------------------------------
+uuid            | 4c5c16bf-5959-4305-9e00-bfa770082a7b
+display_name    | Olley T
+handle          | olleyt2
+email           | does-not-exist@gmail.com
+cognito_user_id | be8129b4-714c-4c1a-a2bd-9dbc59557e8f
+created_at      | 2023-03-24 10:37:28.784121
+```
+
+woohoo! it works! but our job is not done yet
