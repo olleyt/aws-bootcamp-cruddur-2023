@@ -473,7 +473,8 @@ gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $
 1. Create Lambda with boiler plate code in AWS management console, name it 'cruddur-confirmation-function' and choose Python 3.8 as runtime. Leave other settings with default values
 2. assign default execution role and add AWS managed policy AWSLambdaVPCAccessExecutionRole to this role to give permission to create ENI. See details why we need it [here](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html#vpc-permissions) 
 4. attach the lambda function to VPC following this [guide from AWS](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html)
-5 rewrite boiler plate code for Lambda function to insert a user into PostgreSQL AWS RDS on user sign up:
+5. add a layer with this ARN: ```arn:aws:lambda:us-east-1:898466741470:layer:psycopg2-py38:1 doesn't work, arn:aws:lambda:us-east-1:898466741470:layer:psycopg2-py38:2``` ; got it from this [GitHub post](https://github.com/jetbridge/psycopg2-lambda-layer/issues/23)
+6. rewrite boiler plate code for Lambda function to insert a user into PostgreSQL AWS RDS on user sign up:
 ```python
 import json
 import psycopg2
@@ -546,3 +547,33 @@ created_at      | 2023-03-24 10:37:28.784121
 ```
 
 woohoo! it works! but our job is not done yet
+
+## Creating Activities
+
+### Pre-requisites
+1. start your RDS instance
+2. launch GitPod for correct branch (main)
+3. run docker-compose up
+4. go to back-end flask folder
+5. run ```./bin/db-connect``` to ensure that connection to RDS is not hanging
+
+### Changes for create_activities.py
+
+Note: data is not sanitized. That can pose a security and data breach risks in production projects
+
+#### Changes to home_activities.py
+
+Note: data is not sanitized. That can pose a security and data breach risks in production projects
+
+#### Testing and Troubleshooting
+There will be flood of errors like this because of Chrome extensions like EverNote: 
+``` commons.js:2 Channel: Error in handleResponse UNK/SW_UNREACHABLE isLogsEnabled null
+handleResponsePromise @ commons.js:2
+```
+
+```Database cruddur does not exists``` - this error came from the local PostgreSQL container when I switched GitPod instances and didnot re-create a local database.
+I changed docker compose file to set ```CONNECTION_URL = "${PROD_CONNECTION_URL}"```
+
+Note: Secret Manager will rotate RDS secrets every 7 days so environment variables for CONNECTION_URL and PROD_CONNECTION_URL as well as Lambda environment variable need to be refreshed. 
+
+DesktopNavigationLink.js throws warnings but I giuess we will re-implement that later
