@@ -12,6 +12,12 @@ class Db():
     connection_url = os.getenv("CONNECTION_URL")
     self.pool = ConnectionPool(connection_url)
 
+  def print_sql(self, title, sql):
+    cyan = '\033[96m]'
+    no_color = '\033[0m]'
+    print(f'{cyan}SQL STATEMENT--{title}-------{no_color}')
+    print(sql + '\n')
+
   def load_template(self, name):
     template_path = os.path.join(app.root_path, 'db', 'sql', name + '.sql')
     with open(template_path, 'r') as f:
@@ -20,7 +26,7 @@ class Db():
 
   def query_commit(self, sql, params):
     # change to CloudWatch logging later on
-    print("SQL STATEMENT WITH RETURNING ID---------------")
+    self.print_sql(sql)
     pattern = r"\bRETURNING\b"
     is_returning_id = re.search(pattern, sql)
 
