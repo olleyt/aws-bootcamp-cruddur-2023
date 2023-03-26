@@ -8,8 +8,23 @@ class Db():
   def init_pool(self):  
     connection_url = os.getenv("CONNECTION_URL")
     self.pool = ConnectionPool(connection_url)
-  
-  def query_commit(self):
+    
+  def query_commit_returning_id(self, sql, *args):
+    # change to CloudWatch logging later on
+    print("SQL STATEMENT WITH RETURNING ID---------------")
+    try:
+        conn = self.pool.connection()
+        cur  = conn.cursor()
+        cur.execute(sql, *args)
+        returning_id = cur.fetchone()[0]
+        conn.commit()
+    except Exception as error:
+        self.print_sql_err(error)
+        # conn.rollback()  
+    finally:
+        print('success')
+
+  def query_commit(self, sql):
     """
     we want to commit data such as insert
     """
