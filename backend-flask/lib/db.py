@@ -1,5 +1,7 @@
 from psycopg_pool import ConnectionPool
 import os
+import re
+import sys
    
 class Db():
   def __init__(self):
@@ -8,31 +10,22 @@ class Db():
   def init_pool(self):  
     connection_url = os.getenv("CONNECTION_URL")
     self.pool = ConnectionPool(connection_url)
-    
-  def query_commit_returning_id(self, sql, *args):
+
+  def query_commit(self, sql, params):
     # change to CloudWatch logging later on
     print("SQL STATEMENT WITH RETURNING ID---------------")
-    try:
-        conn = self.pool.connection()
-        cur  = conn.cursor()
-        cur.execute(sql, *args)
-        returning_id = cur.fetchone()[0]
-        conn.commit()
-    except Exception as error:
-        self.print_sql_err(error)
-        # conn.rollback()  
-    finally:
-        print('success')
+    pattern = r"\bRETURNING\b"
+    is_returning_id = re.search(pattern, sql)
 
-  def query_commit(self, sql):
-    """
-    we want to commit data such as insert
-    """
     try:
         conn = self.pool.connection()
         cur  = conn.cursor()
-        cur.execute(sql)
+        cur.execute(sql, params)
+        if is_returning_id:
+          returning_id = cur.fetchone()[0]
         conn.commit()
+        if is_returning_id:
+          return returning_id
     except Exception as error:
         self.print_sql_err(error)
         # conn.rollback()  
@@ -76,7 +69,7 @@ class Db():
     print ("psycopg2 traceback:", traceback, "-- type:", err_type)
 
     # psycopg2 extensions.Diagnostics object attribute
-    print ("\nextensions.Diagnostics:", err.diag)
+    #print ("\nextensions.Diagnostics:", err.diag)
 
     # print the pgcode and pgerror exceptions
     print ("pgerror:", err.pgerror)
