@@ -26,7 +26,9 @@ class Db():
 
   def query_commit(self, sql, params):
     # change to CloudWatch logging later on
-    self.print_sql(sql)
+    self.print_sql('query_commit', sql)
+    print(f"THIS IS HANDLE: {params}")
+
     pattern = r"\bRETURNING\b"
     is_returning_id = re.search(pattern, sql)
 

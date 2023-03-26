@@ -56,9 +56,10 @@ class CreateActivity:
 
   def create_activity(handle, message, expires_at):
     sql = db.load_template('create_activity') 
-    params = {'user_uuid' : user_uuid, 'message' : message,'expires_at' : expires_at}
-    uuid = db.query_commit_returning_id(sql, params)
-
+    print(f"THIS IS HANDLE: {handle}")
+    params = {'handle' : handle, 'message' : message,'expires_at' : expires_at}
+    uuid = db.query_commit(sql, params)
+    
     #def query_object_activity():
     #  return None
     
