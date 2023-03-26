@@ -578,4 +578,35 @@ I changed docker compose file to set ```CONNECTION_URL = "${PROD_CONNECTION_URL}
 
 Note: Secret Manager will rotate RDS secrets every 7 days so environment variables for CONNECTION_URL and PROD_CONNECTION_URL as well as Lambda environment variable need to be refreshed. 
 
-DesktopNavigationLink.js throws warnings but I giuess we will re-implement that later
+DesktopNavigationLink.js throws warnings but I giuess we will re-implement that later.
+
+### Passing User Handle from Front End
+This solution was advised by anle4s in the bootcamp Discord [thread](https://discord.com/channels/1055552619441049660/1086233246691495968).
+I think this is a great implementation and following the bootcamper instructions to properly pass the user handle instead of hardcoding it in app.py
+
+1. Update the ActivityForm component in pages/HomeFeedPage.js to pass the user_handle prop as follows:
+```js
+<ActivityForm
+  user_handle={user}
+  popped={popped}
+  setPopped={setPopped}
+  setActivities={setActivities}
+/>
+```
+2. In the components/ActivityForm.js component, update the fetch request body to include the user_handle:
+```js
+body: JSON.stringify({
+  user_handle: props.user_handle.handle,
+  message: message,
+  ttl: ttl
+}),
+```
+
+3. In app.py, under the /api/activities route, assign the user_handle variable as follows:
+```python
+user_handle = request.json["user_handle"]
+```
+
+Save, commit and push.
+Then start the RDS and run docker-compose up and test posting a crud.
+
