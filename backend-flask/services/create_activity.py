@@ -55,7 +55,7 @@ class CreateActivity:
     return model
 
   def create_activity(handle, message, expires_at):
-    sql = db.load_sql('create_activity') 
+    sql = db.load_template('create_activity') 
     params = {'user_uuid' : user_uuid, 'message' : message,'expires_at' : expires_at}
     uuid = db.query_commit_returning_id(sql, params)
 

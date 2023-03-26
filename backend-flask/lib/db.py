@@ -2,6 +2,7 @@ from psycopg_pool import ConnectionPool
 import os
 import re
 import sys
+from flask import current_app as app
    
 class Db():
   def __init__(self):
@@ -11,6 +12,12 @@ class Db():
     connection_url = os.getenv("CONNECTION_URL")
     self.pool = ConnectionPool(connection_url)
 
+  def load_template(self, name):
+    template_path = os.path.join(app.root_path, 'db', 'sql', name + '.sql')
+    with open(template_path, 'r') as f:
+      template_content = f.read()  
+    return template_content
+
   def query_commit(self, sql, params):
     # change to CloudWatch logging later on
     print("SQL STATEMENT WITH RETURNING ID---------------")
@@ -18,7 +25,7 @@ class Db():
     is_returning_id = re.search(pattern, sql)
 
     try:
-        conn = self.pool.connection()
+      with self.pool.connection() as conn:
         cur  = conn.cursor()
         cur.execute(sql, params)
         if is_returning_id:
