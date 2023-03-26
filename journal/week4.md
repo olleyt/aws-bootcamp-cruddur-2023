@@ -226,6 +226,7 @@ db-schema load
 NOTICE:  extension "uuid-ossp" already exists, skipping
 CREATE EXTENSION
 gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
+```
 
 follow the commit history - add if statement for if statement and pretty colors
 
@@ -241,6 +242,7 @@ create db-connect file:
 
 psql $CONNECTION_URL
 ```
+
 check that tables are present:
 ```
 cruddur=# \dt
