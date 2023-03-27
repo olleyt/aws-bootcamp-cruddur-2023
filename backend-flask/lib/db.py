@@ -1,10 +1,13 @@
-from psycopg_pool import ConnectionPool
 import os
 import re
 import sys
+from psycopg_pool import ConnectionPool
 from flask import current_app as app
    
 class Db():
+  """
+  missing class docstring
+  """
   def __init__(self):
     self.init_pool()
 
@@ -18,8 +21,9 @@ class Db():
     print(f'{cyan}SQL STATEMENT--{title}-------{no_color}')
     print(sql + '\n')
 
-  def load_template(self, name):
-    template_path = os.path.join(app.root_path, 'db', 'sql', name + '.sql')
+  def load_template(self, *args):
+    # maybe use pathlib instead
+    template_path = os.path.join(app.root_path, 'db', 'sql', args, '.sql')
     with open(template_path, 'r') as f:
       template_content = f.read()  
     return template_content
@@ -47,26 +51,28 @@ class Db():
     finally:
         print('success')
 
-  def query_object_json(self, sql):
+  def query_object_json(self, sql, params={}):
     """
     when we want to return a json object
     """
+    self.print_sql('query_object_json', sql)
     wrapped_sql = self.query_wrap_object(sql)
     with self.pool.connection() as conn:
       with conn.cursor() as cur:
-        cur.execute(wrapped_sql)
+        cur.execute(wrapped_sql, params)
         # this will return a tuple
         # the first field being the data
         json = cur.fetchone()
     
-  def query_array_json(self, sql):
+  def query_array_json(self, sql, params={}):
     """
     when we want to return and array of json objects
     """ 
+    self.print_sql('query_array_json', sql)
     wrapped_sql = self.query_wrap_array(sql)
     with self.pool.connection() as conn:
       with conn.cursor() as cur:
-        cur.execute(wrapped_sql)
+        cur.execute(wrapped_sql, params)
         # this will return a tuple
         # the first field being the data
         json = cur.fetchone()

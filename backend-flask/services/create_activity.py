@@ -1,65 +1,76 @@
 import uuid
 from datetime import datetime, timedelta, timezone
-from  lib.db import db
+from lib.db import db
+
 
 class CreateActivity:
-  def run(message, user_handle, ttl):
-    model = {
-      'errors': None,
-      'data': None
-    }
+    """
+    class docstring
+    """
 
-    now = datetime.now(timezone.utc).astimezone()
+    def run(message, user_handle, ttl):
+        """
+        run function
+        """
+        model = {
+            'errors': None,
+            'data': None
+        }
 
-    if (ttl == '30-days'):
-      ttl_offset = timedelta(days=30) 
-    elif (ttl == '7-days'):
-      ttl_offset = timedelta(days=7) 
-    elif (ttl == '3-days'):
-      ttl_offset = timedelta(days=3) 
-    elif (ttl == '1-day'):
-      ttl_offset = timedelta(days=1) 
-    elif (ttl == '12-hours'):
-      ttl_offset = timedelta(hours=12) 
-    elif (ttl == '3-hours'):
-      ttl_offset = timedelta(hours=3) 
-    elif (ttl == '1-hour'):
-      ttl_offset = timedelta(hours=1) 
-    else:
-      model['errors'] = ['ttl_blank']
+        now = datetime.now(timezone.utc).astimezone()
 
-    if user_handle == None or len(user_handle) < 1:
-      model['errors'] = ['user_handle_blank']
+        if (ttl == '30-days'):
+            ttl_offset = timedelta(days=30)
+        elif (ttl == '7-days'):
+            ttl_offset = timedelta(days=7)
+        elif (ttl == '3-days'):
+            ttl_offset = timedelta(days=3)
+        elif (ttl == '1-day'):
+            ttl_offset = timedelta(days=1)
+        elif (ttl == '12-hours'):
+            ttl_offset = timedelta(hours=12)
+        elif (ttl == '3-hours'):
+            ttl_offset = timedelta(hours=3)
+        elif (ttl == '1-hour'):
+            ttl_offset = timedelta(hours=1)
+        else:
+            model['errors'] = ['ttl_blank']
 
-    if message == None or len(message) < 1:
-      model['errors'] = ['message_blank'] 
-    elif len(message) > 280:
-      model['errors'] = ['message_exceed_max_chars'] 
+        if user_handle == None or len(user_handle) < 1:
+            model['errors'] = ['user_handle_blank']
 
-    if model['errors']:
-      model['data'] = {
-        'handle':  user_handle,
-        'message': message
-      }   
-    else:
-      expires_at = (now + ttl_offset).isoformat()
-      CreateActivity.create_activity(user_handle, message, expires_at)
-      model['data'] = {
-        'uuid': uuid.uuid4(),
-        'display_name': 'Olley T',
-        'handle':  user_handle,
-        'message': message,
-        'created_at': now.isoformat(),
-        'expires_at': (now + ttl_offset).isoformat()
-      }
-    return model
+        if message is None or len(message) < 1:
+            model['errors'] = ['message_blank']
+        elif len(message) > 280:
+            model['errors'] = ['message_exceed_max_chars']
 
-  def create_activity(handle, message, expires_at):
-    sql = db.load_template('create_activity') 
-    print(f"THIS IS HANDLE: {handle}")
-    params = {'handle' : handle, 'message' : message,'expires_at' : expires_at}
-    uuid = db.query_commit(sql, params)
-    
-    #def query_object_activity():
-    #  return None
-    
+        if model['errors']:
+            model['data'] = {
+                'handle':  user_handle,
+                'message': message
+            }
+        else:
+            expires_at = (now + ttl_offset).isoformat()
+            user_uuid = CreateActivity.create_activity(user_handle, message, expires_at)
+
+            object_json = CreateActivity.query_object_activity(user_uuid)
+            model['data'] = object_json
+        return model
+
+    def create_activity(handle, message, expires_at):
+        """
+        this method creates a crud and commits in RDS
+        """
+        sql = db.load_template('activity', 'create')
+        params = {'handle': handle, 'message': message,
+                  'expires_at': expires_at}
+        user_uuid = db.query_commit(sql, params)
+        return user_uuid
+
+    def query_object_activity(user_uuid):
+        """
+        select crud data to show on front-end
+        """
+        sql = db.load_template('activity', 'object')
+        params = {'uuid': user_uuid}
+        return db.query_object_json(sql, params)
