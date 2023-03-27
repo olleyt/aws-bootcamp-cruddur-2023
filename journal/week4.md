@@ -3,10 +3,13 @@
 Mandatory Tasks
 1. [RDS Security Best Practice](rds-security-best-practice)
 2. [Provision RDS Instance in CLI](#provision-rds-instance-in-cli)
-3. [Create Schema for Postgres](#create-schema-for-postgres)
-4. [Bash scripting for common database actions](#bash-scripting-for-common-database-actions)
-5. [Install PostgreSQL Client](#install-postgresql-client)
-6. [Setup Cognito post confirmation lambda](#setup-cognito-post-confirmation-lambda)
+3. [Connect Gitpod to RDS instance part 1](#connect-gitpod-to-rds-instance-part-1)
+4. [Create Schema for Postgres](#create-schema-for-postgres)
+5. [Bash scripting for common database actions](#bash-scripting-for-common-database-actions)
+6. [Install PostgreSQL Client](#install-postgresql-client)
+7. [Connect Gitpod to RDS instance part 2](#connect-gitpod-to-rds-instance-part-2)
+8. [Setup Cognito post confirmation lambda](#setup-cognito-post-confirmation-lambda)
+9. [Creating Activities](#creating-activities)
 
 ## RDS Security Best Practice
 Watched Ashish's [video](https://www.youtube.com/watch?v=UourWxz7iQg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=46)
@@ -152,6 +155,7 @@ if successful the terminal output will look like:
 Password for user postgres: 
 CREATE EXTENSION
  ```
+## Connect Gitpod to RDS instance part 1 
 ### Setting environment variables
 Next we will form a connection URL for postgreSQL and set it as an environment variable for local PostgreSQL instance running as a container on GitPod:
 ```
@@ -410,6 +414,7 @@ Andrew explained that for Cruddur project it would be best to return json in the
 5. After making all the changes, we can see the first crud imported from seed data:
 ![screenshot](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/91069fb29e661c41d5316cdf6b7ca496a99e6d86/_docs/assets/seed_data.png)
 
+## Connect Gitpod to RDS instance part 2
 6. It's time to connect to AWS RDS now. 
 set PROD_CONNECTION_URL env variable in GitPod in this format:
 ```
