@@ -69,14 +69,19 @@ class Db():
         when we want to return a json object
         """
         self.print_sql('query_object_json', sql)
+        print('PARAMS: ')
+        print(params)
+        
         wrapped_sql = self.query_wrap_object(sql)
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(wrapped_sql, params)
                 json = cur.fetchone()
-                if json is None:
-                    return "{}"
-                return json[0]
+                
+                if json is  None:
+                    return "{}" 
+                else:
+                    return json[0]    
 
     def query_array_json(self, sql, params):
         """
