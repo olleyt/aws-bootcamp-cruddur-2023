@@ -61,7 +61,7 @@ class CreateActivity:
         """
         this method creates a crud and commits in RDS
         """
-        sql = db.load_template('activity', 'create')
+        sql = db.load_template('activities', 'create')
         params = {'handle': handle, 'message': message,
                   'expires_at': expires_at}
         user_uuid = db.query_commit(sql, params)
@@ -71,6 +71,6 @@ class CreateActivity:
         """
         select crud data to show on front-end
         """
-        sql = db.load_template('activity', 'object')
+        sql = db.load_template('activities', 'object')
         params = {'uuid': user_uuid}
         return db.query_object_json(sql, params)
