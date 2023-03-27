@@ -6,4 +6,4 @@ VALUES (
     LIMIT 1),
     %(message)s,
     %(expires_at)s
-) RETURNING user_uuid
+) RETURNING uuid

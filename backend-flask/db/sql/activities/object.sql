@@ -8,6 +8,4 @@ SELECT
 FROM public.activities
 INNER JOIN public.users on users.uuid = activities.user_uuid
 WHERE
-  users.uuid = %(uuid)s
-ORDER BY activities.created_at DESC 
-LIMIT 1  
+  activities.uuid = %(uuid)s 

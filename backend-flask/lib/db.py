@@ -33,12 +33,9 @@ class Db():
         print(f'{green} PATH {no_color}')
 
         app_path = pathlib.Path('.')
-        template_path = app_path.joinpath(app.root_path, 'db', 'sql', *args).with_suffix('.sql')
+        template_path = app_path.joinpath(
+            app.root_path, 'db', 'sql', *args).with_suffix('.sql')
         template_content = template_path.read_text()
-        #print(template_path + '\n')
-        # template_path = os.path.join(app.root_path, 'db', 'sql', args, '.sql')
-        #with template_path.open() as template_file:
-        #    template_content = template_file.read()
         return template_content
 
     def query_commit(self, sql, params):
@@ -62,7 +59,7 @@ class Db():
             self.print_sql_err(error)
             # conn.rollback()
         finally:
-            print('success')
+            print('query_commit finished')
 
     def query_object_json(self, sql, params):
         """
@@ -71,17 +68,17 @@ class Db():
         self.print_sql('query_object_json', sql)
         print('PARAMS: ')
         print(params)
-        
+
         wrapped_sql = self.query_wrap_object(sql)
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(wrapped_sql, params)
                 json = cur.fetchone()
-                
-                if json is  None:
-                    return "{}" 
+
+                if json is None:
+                    return "{}"
                 else:
-                    return json[0]    
+                    return json[0]
 
     def query_array_json(self, sql, params):
         """
