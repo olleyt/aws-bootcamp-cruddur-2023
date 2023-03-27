@@ -32,8 +32,8 @@ class Db():
         no_color = '\033[0m'
         print(f'{green} PATH {no_color}')
 
-        app_path = pathlib.Path(app.root_path)
-        template_path = app_path.joinpath('db', 'sql', *args).with_suffix('.sql')
+        app_path = pathlib.Path('.')
+        template_path = app_path.joinpath(app.root_path, 'db', 'sql', *args).with_suffix('.sql')
         template_content = template_path.read_text()
         #print(template_path + '\n')
         # template_path = os.path.join(app.root_path, 'db', 'sql', args, '.sql')
