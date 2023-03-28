@@ -12,3 +12,8 @@
 8. Prefer using roles and short living credentials like roles or Cognito Identity pools instead of IAM users / groups 
 9. AWS recommends to use client side encryption
 10. try to limit DAX to read access role only if possible 
+
+## Design Considerations
+## DynamoDB Utility Scripts
+
+1. add boto3 in requirements.txt and pip install it.
