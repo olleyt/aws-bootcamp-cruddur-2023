@@ -35,6 +35,8 @@ Noted best practices for RDS:
 
 ## Provision RDS Instance in CLI
 
+Refer to the official [CLI documentation](https://docs.aws.amazon.com/cli/latest/reference/rds/create-db-instance.html)
+
 ```
 aws rds create-db-instance \
   --db-instance-identifier cruddur-db-instance \
@@ -727,3 +729,12 @@ I changed docker compose file to set ```CONNECTION_URL = "${PROD_CONNECTION_URL}
 Note: Secret Manager will rotate RDS secrets every 7 days so environment variables for CONNECTION_URL and PROD_CONNECTION_URL as well as Lambda environment variable need to be refreshed. 
 
 DesktopNavigationLink.js throws warnings but I giuess we will re-implement that later.
+
+## Useful resources
+[Pathlib library](https://docs.python.org/3/library/pathlib.html)
+[Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
+[Using Secrets Manager](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/secrets-envvar-secrets-manager.html)
+[How can I pass secrets or sensitive information securely to containers in an Amazon ECS task?](https://aws.amazon.com/premiumsupport/knowledge-center/ecs-data-security-container-task/)
+[How to Manage Secrets for Amazon EC2 Container Service–Based Applications by Using Amazon S3 and Docker](https://aws.amazon.com/blogs/security/how-to-manage-secrets-for-amazon-ec2-container-service-based-applications-by-using-amazon-s3-and-docker/)
+[Create an AWS Secrets Manager database secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/create_database_secret.html)
+[Password management with Amazon RDS and AWS Secrets Manager](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html#rds-secrets-manager-db-instance)
