@@ -16,4 +16,14 @@
 ## Design Considerations
 ## DynamoDB Utility Scripts
 
-1. add boto3 in requirements.txt and pip install it.
+### Install Boto3
+1. add boto3 in requirements.txt
+2. pip install it.
+
+### House Keeping
+3. run docker-compose up to run DynamoDb on local containers.
+4. inside bin create folder 'db' and move all scripts starting with 'db-' there, and then remove this prefix.
+5. inside bin create folder 'rds' and move script that updates default RDS security group in that folder.
+6. setup script needs updates
+7. inside bin create folder 'ddb' and navidate there. 
+8. create schema-load script inside 'ddb' folder
