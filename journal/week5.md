@@ -167,11 +167,18 @@ aws dynamodb delete-table $ENDPOINT_URL \
   --table-name $TABLE_NAME
 ```
 
-14. create script for seeding data into cruddur-messages DynamoDB table
+14. it is important to have 2 users in our Cognito user pool and users' uuid shall come from the database
+15. go to the AWS console and create a second user
+16. Sign up second user to Cruddur
+17. create script for seeding data into cruddur-messages DynamoDB table
 ```python
 
 
 ```
+Note: Andrew changed his mind and we will not prepend sk with 'GRP#' for message groups
 
+18. as we previously deleted our table, re-load the schema
+19. test the seed script. For production it'd be better to use batch write than executing bunch of puts
 ## Resources:
 - [Python args vs kwargs](https://realpython.com/python-kwargs-and-args/)
+- [Python enumerate](https://realpython.com/python-enumerate/)
