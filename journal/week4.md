@@ -718,6 +718,15 @@ This is the end result of week 4:
 ![completed_week4_screenshot](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/91069fb29e661c41d5316cdf6b7ca496a99e6d86/_docs/assets/final_rds_data.png)
 
 #### Testing and Troubleshooting
+
+#### PostConfirmation failed with error
+check:
+- RDS is running
+- GITPOD_IP matches IP address on the RDS default security group 
+- Lambda connection url is correct
+- password for CONNECTION_URL matches current Secret Manager secret both on GitPod and Lambda variables
+
+#### Other Errors
 There will be flood of errors like this because of Chrome extensions like EverNote: 
 ``` commons.js:2 Channel: Error in handleResponse UNK/SW_UNREACHABLE isLogsEnabled null
 handleResponsePromise @ commons.js:2
