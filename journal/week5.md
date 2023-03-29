@@ -113,9 +113,58 @@ Perhaps this is the reason why we need a GSI for current Cruddur base table desi
 9. create DynamoDB local table with [AWS SDK Boto3 for DynamoDB](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb.html)
 go to ./ddb/schema-load file and edit it like so:
 ```bash
-#! /usr/bin/env python3
+import sys
+import boto3
 
-<COPY FROM MY VSCODE>
+kwargs = {
+  'endpoint_url': 'http://localhost:8000'
+}
+
+if len(sys.argv) == 2:
+    if "prod" in sys.argv[1]:
+        kwargs = {}
+    
+ddb = boto3.client('dynamodb', **kwargs)
+
+table_name = 'cruddur-messages'
+
+response = ddb.create_table(
+    TableName =  table_name,
+    AttributeDefinitions=[
+        {
+            'AttributeName': 'pk',
+            'AttributeType': 'S'
+        },
+        {
+            'AttributeName': 'sk',
+            'AttributeType': 'S'
+        },
+    ],
+    KeySchema=[
+        {
+            'AttributeName': 'pk',
+            'KeyType': 'HASH'
+        },
+        {
+            'AttributeName': 'sk',
+            'KeyType': 'RANGE'
+        },
+    ], 
+    # add GSI later
+    BillingMode='PROVISIONED',
+    ProvisionedThroughput={
+        'ReadCapacityUnits': 5,
+        'WriteCapacityUnits': 5
+    },
+    Tags=[
+        {
+            'Key': 'string',
+            'Value': 'string'
+        },
+    ]
+)
+
+print(response)
 
 ```
 10. save it and run chmod u+x on it. 
