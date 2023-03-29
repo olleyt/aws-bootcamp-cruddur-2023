@@ -14,6 +14,84 @@
 10. try to limit DAX to read access role only if possible 
 
 ## Design Considerations
+‘Access patterns dictate everything’ - Kirk Kirkconell
+
+The below text is my study notes from the [live stream](), so there could be sentences that are matching exact conversation between Andrew and Kirk.
+
+### NoSQL Data Modelling Considerations
+Preplanning is critical for NoSQL data modelling. Dumping data can lead to expensive solutions or solutions that do not perform well.
+NoSQL databases perform their best when getting data as precomputed output.
+
+We shall think about organising data for NoSQL database as the precomputed output for the application and in a sense:
+ * what data do we need
+ * when 
+ * at what velocity data will be accessed.
+
+Kirk's advice:
+* Think about NoSQL queries as if you were getting data from a single flat table. 
+* When designing a flat table think about what are related attributes that can be accessed together. For example, what data is also related to conversations like time it was created at, users involved.
+* Storage is cheap, so that it is perfectly fine to have duplicated attributes in the base table if it is supporting access patterns. DynamoDB has consistent low latency.
+* We are asking NoSQL ‘go get me data’ instead of deriving insights from the data in traditional SQL way. This allows DynamoDB to have consistent performance at millisecond time.
+* We are not asking questions of data because we know what data we need to get exactly and that’s why we want it pre-computed and stored in a flat structure for easy access.
+
+Side note: some people like to get data from NoSQL in SQL fashion. PartiQL can help with that.
+
+### DynamoDB Data Presentation with GSI and LSI
+We can slice and dice data from the base flat table as if we were looking at different facets of a crystal with using global secondary indices (GSI) or local secondary indices(LSI).
+* GSI: eventually consistent global secondary index. We can choose subsets of attributes from the base table to project and it acts as another optimised table for a specific access patterns allowing to save on cost due to attribute optimisation. Items in GSIs do not need to be unique and that’s why we cannot use get_iem() operation but can only query or scan items. Another way to describe a GSI is it is a different view of the same data.
+* LSI: strong consistent local secondary index where data stored and ordered in a different way compared to the base table. We can slice and dice data whatever way we want to support our access patterns.  LSI is created at table creation time and cannot be created or deleted afterwards.
+
+### Base Table Design
+Base table shall be designed to support as many access patterns as possible while keeping amount of  GSI and LSI to minimum. We shall solve 80-90% access patterns with the base table and 20-10% with GSI ( and maybe LSI).
+
+Base table + GSI can be a comparable Dynamo DB cost for having two DynamoDB tables for our application.
+
+As Kirk said, “with RDS we model tables as database wants it whereas NoSQL database allow to model as application will interact with the data”.
+
+### DynamoDB Constraints 
+* _partition key_ is mandatory for querying table. We need to design base table in a way that data is evenly distributed across partition key values
+* if a table was created with a _sort key_ then we can use it for querying. Sort key is optional when querying DynamoDB table
+
+As mentioned in the ‘DynamoDB book’, some people make general names for partition key as ‘pk’ and sort key as ‘sk’ because of pivoting data for different access patterns can make naming keys hard. They also duplicate these ‘pk’ and ‘sk’ as explicit attributes to support design flat table for as many access patterns as possible while keeping least amount of GSIs and LSIs.
+
+In addition to that, some people create a ‘data’ key and dump entire record in that attribute in JSON format for performance reasons.
+
+### Cruddur Flat NoSQL Table
+* We put Cruddur message and conversation data in one flat table because it is related.
+* We are also reducing database management complexity compared to multi-table database approach:
+    * think about balancing multi indexes
+    * replicating one global table for disaster recovery purposes is a lot easier than replicating multiple tables and ensure that all data is in sync  
+
+### Cruddur Patterns
+#### Note about uuid
+Applications usually cannot piece together data in a picture based on uuid. 
+However, for Cruddur it will work very well as  we want to obscure how many users we have.
+
+#### Pattern A: conversations with others (message groups). 
+This access pattern is ‘What conversations I am in with others’ that shall show message groups. This access pattern shall be able to grab most recent conversations for the user and they shall be shown in a descendent order.
+
+#### Pattern B: Show all messages that are in a conversation and sort messages by ‘created_at’ attribute in descendent order. 
+- Andrew asked Kirk if there is an order we shall follow to review our access patterns? 
+- Kirk advised: “We shall get Message Groups data from the base table. However,  getting into a message group is a less frequent pattern).” 
+We can also put additional attributes in a JSON string if wea re not going to index on those attributes.
+- Andrew replied that it is an interesting idea and we might should have follow that but it is too late to re-design Cruddur. 
+When we create a message in a conversation, we might need 2 message groups:
+    - one from the logged in user perspective
+    - other one is for the user our logged in user is interacting with and having conversation.
+Hence we need to add other_user_uuid in the base table
+
+#### Pattern C: create message 
+Our flat table design was already supporting this access pattern
+
+#### Pattern D: reply to existing conversation and update relevant message groups
+
+The hardest part of this pattern was getting the last replier and the related message to update both message groups. We probably would need to delete and re-create the record in our base table because we would need to know ‘pk’ and ‘sk’ of the record to update it in one go. We can also update only 1 record at a time in DynamoDB so probably one update operation is not feasible anyways. 
+Perhaps this is the reason why we need a GSI for current Cruddur base table design.
+
+#### Missing Patterns
+- Pagination: we could have limit number of returned items while refining results for Pattern B. Kirk suggested to narrow down the refined result.
+- Update display name: this would require updating all related messages and conversations. It’s too late to cater for this pattern and we are not going to implement it
+
 ## DynamoDB Utility Scripts
 
 ### Install Boto3
