@@ -5,7 +5,7 @@ image:
 github:
   prebuilds:
     # enable for the master/default branch (defaults to true)
-    master: true
+    master: false
 # enable for all branches in this repo (defaults to false)
     branches: false
 # enable for pull requests coming from this repo (defaults to true)
@@ -27,7 +27,7 @@ tasks:
       cd $THEIA_WORKSPACE_ROOT/frontend-react-js
       npm i
       npm i aws-amplify --save
-      cd $THEIA_WORKSPACE_ROOT
+      cd $THEIA_WORKSPACE_ROOT 
   - name: postgres
     init: |
       curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
