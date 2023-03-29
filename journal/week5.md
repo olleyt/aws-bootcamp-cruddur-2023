@@ -216,10 +216,11 @@ aws dynamodb delete-table $ENDPOINT_URL \
   --table-name $TABLE_NAME
 ```
 
-14. it is important to have 2 users in our Cognito user pool and users' uuid shall come from the database
-15. go to the AWS console and create a second user
-16. Sign up second user to Cruddur
-17. create script for seeding data into cruddur-messages DynamoDB table
+14. chmod u+x and then run this command to test it from ./backend-flask/bin/ddb folder: ```./delete-table cruddur-messages```
+15. it is important to have 2 users in our Cognito user pool and users' uuid shall come from the database
+16. go to the AWS console and create a second user
+17. Sign up second user to Cruddur
+18. create script for seeding data into cruddur-messages DynamoDB table
 ```python
 
 
