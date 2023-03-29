@@ -1,9 +1,9 @@
+#!/usr/bin/env python3
+
 import sys
 import boto3
 
-kwargs = {
-  'endpoint_url': 'http://localhost:8000'
-}
+kwargs = { 'endpoint_url': 'http://localhost:8000' }
 
 if len(sys.argv) == 2:
     if "prod" in sys.argv[1]:
@@ -63,8 +63,8 @@ response = ddb.create_table(
     },
     Tags=[
         {
-            'Key': 'string',
-            'Value': 'string'
+            'Key': 'project',
+            'Value': 'cruddur'
         },
     ]
 )
