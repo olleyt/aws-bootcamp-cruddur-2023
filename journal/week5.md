@@ -389,6 +389,32 @@ Note: Andrew changed his mind and we will not prepend sk with 'GRP#' for message
 19. temporarily change db.py to connect to prod RDS to get the users' data as we set them up for Cognito, go to line 18 and change CONNECTION_URL to PROD_CONNECTION_URL
 20. test the seed script from /backend-flask/bin/ddb by running command ```python3 seed.py```. For production it'd be better to use batch write than executing bunch of puts
 
+#### Scan 
+21. create a script named 'scan' in the ddb folder:
+```python
+#!/usr/bin/env python3
+
+import boto3
+
+# we will not use scans for production
+attrs = {
+  'endpoint_url': 'http://localhost:8000'
+}
+ddb = boto3.resource('dynamodb',**attrs)
+table_name = 'cruddur-messages'
+
+table = ddb.Table(table_name)
+response = table.scan()
+
+items = response['Items']
+for item in items:
+  print(item)
+```
+22. make this script executable : ``` chmod u+x ./scan ```
+23. run ```./scan``` and you shall see records from the loaded converstaion like one below:
+```
+{'user_uuid': 'd1f1f69e-e5e3-40d6-a43a-8d89bcca8c61', 'user_handle': 'bestie', 'sk': '2023-03-29T09:45:13.050615+00:00', 'pk': 'MSG#5ae290ed-55d1-47a0-bc6d-fe2bc2700399', 'message_uuid': 'a9fa7523-61db-46c1-b8f0-ea97e6c02de9', 'message': "Definitely. I think his character is a great example of the show's ability to balance humor and heart, and to create memorable and beloved characters that fans will cherish for years to come.", 'user_display_name': 'Alter Ego'}
+```
 
 ## Resources:
 - [Python args vs kwargs](https://realpython.com/python-kwargs-and-args/)
