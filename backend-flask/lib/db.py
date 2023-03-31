@@ -15,14 +15,14 @@ class Db():
         self.init_pool()
 
     def init_pool(self):
-        connection_url = os.getenv("CONNECTION_URL")
+        connection_url = os.getenv("PROD_CONNECTION_URL")
         self.pool = ConnectionPool(connection_url)
 
-    def print_sql(self, title, sql):
+    def print_sql(self, title, sql, params):
         cyan = '\033[96m'
         no_color = '\033[0m'
         print(f'{cyan} SQL STATEMENT--{title}-------{no_color}')
-        print(sql + '\n')
+        print(sql, params, '\n')
 
     def load_template(self, *args):
         """
@@ -40,7 +40,7 @@ class Db():
 
     def query_commit(self, sql, params):
         # change to CloudWatch logging later on
-        self.print_sql('query_commit', sql)
+        self.print_sql('query_commit', sql, params)
         print(f"THIS IS HANDLE: {params}")
 
         pattern = r"\bRETURNING\b"
@@ -65,7 +65,7 @@ class Db():
         """
         when we want to return a json object
         """
-        self.print_sql('query_object_json', sql)
+        self.print_sql('query_object_json', sql, params)
         print('PARAMS: ')
         print(params)
 
@@ -84,7 +84,7 @@ class Db():
         """
         when we want to return and array of json objects
         """
-        self.print_sql('query_array_json', sql)
+        self.print_sql('query_array_json', sql, params)
         wrapped_sql = self.query_wrap_array(sql)
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
@@ -137,6 +137,16 @@ class Db():
             ) array_row);
             """
         return sql
-
+    
+    def query_value(self,sql,params={}):
+        """ 
+        returns single value
+        """    
+        self.print_sql('value',sql,params)
+        with self.pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql,params)
+                json = cur.fetchone()
+                return json[0]
 
 db = Db()
