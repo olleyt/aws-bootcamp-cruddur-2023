@@ -478,6 +478,90 @@ for item in items:
   print(f'{sender_handle: <12}{formatted_datetime: <22}{message[:40]}...')
 ```
 26. chmod u+x and run the script from the terminal. You shall see the conversation with json printed nicely.
+27. Notice that we also implemented a filter on the sort key as Kirk suggested. Andrew put a comments for filtering messages between start and end dates but we will proceed with filtering by year for now.
+28. implement ```list-conversations```
+29. insert code
+30. run ```chmod u+x ./list-conversations```
+31. run ``` ./list_conversations```
+32. expected response shall be similar to mine
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask/bin/ddb/patterns (main) $ ./list-conversations 
+ SQL STATEMENT--value-------
+
+    SELECT 
+      users.uuid
+    FROM users
+    WHERE
+      users.handle =%(handle)s
+   {'handle': 'olleyt'} 
+
+my-uuid: 48c078df-8331-4715-a58d-0c0494496d02
+{
+  "ConsumedCapacity": {
+    "CapacityUnits": 0.5,
+    "TableName": "cruddur-messages"
+  },
+  "Count": 1,
+  "Items": [
+    {
+      "message": {
+        "S": "this is a filler message"
+      },
+      "message_group_uuid": {
+        "S": "5ae290ed-55d1-47a0-bc6d-fe2bc2700399"
+      },
+      "pk": {
+        "S": "GRP#48c078df-8331-4715-a58d-0c0494496d02"
+      },
+      "sk": {
+        "S": "2023-03-31T01:07:29.447128+00:00"
+      },
+      "user_display_name": {
+        "S": "Alter Ego"
+      },
+      "user_handle": {
+        "S": "bestie"
+      },
+      "user_uuid": {
+        "S": "d1f1f69e-e5e3-40d6-a43a-8d89bcca8c61"
+      }
+    }
+  ],
+  "ResponseMetadata": {
+    "HTTPHeaders": {
+      "content-length": "445",
+      "content-type": "application/x-amz-json-1.0",
+      "date": "Fri, 31 Mar 2023 22:27:54 GMT",
+      "server": "Jetty(9.4.48.v20220622)",
+      "x-amz-crc32": "2276557303",
+      "x-amzn-requestid": "124de0fd-7e38-4ef9-b40b-152f110f7d66"
+    },
+    "HTTPStatusCode": 200,
+    "RequestId": "124de0fd-7e38-4ef9-b40b-152f110f7d66",
+    "RetryAttempts": 0
+  },
+  "ScannedCount": 1
+}
+```
+33. this completes implementation of DynamoDb utility scripts
+
+## Troubleshooting
+* Check that RDS is up & running
+* Check that connection url is using current password from Secret Manager
+* Check that post-confirmation Lambda environment variable is using current password from Secret Manager. The password is rotated regularly.
+* Check that db.py is pointed to production RDS as we source user data from AWS Cognito pool
+* run docker-compose up to make local DynamoDB instance available
+* Since I turned off pre-builds, new GitPod instances did not update GitPod IP automatically so I needed to run these commands as pre-requisite before testing utility:
+```bash
+export GITPOD_IP=$(curl ifconfig.me)
+source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds-update-sg-rule"
+```  
+* if a new GitPod isntance was spinned up, local DynamoDB table need to be re-created and re-seeded from ./backend-flask/bin/ddb:
+```
+./schema-load
+./list-tables
+./python3 seed.py
+```
 
 ## Resources:
 - [Python args vs kwargs](https://realpython.com/python-kwargs-and-args/)
