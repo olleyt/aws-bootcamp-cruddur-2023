@@ -415,6 +415,69 @@ for item in items:
 ```
 {'user_uuid': 'd1f1f69e-e5e3-40d6-a43a-8d89bcca8c61', 'user_handle': 'bestie', 'sk': '2023-03-29T09:45:13.050615+00:00', 'pk': 'MSG#5ae290ed-55d1-47a0-bc6d-fe2bc2700399', 'message_uuid': 'a9fa7523-61db-46c1-b8f0-ea97e6c02de9', 'message': "Definitely. I think his character is a great example of the show's ability to balance humor and heart, and to create memorable and beloved characters that fans will cherish for years to come.", 'user_display_name': 'Alter Ego'}
 ```
+#### Implement Pattern Scripts for Read and List Conversations
+24. create folder patterns inside ddb folder
+25. create files: get-conversation and list-conversations. Note that we need to specify 'TOTAL' on returned capacity to see how expensive our query is. We are getting messages belonging to a conversation by pk = MSG#message_group_uuid:
+```python
+#!/usr/bin/env python3
+
+import boto3
+import sys
+import json
+import datetime
+
+attrs = {
+  'endpoint_url': 'http://localhost:8000'
+}
+
+if len(sys.argv) == 2:
+  if "prod" in sys.argv[1]:
+    attrs = {}
+
+dynamodb = boto3.client('dynamodb',**attrs)
+table_name = 'cruddur-messages'
+
+message_group_uuid = "5ae290ed-55d1-47a0-bc6d-fe2bc2700399"
+
+year = str(datetime.datetime.now().year)
+# define the query parameters
+query_params = {
+  'TableName': table_name,
+  'ScanIndexForward': False,
+  'Limit': 20,
+  'ReturnConsumedCapacity': 'TOTAL',
+  'KeyConditionExpression': 'pk = :pk AND begins_with(sk,:year)',
+  #'KeyConditionExpression': 'pk = :pk AND sk BETWEEN :start_date AND :end_date',
+  'ExpressionAttributeValues': {
+    ':year': {'S': year },
+    #":start_date": { "S": "2023-03-01T00:00:00.000000+00:00" },
+    #":end_date": { "S": "2023-03-19T23:59:59.999999+00:00" },
+    ':pk': {'S': f"MSG#{message_group_uuid}"}
+  }
+}
+
+
+# query the table
+response = dynamodb.query(**query_params)
+
+# print the items returned by the query
+print(json.dumps(response, sort_keys=True, indent=2))
+
+# print the consumed capacity
+print(json.dumps(response['ConsumedCapacity'], sort_keys=True, indent=2))
+
+items = response['Items']
+items.reverse()
+
+for item in reversed_array:
+  sender_handle = item['user_handle']['S']
+  message       = item['message']['S']
+  timestamp     = item['sk']['S']
+  dt_object = datetime.datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z')
+  formatted_datetime = dt_object.strftime('%Y-%m-%d %I:%M %p')
+  print(f'{sender_handle: <12}{formatted_datetime: <22}{message[:40]}...')
+```
+26. chmod u+x and run the script from the terminal. You shall see the conversation with json printed nicely.
 
 ## Resources:
 - [Python args vs kwargs](https://realpython.com/python-kwargs-and-args/)
