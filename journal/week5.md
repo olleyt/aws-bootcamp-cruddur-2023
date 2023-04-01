@@ -570,3 +570,4 @@ source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds-update-sg-rule"
 - DynamoDB / Client / [create_table](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/create_table.html)
 - [Python Script Not Showing Output](https://www.shellhacks.com/python-script-not-showing-output-solved/)
 - [DynamoDB examples using SDK for Python (Boto3)](https://docs.aws.amazon.com/code-library/latest/ug/python_3_dynamodb_code_examples.html)
+- [Git Concepts I Wish I Knew Years Ago](https://dev.to/g_abud/advanced-git-reference-1o9j#commit-messages)
