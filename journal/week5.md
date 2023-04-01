@@ -568,3 +568,4 @@ source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds-update-sg-rule"
 - [Python enumerate](https://realpython.com/python-enumerate/)
 - [Import Python modules](https://realpython.com/python-modules-packages/)
 - DynamoDB / Client / [create_table](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb/client/create_table.html)
+- [Python Script Not Showing Output](https://www.shellhacks.com/python-script-not-showing-output-solved/)
