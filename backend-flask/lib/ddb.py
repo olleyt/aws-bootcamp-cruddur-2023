@@ -47,6 +47,7 @@ class Ddb:
         'created_at': last_sent_at
       })
     return results
+
   def list_messages(client,message_group_uuid):
     current_year = datetime.now().year
     table_name = 'cruddur-messages'
