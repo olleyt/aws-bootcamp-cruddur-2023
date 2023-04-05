@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     try:
         conn = psycopg2.connect(os.getenv('CONNECTION_URL'))
         cur = conn.cursor()
-        cur.execute(sql, *params)
+        cur.execute(sql, params)
         conn.commit() 
 
     except (Exception, psycopg2.DatabaseError) as error:
