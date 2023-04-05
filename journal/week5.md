@@ -545,6 +545,14 @@ my-uuid: 48c078df-8331-4715-a58d-0c0494496d02
 ```
 33. this completes implementation of DynamoDb utility scripts
 
+## create new conversation
+we created a new user Londo Mollari with handle 'londomollari'.
+So that when we append messages/new/londomollari, a filler conversation appear:
+![filler_conversation](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/b34e0322ee61f68a27fa27c0ddb077eefe9ce23a/_docs/assets/filler_conversation.png)
+
+If we post a message in this filler conversation, we are redirected to the new conversation and see the posted message:
+![comversation_londo](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/b34e0322ee61f68a27fa27c0ddb077eefe9ce23a/_docs/assets/new_conversation_londo.png)
+
 ## Troubleshooting
 * Check that RDS is up & running
 * Check that connection url is using current password from Secret Manager
