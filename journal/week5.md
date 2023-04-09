@@ -1,5 +1,12 @@
 # Week 5 — DynamoDB and Serverless Caching
 
+## Deviations from official guidance
+
+* some Python code has 4 spaces identation: db.py
+* postgreSQL scripts in db folder still have *db-* prefix
+* script that updates default security group still have *rds* prefix
+* I run RDS as production instance for since week 4 and stopped used mocked data but instead used my own 3 users I signed up in Cruddur
+* my function to load sql scripts called 'load_template' in db.py instead of 'template'
 
 ## Dynamo DB Security Considerations
 1. Protect from public access: use VPC endpoints, or site-to-site VPN, direct connect for on-prem access
@@ -546,6 +553,63 @@ my-uuid: 48c078df-8331-4715-a58d-0c0494496d02
 33. this completes implementation of DynamoDb utility scripts
 
 ## create new conversation
+
+34. as I stopped RDS and shut down GitPod for the night, these actions need to be executed to proceed with the implementation:
+    * start RDS in AWS console
+    * run ```docker-compose up``` in GitPod
+    * check connection to RDS with ```./backend-flask/bin/db/db-connect prod```
+    * open Cruddur web application, sign out and sign in to refresh the token
+36. go to backend-flask folder 
+37. create a new Python script named 'ddb.py' with the code from Andrew's repository for week 5. 
+38. Note 1: Ddb is a stateless class; Andrew said it is so much easier to test a stateless class than test with tracing of instance of a class, even though this approach results in a more verbose code 
+39. Note 2: that for RDS we wrote generic functions and SQL queries but for DynamoDB we will use more explicit queries for the application dictated by access patterns 
+40. Note 3: we could have used environment variables (or feature flags) for table name to denote environment stage such as 'dev', 'test', 'prod' and use them as table prefix for example
+41. add 'ScanIndexforward' for explicit order in ddb/list-conversation script (line 44)
+42. go back to backend-flask folder and amend app.py:
+    * find route ```/api/message-groups```, note that handle was hardcoded and we will change this code now to the cognito user id; it is called 'sub' in the AWS Cognito User Pool
+43. Then create a folder ./backend-flask/bin/cognito and create a script called ```list-users``` with the code from Andrew's repository
+44. run ```chmod u+x ./list-users```
+45. add list cognito user in the IAM policy for Cruddur (since we follow the principle of least priviledge)
+46. temporarily set environment variable ```AWS_COGNITO_USER_POOL``` and also add it to the docker compose file
+47. add package.json and and package-json.lock into .gitattributes
+48. create file ./backend-flask/bin/db/update_cognito_user_ids, copy the code from Andrew's repository then run chmod u+x on it
+49. add for the setup script: ```source $bin_path/db/update_cognito_user_ids```
+50. ```Note 4:``` db-setup script for RDS needs modification for my Cognito users since I don't use mocked users anymore. seed.sql also need to be updated with my own users 
+51. added 'params' in method signature for 'query_commit' in db.py. Remember I run it with python3 command instead of source
+52. go back to app.py and change code for route ```/api/message_groups```: get message gropu with cognito user id (see the commit history for week 5)
+53. change code for ```./services/message_groups.py``` (see the commit history for week 5)
+54. when we tried to login to Cruddur and see messages, we got 401 error and back-end logs showed an error 'token is not passed along'
+55. Bearer token needs to be passed along to these pages:
+    * HomeFeed.js
+    * MessageGroups.js
+    * MessageGroup.js
+    * MessageForm.js
+56. amend code for ```HomeFeedPage.js``` (see the commit history for week 5)
+57. correct code for method query_value, line 91 in db.py (see the commit history for week 5). Andrew was getting an error because his users were not updated with cognito user ids
+58. abstract checking authentication with Cognito in a separate JavaScript function ```CheckAuth.js```
+59. in ./frontend-react-js/src folder create new folder *lib*
+60. ```Note 5:``` "This is a filler message" comes from seed.py script for DynamoDB (ddb) when we created a mocked conversation. 
+61. implement changes for ```MessageGroupPage.js``` (see commit history)
+62. re-create DynamoDB table and the conversation: 
+    ```bash
+        ./bin/ddb/schema-load
+        ./bin/ddb/seed
+        ./bin/ddb/patterns/list-conversations
+    ```
+63. implement changes for MessageGroupItem.js (see commit history)
+64. Now we need to implement changes for back-end. Go back to app.py as we need to add authentication to stop people reading other people's conversations
+65. implement changes for messages.py script
+66. implement changes for method list-messages in ddb.py
+67. go back to frontend-react-js
+68. implement changes for MessageForm.js for creating messages
+69. update ./backednd-flask/app.py for route ```api/messages``` with methods 'POST', 'OPTIONS'
+70. implement changes for ```create_messages.py``` (copy code from Andrew's repository). We added 'mode' parameter to create messageto differentiate if we want to update a conversation or to create a new message group
+71. implement changes for ./lib/ddb.py : add create_message function. Note that this function generates uuid for us. Andrew noted: "we should propbably check that put operation for the DynamoDb table was successful before returning results"
+72. ```Note 6:``` 'credential provider' error that Andrew was facing was misleading and he had to compose down and up Cruddur containers
+73. create a new SQL script: ```./backend-flask/db/sql/users/create_message_users.sql``` where we shall be able to separate sender and receiver     
+
+
+   
 we created a new user Londo Mollari with handle 'londomollari'.
 So that when we append messages/new/londomollari, a filler conversation appear:
 ![filler_conversation](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/b34e0322ee61f68a27fa27c0ddb077eefe9ce23a/_docs/assets/filler_conversation.png)
@@ -554,15 +618,23 @@ If we post a message in this filler conversation, we are redirected to the new c
 ![comversation_londo](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/b34e0322ee61f68a27fa27c0ddb077eefe9ce23a/_docs/assets/new_conversation_londo.png)
 
 ## Troubleshooting
+
+* if a new GitPod instance was started and/or if there is an error in backend-flask container logs: 'CIDR block /32 is malformed':
+    * GitPod IP address was changed
+    * run these commands as command in docker.yml is not picked up: 
+        ```bash
+         export GITPOD_IP=$(curl ifconfig.me)
+         source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds/rds-update-sg-rule"
+        ``` 
 * Check that RDS is up & running
 * Check that connection url is using current password from Secret Manager
 * Check that post-confirmation Lambda environment variable is using current password from Secret Manager. The password is rotated regularly.
 * Check that db.py is pointed to production RDS as we source user data from AWS Cognito pool
-* run docker-compose up to make local DynamoDB instance available
+* run ```docker-compose up``` to make local DynamoDB instance and Cruddur application available
 * Since I turned off pre-builds, new GitPod instances did not update GitPod IP automatically so I needed to run these commands as pre-requisite before testing utility:
 ```bash
 export GITPOD_IP=$(curl ifconfig.me)
-source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds-update-sg-rule"
+source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds/rds-update-sg-rule"
 ```  
 * if a new GitPod isntance was spinned up, local DynamoDB table need to be re-created and re-seeded from ./backend-flask/bin/ddb:
 ```
@@ -570,6 +642,11 @@ source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds-update-sg-rule"
 ./list-tables
 ./python3 seed.py
 ```
+
+### GitPod environment variables did not propagate
+* issue: env variables did not propagate to docker containters 
+* back-end container was using old database password
+* I had to set CONNECTION_URL as PROD_CONNECTION_URL to use production RDS while Docker backedn container was using CONNECTION_URL. This was conflicting with local database setup. ```./bin/ddb/patterns/list-conversations``` needed PROD_CONNECTION_URL to get user ids from Cognito and production RDS in AWS, but the backend-flask Docker container used CONNECTION_URL for connection to PostgreSQL database
 
 ## Resources:
 - [Python args vs kwargs](https://realpython.com/python-kwargs-and-args/)
