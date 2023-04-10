@@ -726,3 +726,9 @@ source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds/rds-update-sg-rule"
 - [Git Concepts I Wish I Knew Years Ago](https://dev.to/g_abud/advanced-git-reference-1o9j#commit-messages)
 - [Customizing Git Attributes](https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes#:~:text=gitattributes%20file%20in%20one%20of,file%20committed%20with%20your%20project.)
 - [Please Add .gitattributes To Your Git Repository](https://dev.to/deadlybyte/please-add-gitattributes-to-your-git-repository-1jld)
+
+### IAM Policies for DynamoDB
+- [Testing IAM policies with the IAM policy simulator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_testing-policies.html)
+- [IAM policy to allow an AWS Lambda function to access DynamoDB stream records](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/iam-policy-example-lamda-process-dynamodb-streams.html)
+- [IAM policy to grant access to a specific DynamoDB table and its indexes](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/iam-policy-specific-table-indexes.html)
+- [IAM policy to read, write, update, and delete access on a DynamoDB table](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/iam-policy-example-data-crud.html)
