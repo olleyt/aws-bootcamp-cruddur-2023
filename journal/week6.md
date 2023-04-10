@@ -13,7 +13,80 @@ Contents:
   Watch Fargate Technical Questions with Maish (Not yet uploaded)
   
 ## Provision ECS Cluster
-	Provision ECS Cluster	https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58
+[stream link](https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
+
+### Create script to test connection to RDS
+1. go to backend-flask/bin/db folder and create a new script 'test' to test connection to RDS in AWS:
+```python
+#!/usr/bin/env python3
+
+import psycopg
+import os
+import sys
+
+connection_url = os.getenv("CONNECTION_URL")
+
+conn = None
+try:
+  print('attempting connection')
+  conn = psycopg.connect(connection_url)
+  print("Connection successful!")
+except psycopg.Error as e:
+  print("Unable to connect to the database:", e)
+finally:
+  conn.close()
+```
+2. make it executable with ```chmod u+x``` command
+3. note that my CONNECTION_URL = PROD_CONNECTION_URL
+4. remember to update GITPOD_UP and run update security group script
+5. run ```./bin/db/test``` script from backend-flask folder
+
+### Implement health check for backend container
+1. go to app.py
+2. add these lines above rollbar test:
+```python
+@app.route('/api/health-check')
+def health_check():
+  return {'success': True}, 200
+```
+3. create new script backend-flask/bin/db/test:
+```python
+#!/usr/bin/env python3
+
+import urllib.request
+
+try:
+  response = urllib.request.urlopen('http://localhost:4567/api/health-check')
+  if response.getcode() == 200:
+    print("[OK] Flask server is running")
+    exit(0) # success
+  else:
+    print("[BAD] Flask server is not running")
+    exit(1) # false
+# This for some reason is not capturing the error....
+#except ConnectionRefusedError as e:
+# so we'll just catch on all even though this is a bad practice
+except Exception as e:
+  print(e)
+  exit(1) # false
+```
+4. make it executable with ```chmod u+x``` command
+5. Docker shall not have Curl in our container for security reasons
+6. run ```./bin/flask/health-check```
+7. Andrew had error '111 Connection refused' watched
+
+### Create CloudWatch Log Group
+:white_check_mark:
+1. got to AWS CloudWatch console
+2. run these commands in CLI (or CloudShell):
+```
+aws logs create-log-group --log-group-name "/cruddur/fargate-cluster"
+aws logs put-retention-policy --log-group-name "/cruddur/fargate-cluster" --retention-in-days 1
+```
+3. retention days set to 1 for the cost reason. The lowest it can be!
+4. go back to the AWS CloudWatch console and check that '/cruddur/fargate-cluster' log group appeared
+
+### Create ECS Cluster
 	
 ## Create ECR repo and push image for backend-flask  
   https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58
