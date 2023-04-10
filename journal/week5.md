@@ -1,5 +1,16 @@
 # Week 5 — DynamoDB and Serverless Caching
 
+Contents:
+1. [Deviations from official guidance](#deviations-from-official-guidance)
+2. [Dynamo DB Security Considerations](#dynamodb-security-considerations)
+3. [Design Considerations](#design-considerations)
+4. [DynamoDB Utility Scripts](#dynamodb-utility-scripts)
+5. [Create New Conversation](#create-new-conversation)
+6. [Create New Message](#create-new-message)
+7. [Implementing DynamoDB Streams](#implementing-dynamodb-streams)
+8. [Troubleshooting](#troubleshooting)
+9. [Resources](#resources)
+
 ## Deviations from official guidance
 
 * some Python code has 4 spaces identation: db.py
@@ -9,7 +20,7 @@
 * my function to load sql scripts called 'load_template' in db.py instead of 'template'
 * Andrew added his 3rd user Londo Mollari to seed data script. I added a new user by signing it up in Cruddur on a separate email account so it was stored in RDS and registered in Cognito User pool
 
-## Dynamo DB Security Considerations
+## DynamoDB Security Considerations
 1. Protect from public access: use VPC endpoints, or site-to-site VPN, direct connect for on-prem access
 2. Compliance standard depends on what your organisation requires
 3. Use CloudTrail to monitor malicious activity. DynamoDb is still not monitired by GuardDuty
@@ -553,7 +564,7 @@ my-uuid: 48c078df-8331-4715-a58d-0c0494496d02
 ```
 33. this completes implementation of DynamoDb utility scripts
 
-## create new conversation
+## Create New Conversation
 
 34. as I stopped RDS and shut down GitPod for the night, these actions need to be executed to proceed with the implementation:
     * start RDS in AWS console
@@ -609,7 +620,7 @@ my-uuid: 48c078df-8331-4715-a58d-0c0494496d02
 72. ```Note 6:``` 'credential provider' error that Andrew was facing was misleading and he had to compose down and up Cruddur containers
 73. create a new SQL script: ```./backend-flask/db/sql/users/create_message_users.sql``` where we shall be able to separate sender and receiver     
 
-## Create New Conversation
+## Create New Message
 74. implement changes in App.js (see commit history)
 75. create new page MessageGroupNewPage.js with the code from Andrew's repository (see commit history)
 76. sign up a new user called Londo Mollari with handle @londo as a test user for new converstaion. Andrew added his 3rd user to seed data script. I added a new user by signing it up in Cruddur on a separate email account so it was stored in RDS and registered in Cognito User pool
@@ -627,7 +638,7 @@ So that when we append messages/new/londomollari, a filler conversation appear:
 If we post a message in this filler conversation, we are redirected to the new conversation and see the posted message:
 ![comversation_londo](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/b34e0322ee61f68a27fa27c0ddb077eefe9ce23a/_docs/assets/new_conversation_londo.png)
 
-## Implementing DynamoDB streams
+## Implementing DynamoDB Streams
 83. it's time to implement DynamoDB base table and GSI in AWS. We will do it with ddb/schema-load script + AWS console (for now)
 84. I added a policy for my AWS user for DynamoDB since I am adhering to the principle of the least priviledge and do not use an Admin user
 85. go to Gitpod, folder ./backend-flask/bin/ddb
@@ -705,7 +716,7 @@ source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds/rds-update-sg-rule"
 * back-end container was using old database password
 * I had to set CONNECTION_URL as PROD_CONNECTION_URL to use production RDS while Docker backedn container was using CONNECTION_URL. This was conflicting with local database setup. ```./bin/ddb/patterns/list-conversations``` needed PROD_CONNECTION_URL to get user ids from Cognito and production RDS in AWS, but the backend-flask Docker container used CONNECTION_URL for connection to PostgreSQL database
 
-## Resources:
+## Resources
 - [Python args vs kwargs](https://realpython.com/python-kwargs-and-args/)
 - [Python enumerate](https://realpython.com/python-enumerate/)
 - [Import Python modules](https://realpython.com/python-modules-packages/)
