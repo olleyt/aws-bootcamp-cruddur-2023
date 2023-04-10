@@ -7,6 +7,7 @@
 * script that updates default security group still have *rds* prefix
 * I run RDS as production instance for since week 4 and stopped used mocked data but instead used my own 3 users I signed up in Cruddur
 * my function to load sql scripts called 'load_template' in db.py instead of 'template'
+* Andrew added his 3rd user Londo Mollari to seed data script. I added a new user by signing it up in Cruddur on a separate email account so it was stored in RDS and registered in Cognito User pool
 
 ## Dynamo DB Security Considerations
 1. Protect from public access: use VPC endpoints, or site-to-site VPN, direct connect for on-prem access
@@ -608,7 +609,16 @@ my-uuid: 48c078df-8331-4715-a58d-0c0494496d02
 72. ```Note 6:``` 'credential provider' error that Andrew was facing was misleading and he had to compose down and up Cruddur containers
 73. create a new SQL script: ```./backend-flask/db/sql/users/create_message_users.sql``` where we shall be able to separate sender and receiver     
 
-
+## Create New Conversation
+74. implement changes in App.js (see commit history)
+75. create new page MessageGroupNewPage.js with the code from Andrew's repository (see commit history)
+76. sign up a new user called Londo Mollari with handle @londo as a test user for new converstaion. Andrew added his 3rd user to seed data script. I added a new user by signing it up in Cruddur on a separate email account so it was stored in RDS and registered in Cognito User pool
+77. next we needed to add a new service and a script user_short.sql to be able to send this new user a message. Note that we don't need to protect this endpoint because we are dealing with publicly available information here
+78. update MessageGroupFeed.js for getting other user's handle and adding a new message item. We also needed to take care about user redirection on a new conversation page if a new conversation started
+79. update create_message.py to cater for creating a new conversation case in lines 71-80 when we added ```elif(mode == 'create')```
+80. update ddb.py method to create message group. We need to create conversation from current user perspective and another conversation from other user perspective and then return message data structure. Check that we pass message (around line 74)
+81. side tracked with post-confirmation Lamba error 'function takes 2 arguments, 5 given). That was because I used unpacking for params tuple in line 26. It shall be just params without unpacking. I need to investigate later why it is the case now and what we have changed in db.py to chang this Lambda function behaviour
+82. Now we shall be able to loging to Cruddur, go to Messages and append /new/londo and send a message to start a new conversation with Londo
    
 we created a new user Londo Mollari with handle 'londomollari'.
 So that when we append messages/new/londomollari, a filler conversation appear:
@@ -616,6 +626,53 @@ So that when we append messages/new/londomollari, a filler conversation appear:
 
 If we post a message in this filler conversation, we are redirected to the new conversation and see the posted message:
 ![comversation_londo](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/b34e0322ee61f68a27fa27c0ddb077eefe9ce23a/_docs/assets/new_conversation_londo.png)
+
+## Implementing DynamoDB streams
+83. it's time to implement DynamoDB base table and GSI in AWS. We will do it with ddb/schema-load script + AWS console (for now)
+84. I added a policy for my AWS user for DynamoDB since I am adhering to the principle of the least priviledge and do not use an Admin user
+85. go to Gitpod, folder ./backend-flask/bin/ddb
+86. run ```./schema-load prod```
+87. check AWS DynamoDB console that table 'cruddur-messages' was created
+88. go to tab 'Exports and Streams'
+89. scroll down to 'DynamoDB Stream Details'
+90. click on 'Turn On' button
+91. choose 'New Image'
+92. click on 'Turn on stream' button at the bottom of the form. This will create a DynamoDB stream
+93. Next we need to add VPC Endpoint Gateway for the DynamoDB table
+94. go to VPC in AWS console
+95. choose 'Endpoints' on the left hand side
+96. create an endpoint, name tag = ddb_cruddur, service category = AWS Services. 
+97. in services, search for DynamoDB and tick the box next to it when found
+98. choose the default VPC and associated route table
+99. leave 'Policy' with default value 'Full access'
+100. click 'Create Endpoint'
+101. Andrew noted that transactions are hard to implement in DynamoDB and we are not doing that (at this point)
+102. Next we need to implement Lambda function that will insert a message into conversation via DynamoDB stream
+    * function name: cruddur_messaging_stream
+    * Andrew chose to use `create new basic role` but we will add more permissions for Lambda to access DynamoDB later
+    * go to IAM and create policy [cruddur-message-stream-policy.json](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/276a8e18929f0988e60c34d1234d1b4353a93dae/aws/policies/cruddur-message-stream-policy.json)
+    * attach this policy to our lambda role
+    * in advanced settings, tick 'enable VPC'
+    * choose same subnets that were chosen for the RDS (us-east-1a, us-east-1b)
+    * choose default security group that was chosen for the RDS instance
+    * create function
+    * copy Andrew's code from week5-again-again branch
+    * click on 'Deploy' button
+    * go to 'Configuration', then 'Permissions' tab
+    * click on the role link
+    * in the opened up tab add policy 'AWSLambdainvocation-DynamoDb' policy to this role. Note that we left resources as all ('*') 
+
+### Adding GSI to DynamoDB
+103. first we need to delete the existing DynamoDB table 'cruddur-messages' as we will re-create it with the GSI via ddb/schema-load script
+104. copy the GSI code from Andrew's repository and add it to the ddb/schema-load script
+105. run ```./ddb/schema-load prod``` to recreate DynamoDB table 'cruddur-messages' in AWS
+106. add streams as in steps 89-92 above
+107. add trigger below: choose Lambda function cruddur_messaging_stream and set batch size = 1
+108. go to GitPod, open docker-compose.yml file and comment out AWS_ENDPOINT_URL variable. This will force our back-end container to connect to AWS DynamoDB table, not the local one
+109. Go to the Cruddur web app, sign out, sign in, go to 'Messages'
+110. append the url with /new/londo 
+111. now we shall be able to send new mesage to londo and see no errors in CloudWatch logs
+
 
 ## Troubleshooting
 
@@ -656,3 +713,5 @@ source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds/rds-update-sg-rule"
 - [Python Script Not Showing Output](https://www.shellhacks.com/python-script-not-showing-output-solved/)
 - [DynamoDB examples using SDK for Python (Boto3)](https://docs.aws.amazon.com/code-library/latest/ug/python_3_dynamodb_code_examples.html)
 - [Git Concepts I Wish I Knew Years Ago](https://dev.to/g_abud/advanced-git-reference-1o9j#commit-messages)
+- [Customizing Git Attributes](https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes#:~:text=gitattributes%20file%20in%20one%20of,file%20committed%20with%20your%20project.)
+- [Please Add .gitattributes To Your Git Repository](https://dev.to/deadlybyte/please-add-gitattributes-to-your-git-repository-1jld)
