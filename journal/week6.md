@@ -15,7 +15,7 @@ Contents:
 ## Provision ECS Cluster
 [stream link](https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
 
-### Create script to test connection to RDS
+### Create script to test connection to RDS :white_check_mark:
 1. go to backend-flask/bin/db folder and create a new script 'test' to test connection to RDS in AWS:
 ```python
 #!/usr/bin/env python3
@@ -40,8 +40,15 @@ finally:
 3. note that my CONNECTION_URL = PROD_CONNECTION_URL
 4. remember to update GITPOD_UP and run update security group script
 5. run ```./bin/db/test``` script from backend-flask folder
+6. expected response:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/db/test
+attempting connection
+Connection successful!
+```
 
-### Implement health check for backend container
+
+### Implement health check for backend container :white_check_mark:
 1. go to app.py
 2. add these lines above rollbar test:
 ```python
@@ -49,7 +56,7 @@ finally:
 def health_check():
   return {'success': True}, 200
 ```
-3. create new script backend-flask/bin/db/test:
+3. create new script backend-flask/bin/flask/health-check:
 ```python
 #!/usr/bin/env python3
 
@@ -73,10 +80,15 @@ except Exception as e:
 4. make it executable with ```chmod u+x``` command
 5. Docker shall not have Curl in our container for security reasons
 6. run ```./bin/flask/health-check```
-7. Andrew had error '111 Connection refused' watched
+7. Andrew had error '111 Connection refused' watched, so did I:
+```bash
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/flask/health-check
+<urlopen error [Errno 111] Connection refused>
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
+```
 
-### Create CloudWatch Log Group
-:white_check_mark:
+### Create CloudWatch Log Group :white_check_mark:
+
 1. got to AWS CloudWatch console
 2. run these commands in CLI (or CloudShell):
 ```
@@ -87,6 +99,16 @@ aws logs put-retention-policy --log-group-name "/cruddur/fargate-cluster" --rete
 4. go back to the AWS CloudWatch console and check that '/cruddur/fargate-cluster' log group appeared
 
 ### Create ECS Cluster
+1. run these commands in CLI:
+```
+aws ecs create-cluster \
+--cluster-name cruddur \
+--service-connect-defaults namespace=cruddur
+```
+2. Check in AWS console that the cluster is created and new tasks are running
+3. no need for security groups for now
+
+
 	
 ## Create ECR repo and push image for backend-flask  
   https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58
