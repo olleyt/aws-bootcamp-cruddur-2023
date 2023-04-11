@@ -98,20 +98,78 @@ aws logs put-retention-policy --log-group-name "/cruddur/fargate-cluster" --rete
 3. retention days set to 1 for the cost reason. The lowest it can be!
 4. go back to the AWS CloudWatch console and check that '/cruddur/fargate-cluster' log group appeared
 
-### Create ECS Cluster
-1. run these commands in CLI:
+### Create ECS Cluster :white_check_mark:
+1. run these commands in CLI (CloudShell):
 ```
 aws ecs create-cluster \
 --cluster-name cruddur \
 --service-connect-defaults namespace=cruddur
 ```
-2. Check in AWS console that the cluster is created and new tasks are running
+2. Check in AWS console that the cluster is created and new tasks are not running yet, i.e. no spend concern just yet
 3. no need for security groups for now
 
 
 	
 ## Create ECR repo and push image for backend-flask  
-  https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58
+[stream link] (https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
+We are going to create 3 repos:
+
+#### Base Image Python :white_check_mark:
+1. create a repository for base python image
+```
+aws ecr create-repository \
+  --repository-name cruddur-python \
+  --image-tag-mutability MUTABLE
+```
+2. our backend container references python:3.10-slim-buster from DockerHub. We are going to pull this image and then push it to ECR
+3. we keep tags mutable for easier life but we would not do this for real production app
+4. we will login to ECR with this command:
+```
+aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+```
+5 expected reult from the terminal:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+WARNING! Your password will be stored unencrypted in /home/gitpod/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+```
+6. next we need to map URI to ECR:
+```
+export ECR_PYTHON_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/cruddur-python"
+echo $ECR_PYTHON_URL
+```
+7. keep in in mind that our backend container uses Python 3.10
+8. pull image: ```docker pull python:3.10-slim-buster```
+9. terminal output:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ docker pull python:3.10-slim-buster
+3.10-slim-buster: Pulling from library/python
+3689b8de819b: Already exists 
+af8cd5f36469: Already exists 
+74adefb035bf: Already exists 
+7d3f13b19e92: Already exists 
+ee5147252e65: Already exists 
+Digest: sha256:7d6283c08f546bb7f97f8660b272dbab02e1e9bffca4fa9bc96720b0efd29d8e
+Status: Downloaded newer image for python:3.10-slim-buster
+docker.io/library/python:3.10-slim-buster
+```
+10. run ```docker images``` to see the image
+11. tag image: ```docker tag python:3.10-slim-buster $ECR_PYTHON_URL:3.10-slim-buster```
+12. push image: ```docker push $ECR_PYTHON_URL:3.10-slim-buster```
+13. got to ECR console, navigate inside the cruddur repository and check that this image is present
+14. next we need to set URI to pull the image in our Dockerfile like so ```FROM ${ECR_PYTHON_URL}:3.10-slim-buster```
+15. ```docker compose up backend-flask db```
+16. go to cruddur back-end container url and append with ```/api/health-check```. Health check shall be successful:
+```
+{
+  "success": true
+}
+```
+
+
 	
 ## Deploy Backend Flask app as a service to Fargate	
 https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58
