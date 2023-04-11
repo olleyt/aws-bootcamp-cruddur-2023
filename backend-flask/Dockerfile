@@ -1,4 +1,4 @@
-FROM ${ECR_PYTHON_URL}:3.10-slim-buster
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/cruddur-python:3.10-slim-buster
 
 WORKDIR /backend-flask
 
