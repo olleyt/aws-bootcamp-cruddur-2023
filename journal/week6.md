@@ -575,3 +575,14 @@ https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgN
 	
 ## Using ruby generate out env dot files for docker using erb templates
 https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
+
+## Resources
+- [AWS Samples Git Repo](https://github.com/orgs/aws-samples/repositories?language=&page=2&q=cloudformati&sort=&type=all)
+- https://github.com/aws-samples/fargate-efs-cloudformation-deployment-example/blob/master/ecs_efs_template.yml
+- https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md
+- [Private repository policy examples](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policy-examples.html)
+- https://docs.aws.amazon.com/cli/latest/reference/ecr/get-login-password.html
+- --requires-compatibilities "FARGATE" (check the reference here: https://docs.aws.amazon.com/cli/latest/reference/ecs/register-task-definition.html)
+- [Tutorial: Creating a cluster with a Fargate Linux task using the AWS CLI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_AWSCLI_Fargate.html#ECS_AWSCLI_Fargate_register_task_definition)
+- [CLI register task definition](https://docs.aws.amazon.com/cli/latest/reference/ecs/register-task-definition.html)
+-  Amazon ECS Workshop > Introduction > ECS Overview > [Task Definitions](https://ecsworkshop.com/introduction/ecs_basics/task_definition/)
