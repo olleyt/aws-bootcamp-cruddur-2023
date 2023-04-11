@@ -1,4 +1,4 @@
-FROM python:3.10-slim-buster
+FROM ${ECR_PYTHON_URL}:3.10-slim-buster
 
 WORKDIR /backend-flask
 
@@ -7,7 +7,7 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE ${PORT}
