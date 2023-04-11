@@ -247,6 +247,289 @@ aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/ROLLB
 aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/OTEL_EXPORTER_OTLP_HEADERS" --value "x-honeycomb-team=$HONEYCOMB_API_KEY"
 ```
 12. go to AWS SSM console, navigate to Parameter Store and check if they all set correctly
+13. create task role:
+```json
+aws iam create-role \
+    --role-name CruddurTaskRole \
+    --assume-role-policy-document "{
+  \"Version\":\"2012-10-17\",
+  \"Statement\":[{
+    \"Action\":[\"sts:AssumeRole\"],
+    \"Effect\":\"Allow\",
+    \"Principal\":{
+      \"Service\":[\"ecs-tasks.amazonaws.com\"]
+    }
+  }]
+}"
+```
+14. create policy:
+```
+aws iam put-role-policy \
+  --policy-name SSMAccessPolicy \
+  --role-name CruddurTaskRole \
+  --policy-document "{
+  \"Version\":\"2012-10-17\",
+  \"Statement\":[{
+    \"Action\":[
+      \"ssmmessages:CreateControlChannel\",
+      \"ssmmessages:CreateDataChannel\",
+      \"ssmmessages:OpenControlChannel\",
+      \"ssmmessages:OpenDataChannel\"
+    ],
+    \"Effect\":\"Allow\",
+    \"Resource\":\"*\"
+  }]
+}
+"
+```
+15. add cloudWatch and X-ray permissions:
+```
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/CloudWatchFullAccess --role-name CruddurTaskRole
+aws iam attach-role-policy --policy-arn arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess --role-name CruddurTaskRole
+```
+16. under aws folder create a new one called 'task-definition'
+17. create a new file called backend-flask.json inside of this new folder
+18. register task definition and make sure these are defined on the task level:
+```
+"cpu": "256",
+  "memory": "512",
+  "requiresCompatibilities": [ 
+    "FARGATE" 
+  ],
+```
+run command in CLI:
+```
+aws ecs register-task-definition --cli-input-json file://aws/task-definitions/backend-flask.json
+```
+19. go to ECS console and check that task definition was created
+20. get dafault VPC by running this command:
+```bash
+export DEFAULT_VPC_ID=$(aws ec2 describe-vpcs \
+--filters "Name=isDefault, Values=true" \
+--query "Vpcs[0].VpcId" \
+--output text)
+echo $DEFAULT_VPC_ID
+```
+21. create security group:
+```bash
+export CRUD_SERVICE_SG=$(aws ec2 create-security-group \
+  --group-name "crud-srv-sg" \
+  --description "Security group for Cruddur services on ECS" \
+  --vpc-id $DEFAULT_VPC_ID \
+  --query "GroupId" --output text)
+echo $CRUD_SERVICE_SG
+```
+22. open port 80 for this security group:
+```bash
+aws ec2 authorize-security-group-ingress \
+  --group-id $CRUD_SERVICE_SG \
+  --protocol tcp \
+  --port 80 \
+  --cidr 0.0.0.0/0
+```
+23. create Fargate service in the AWS ECS console (GUI)
+24. then we found out that our Fargate role missed get authorizarion token permission for ECR, so we need to add this permission to the role CruddurServiceExecutionRole
+25. Note: in my case I had to delete CloudFormation stack that created ECS service and the service itself was rolled back. Andrew forced the service redeployment.
+26. next we needed to add cloudwatch access to create a log stream added to the same role and we added CloudWatchFullAccess policy to the role
+27. then we had error (ACCOUNT_ID replaced the real value):
+```
+CannotPullContainerError: pull image manifest has been retried 1 time(s): failed to resolve ref ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/backend-flask:latest: pulling from host ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com failed with status code [manifests latest]: 403 Forbidden
+```
+28. then we needed to add more ECR permission to the same policy CruddurServiceExecutionPolicy as explained [here](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policy-examples.html)
+29. now the service is runninng but the health check status is 'unknown'
+30. we need to install SSM plugin on GitPod:
+```
+curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+sudo dpkg -i session-manager-plugin.deb
+```
+31. verify it is working by running this command ```session-manager-plugin```
+32. connect to the container:
+```
+aws ecs execute-command  \
+--region $AWS_DEFAULT_REGION \
+--cluster cruddur \
+--task 72e839665f8b4d33af8cac238f92a78a \
+--container backend-flask \
+--command "/bin/bash" \
+--interactive
+```
+33. However, the error appeared:
+```
+An error occurred (InvalidParameterException) when calling the ExecuteCommand operation: The execute command failed because execute command was not enabled when the task was run or the execute command agent isn’t running. Wait and try again or run a new task with execute command enabled and try again.
+```
+34. go back to the ECS console and delete the service
+35. create aws/json/service-backend-flask.json and
+```json
+{
+    "cluster": "cruddur",
+    "launchType": "FARGATE",
+    "desiredCount": 1,
+    "enableECSManagedTags": true,
+    "enableExecuteCommand": true,
+    "loadBalancers": [
+      {
+          "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:ACCOUNT_ID:targetgroup/cruddur-backend-flask-tg/TARGET_GROUP_ID",
+          "containerName": "backend-flask",
+          "containerPort": 4567
+      }
+    ],
+    "networkConfiguration": {
+      "awsvpcConfiguration": {
+        "assignPublicIp": "ENABLED",
+        "securityGroups": [
+          "sg-0f712624a41a7ce84"
+        ],
+        "subnets": [
+          "subnet-06377ea30fef723df",
+          "subnet-07891b0180376d75c",
+          "subnet-0419619de27cb7b35",
+          "subnet-06ca0ac2341ac85c5",
+          "subnet-0ef64c831e44e3e96",
+          "subnet-016685aff57e51d74"
+        ]
+      }
+    },
+    "serviceConnectConfiguration": {
+      "enabled": true,
+      "namespace": "cruddur",
+      "services": [
+        {
+          "portName": "backend-flask",
+          "discoveryName": "backend-flask",
+          "clientAliases": [{"port": 4567}]
+        }
+      ]
+    },
+    "propagateTags": "SERVICE",
+    "serviceName": "backend-flask",
+    "taskDefinition": "backend-flask"
+  }
+```
+37. create ECS service via CLI
+```
+aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.json
+```
+38 run command:
+```
+aws ecs execute-command  \
+--region $AWS_DEFAULT_REGION \
+--cluster cruddur \
+--task 8764b10508954aa487fa8d4d4a8abfdd \
+--container backend-flask \
+--command "/bin/bash" \
+--interactive
+```
+39. the terminal output shows that health check is running:
+```
+The Session Manager plugin was installed successfully. Use the AWS CLI to start a session.
+
+
+Starting session with SessionId: ecs-execute-command-0251a3ff749509161
+root@ip-xxx-xx-xx-xxx:/backend-flask# ./bin/flask/health-check
+[OK] Flask server is running
+root@ip-xxx-xx-xx-xxx:/backend-flask# 
+```
+40. create a new script 'connect-to-service 'in bin/ecs folder: 
+```bash
+#! /usr/bin/bash
+if [ -z "$1" ]; then
+  echo "No TASK_ID argument supplied eg ./bin/ecs/connect-to-backend-flask <task_id>"
+  exit 1
+fi
+TASK_ID=$1
+
+CONTAINER_NAME=backend-flask
+
+echo "TASK ID : $TASK_ID"
+echo "Container Name: $CONTAINER_NAME"
+
+aws ecs execute-command  \
+--region $AWS_DEFAULT_REGION \
+--cluster cruddur \
+--task $TASK_ID \
+--container $CONTAINER_NAME \
+--command "/bin/bash" \
+--interactive
+```
+41. my cloudwatch logs show errors:
+```
+
+2023-04-11T19:12:23.493+10:00	127.0.0.1 - - [11/Apr/2023 09:12:23] "GET /api/health-check HTTP/1.1" 200 -
+
+2023-04-11T19:12:31.878+10:00	Encountered an issue while polling sampling rules.
+
+2023-04-11T19:12:31.878+10:00
+
+Traceback (most recent call last):
+Traceback (most recent call last):
+
+2023-04-11T19:12:31.878+10:00
+File "/usr/local/lib/python3.10/site-packages/urllib3/connection.py", line 174, in _new_conn
+
+2023-04-11T19:12:31.878+10:00	conn = connection.create_connection(
+
+2023-04-11T19:12:31.878+10:00	ConnectionRefusedError: [Errno 111] Connection refused
+
+2023-04-11T19:12:31.878+10:00	During handling of the above exception, another exception occurred:
+
+2023-04-11T19:12:31.878+10:00	Traceback (most recent call last):
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/site-packages/botocore/httpsession.py", line 455, in send
+
+2023-04-11T19:12:31.878+10:00	urllib_response = conn.urlopen(
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+
+2023-04-11T19:12:31.878+10:00	retries = retries.increment(
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/site-packages/urllib3/util/retry.py", line 525, in increment
+
+2023-04-11T19:12:31.878+10:00	raise six.reraise(type(error), error, _stacktrace)
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/site-packages/urllib3/packages/six.py", line 770, in reraise
+
+2023-04-11T19:12:31.878+10:00	raise value
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+
+2023-04-11T19:12:31.878+10:00	httplib_response = self._make_request(
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/site-packages/urllib3/connectionpool.py", line 398, in _make_request
+
+2023-04-11T19:12:31.878+10:00	conn.request(method, url, **httplib_request_kw)
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/site-packages/urllib3/connection.py", line 244, in request
+
+2023-04-11T19:12:31.878+10:00	super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/http/client.py", line 1283, in request
+
+2023-04-11T19:12:31.878+10:00	self._send_request(method, url, body, headers, encode_chunked)
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/site-packages/botocore/awsrequest.py", line 94, in _send_request
+
+2023-04-11T19:12:31.878+10:00	rval = super()._send_request(
+
+2023-04-11T19:12:31.878+10:00	File "/usr/local/lib/python3.10/http/client.py", line 1329, in _send_request
+
+2023-04-11T19:12:31.879+10:00	self.endheaders(body, encode_chunked=encode_chunked)
+
+2023-04-11T19:12:31.879+10:00	File "/usr/local/lib/python3.10/http/client.py", line 1278, in endheaders
+
+2023-04-11T19:12:31.879+10:00	self._send_output(message_body, encode_chunked=encode_chunked)
+
+2023-04-11T19:12:31.879+10:00	File "/usr/local/lib/python3.10/site-packages/botocore/awsrequest.py", line 123, in _send_output
+
+2023-04-11T19:12:31.879+10:00	self.send(msg)
+
+2023-04-11T19:12:31.879+10:00	File "/usr/local/lib/python3.10/site-packages/botocore/awsrequest.py", line 218, in send
+
+2023-04-11T19:12:31.879+10:00	return super().send(str)
+
+2023-04-11T19:12:31.879+10:00	File "/usr/local/lib/python3.10/http/client.py", line 976, in send
+
+2023-04-11T19:12:31.879+10:00	self.connect()
+```
 	
 ## Create ECR repo and push image for fronted-react-js	
   https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
