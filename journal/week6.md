@@ -110,7 +110,7 @@ aws ecs create-cluster \
 
 
 	
-## Create ECR repo and push image for backend-flask  
+## Create ECR repo and push image for backend-flask  :white_check_mark:
 [stream link] (https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
 We are going to create 3 repos:
 
@@ -169,10 +169,84 @@ docker.io/library/python:3.10-slim-buster
 }
 ```
 
+#### Flask image :white_check_mark:
+
+1.create Repo
+```
+  aws ecr create-repository \
+  --repository-name backend-flask \
+  --image-tag-mutability MUTABLE
+```  
+2. set URL
+```
+export ECR_BACKEND_FLASK_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backend-flask"
+echo $ECR_BACKEND_FLASK_URL
+```
+3. build Image, note that I had to put explicit value of ECR_PYTHON_URL into the Docker file
+```
+docker build -t backend-flask .
+```
+4. tag Image
+```
+docker tag backend-flask:latest $ECR_BACKEND_FLASK_URL:latest
+```
+5. push Image
+```
+docker push $ECR_BACKEND_FLASK_URL:latest
+```
+6. Fargate will look for 'latest' tag but we probably shall use tags in real DevOps life
 
 	
 ## Deploy Backend Flask app as a service to Fargate	
-https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58
+[stream link](https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
+1. Login to the AWS ECS console
+2. go to our cruddur cluster. You'll see tabs 'Services' and 'Tasks'. The difference is that service is continiously running whereas tasks kills itself when it finished its job (better suited for batch jobs). We want a service because we are running a web application.
+3. we need to create a task definition that is similar to Docker file that defines how to build a cintainer.
+4. AWS will take care of envoy proxy
+5. task role defines permission that container will have when it is running whereas execution role is when task is executed
+6. we will use awsvpc mode to have ENI automatically assigned
+7. we shall keep cpu and memory ratio as 1:2 (256Mb : 512Mb)
+8. create service-assume-role-execution-policy.json
+```json
+{
+    "Version":"2012-10-17",
+    "Statement":[{
+        "Action":["sts:AssumeRole"],
+        "Effect":"Allow",
+        "Principal":{
+          "Service":["ecs-tasks.amazonaws.com"]
+      }}]
+  }  
+```
+9. create service-execution-policy.json, note that ${AWS::AccountId} shall be substituted with account id value otherwise CLI throws error
+```json
+{
+    "Version":"2012-10-17",
+    "Statement":[{
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters",
+        "ssm:GetParameter"
+      ],
+      "Resource": "arn:aws:ssm:us-east-1:${AWS::AccountId}:parameter/cruddur/backend-flask/*"
+    }]
+  }
+```
+10. run the role creation command in CLI:
+```
+aws iam create-role \    
+--role-name CruddurServiceExecutionRole  \   
+--assume-role-policy-document file://aws/policies/service-assume-role-execution-policy.json
+```
+11. create ssm parameters via CLI:
+```
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/AWS_ACCESS_KEY_ID" --value $AWS_ACCESS_KEY_ID
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/AWS_SECRET_ACCESS_KEY" --value $AWS_SECRET_ACCESS_KEY
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/CONNECTION_URL" --value $PROD_CONNECTION_URL
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/ROLLBAR_ACCESS_TOKEN" --value $ROLLBAR_ACCESS_TOKEN
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/OTEL_EXPORTER_OTLP_HEADERS" --value "x-honeycomb-team=$HONEYCOMB_API_KEY"
+```
+12. go to AWS SSM console, navigate to Parameter Store and check if they all set correctly
 	
 ## Create ECR repo and push image for fronted-react-js	
   https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
