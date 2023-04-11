@@ -98,23 +98,155 @@ aws logs put-retention-policy --log-group-name "/cruddur/fargate-cluster" --rete
 3. retention days set to 1 for the cost reason. The lowest it can be!
 4. go back to the AWS CloudWatch console and check that '/cruddur/fargate-cluster' log group appeared
 
-### Create ECS Cluster
-1. run these commands in CLI:
+### Create ECS Cluster :white_check_mark:
+1. run these commands in CLI (CloudShell):
 ```
 aws ecs create-cluster \
 --cluster-name cruddur \
 --service-connect-defaults namespace=cruddur
 ```
-2. Check in AWS console that the cluster is created and new tasks are running
+2. Check in AWS console that the cluster is created and new tasks are not running yet, i.e. no spend concern just yet
 3. no need for security groups for now
 
 
 	
-## Create ECR repo and push image for backend-flask  
-  https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58
+## Create ECR repo and push image for backend-flask  :white_check_mark:
+[stream link] (https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
+We are going to create 3 repos:
+
+#### Base Image Python :white_check_mark:
+1. create a repository for base python image
+```
+aws ecr create-repository \
+  --repository-name cruddur-python \
+  --image-tag-mutability MUTABLE
+```
+2. our backend container references python:3.10-slim-buster from DockerHub. We are going to pull this image and then push it to ECR
+3. we keep tags mutable for easier life but we would not do this for real production app
+4. we will login to ECR with this command:
+```
+aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+```
+5 expected reult from the terminal:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+WARNING! Your password will be stored unencrypted in /home/gitpod/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+```
+6. next we need to map URI to ECR:
+```
+export ECR_PYTHON_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/cruddur-python"
+echo $ECR_PYTHON_URL
+```
+7. keep in in mind that our backend container uses Python 3.10
+8. pull image: ```docker pull python:3.10-slim-buster```
+9. terminal output:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ docker pull python:3.10-slim-buster
+3.10-slim-buster: Pulling from library/python
+3689b8de819b: Already exists 
+af8cd5f36469: Already exists 
+74adefb035bf: Already exists 
+7d3f13b19e92: Already exists 
+ee5147252e65: Already exists 
+Digest: sha256:7d6283c08f546bb7f97f8660b272dbab02e1e9bffca4fa9bc96720b0efd29d8e
+Status: Downloaded newer image for python:3.10-slim-buster
+docker.io/library/python:3.10-slim-buster
+```
+10. run ```docker images``` to see the image
+11. tag image: ```docker tag python:3.10-slim-buster $ECR_PYTHON_URL:3.10-slim-buster```
+12. push image: ```docker push $ECR_PYTHON_URL:3.10-slim-buster```
+13. got to ECR console, navigate inside the cruddur repository and check that this image is present
+14. next we need to set URI to pull the image in our Dockerfile like so ```FROM ${ECR_PYTHON_URL}:3.10-slim-buster```
+15. ```docker compose up backend-flask db```
+16. go to cruddur back-end container url and append with ```/api/health-check```. Health check shall be successful:
+```
+{
+  "success": true
+}
+```
+
+#### Flask image :white_check_mark:
+
+1.create Repo
+```
+  aws ecr create-repository \
+  --repository-name backend-flask \
+  --image-tag-mutability MUTABLE
+```  
+2. set URL
+```
+export ECR_BACKEND_FLASK_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backend-flask"
+echo $ECR_BACKEND_FLASK_URL
+```
+3. build Image, note that I had to put explicit value of ECR_PYTHON_URL into the Docker file
+```
+docker build -t backend-flask .
+```
+4. tag Image
+```
+docker tag backend-flask:latest $ECR_BACKEND_FLASK_URL:latest
+```
+5. push Image
+```
+docker push $ECR_BACKEND_FLASK_URL:latest
+```
+6. Fargate will look for 'latest' tag but we probably shall use tags in real DevOps life
+
 	
 ## Deploy Backend Flask app as a service to Fargate	
-https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58
+[stream link](https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
+1. Login to the AWS ECS console
+2. go to our cruddur cluster. You'll see tabs 'Services' and 'Tasks'. The difference is that service is continiously running whereas tasks kills itself when it finished its job (better suited for batch jobs). We want a service because we are running a web application.
+3. we need to create a task definition that is similar to Docker file that defines how to build a cintainer.
+4. AWS will take care of envoy proxy
+5. task role defines permission that container will have when it is running whereas execution role is when task is executed
+6. we will use awsvpc mode to have ENI automatically assigned
+7. we shall keep cpu and memory ratio as 1:2 (256Mb : 512Mb)
+8. create service-assume-role-execution-policy.json
+```json
+{
+    "Version":"2012-10-17",
+    "Statement":[{
+        "Action":["sts:AssumeRole"],
+        "Effect":"Allow",
+        "Principal":{
+          "Service":["ecs-tasks.amazonaws.com"]
+      }}]
+  }  
+```
+9. create service-execution-policy.json, note that ${AWS::AccountId} shall be substituted with account id value otherwise CLI throws error
+```json
+{
+    "Version":"2012-10-17",
+    "Statement":[{
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters",
+        "ssm:GetParameter"
+      ],
+      "Resource": "arn:aws:ssm:us-east-1:${AWS::AccountId}:parameter/cruddur/backend-flask/*"
+    }]
+  }
+```
+10. run the role creation command in CLI:
+```
+aws iam create-role \    
+--role-name CruddurServiceExecutionRole  \   
+--assume-role-policy-document file://aws/policies/service-assume-role-execution-policy.json
+```
+11. create ssm parameters via CLI:
+```
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/AWS_ACCESS_KEY_ID" --value $AWS_ACCESS_KEY_ID
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/AWS_SECRET_ACCESS_KEY" --value $AWS_SECRET_ACCESS_KEY
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/CONNECTION_URL" --value $PROD_CONNECTION_URL
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/ROLLBAR_ACCESS_TOKEN" --value $ROLLBAR_ACCESS_TOKEN
+aws ssm put-parameter --type "SecureString" --name "/cruddur/backend-flask/OTEL_EXPORTER_OTLP_HEADERS" --value "x-honeycomb-team=$HONEYCOMB_API_KEY"
+```
+12. go to AWS SSM console, navigate to Parameter Store and check if they all set correctly
 	
 ## Create ECR repo and push image for fronted-react-js	
   https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
