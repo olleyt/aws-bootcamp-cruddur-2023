@@ -197,7 +197,7 @@ docker push $ECR_BACKEND_FLASK_URL:latest
 6. Fargate will look for 'latest' tag but we probably shall use tags in real DevOps life
 
 	
-## Deploy Backend Flask app as a service to Fargate	
+## Deploy Backend Flask app as a service to Fargate :white_check_mark:	
 [stream link](https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
 1. Login to the AWS ECS console
 2. go to our cruddur cluster. You'll see tabs 'Services' and 'Tasks'. The difference is that service is continiously running whereas tasks kills itself when it finished its job (better suited for batch jobs). We want a service because we are running a web application.
@@ -631,11 +631,90 @@ aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.js
 77. turn on access logs for the ALB on tab Attributes
 
 
-## Create ECR repo and push image for fronted-react-js	
-  https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
+## Create ECR repo and push image for fronted-react-js	:white_check_mark:
+[stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
+78. create file frontend-react-js.json in task-definitions folder (GitPod) - get one from Andrews week6-fargate branch
+79. create Dockerfile.prod for frontend-react-js container. We will be using multi-stage build for frontend container
+80. create file nginx.conf file in the frontend-react-js folder
+81. cd frontend-react-js in terminal
+82. run ```npm run build``` -> ignore warnings (for now)
+83. add build folder into .gitignore
+84. build frontend image:
+```
+docker build \
+--build-arg REACT_APP_BACKEND_URL="https://4567-$GITPOD_WORKSPACE_ID.$GITPOD_WORKSPACE_CLUSTER_HOST" \
+--build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_USER_POOLS_ID="us-east-1_vBKMcxpJ9" \
+--build-arg REACT_APP_CLIENT_ID="7tp9c32crfu6hk1rdk43qiah33" \
+-t frontend-react-js \
+-f Dockerfile.prod \
+.
+```
+85. create repo:
+```
+aws ecr create-repository \
+  --repository-name frontend-react-js \
+  --image-tag-mutability MUTABLE
+```
+86. set URL for front-end:
+```
+export ECR_FRONTEND_REACT_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/frontend-react-js"
+echo $ECR_FRONTEND_REACT_URL
+```
+87. login to ECR:
+```
+aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+```
+88. tag image:
+```
+docker tag frontend-react-js:latest $ECR_FRONTEND_REACT_URL:latest
+```
+89. push image:
+```
+docker push $ECR_FRONTEND_REACT_URL:latest
+```
+90. run the new frontend image locally:
+```
+docker run --rm -p 3000:3000 -it frontend-react-js 
+```
+91. add file service-frontend-react-js.json (see commit history). Not sure if security group shall be crud-srv-sg
+92. in order to avoid CORS issues, we need to rebuild the image with the load balancer DNS name, not local GitPod URL
+```
+docker build \
+--build-arg REACT_APP_BACKEND_URL="http://cruddur-alb-1822031801.us-east-1.elb.amazonaws.com:4567" \
+--build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_USER_POOLS_ID="us-east-1_vBKMcxpJ9" \
+--build-arg REACT_APP_CLIENT_ID="7tp9c32crfu6hk1rdk43qiah33" \
+-t frontend-react-js \
+-f Dockerfile.prod \
+.
+```
+93. tag and push the image to ECR as done on steps 87-89
+
   
 ## Deploy Frontend React JS app as a service to Fargate
-https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
+[stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
+94. cd ..
+95. create front-end task definition:
+```
+aws ecs register-task-definition --cli-input-json file://aws/task-definitions/frontend-react-js.json
+```
+96. create a front-end service:
+```
+aws ecs create-service --cli-input-json file://aws/json/service-frontend-react-js.json
+```
+97. however the service is failing. Andrew built a local image without ALB. Then he tried to inspect this container.
+98. NOT REQUIRED: go to the frontend target group and override port for health check to 3000 - no need for that
+99. add port 3000 for inbound rule for crud-srv-sg security group allowing ALB security group to access it on port 3000
+100. create ECS frontend service again via CLI
+101. now we see both services running healthy: [ecs_2_services](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/374f1d75359de55034a3bbf3e4d482b5c34792e8/_docs/assets/ecs_2_service_running.png)
+102. go to the load balancer and copy its DNS name
+103. copy the DNS name to Chrome and append with :3000
+104. woohoo! Cruddur web site is now loaded with data!
+[cruddur_behind_alb](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/374f1d75359de55034a3bbf3e4d482b5c34792e8/_docs/assets/cruddur_fargate.png)
+105. tear down ALB and ECS tasks for cost savings. stop RDS
 
 ## Provision and configure Application Load Balancer along with target groups
 https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
