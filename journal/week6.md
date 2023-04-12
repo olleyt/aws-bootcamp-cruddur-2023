@@ -319,12 +319,12 @@ export CRUD_SERVICE_SG=$(aws ec2 create-security-group \
   --query "GroupId" --output text)
 echo $CRUD_SERVICE_SG
 ```
-22. open port 80 for this security group:
+22. open port 4567 for this security group:
 ```bash
 aws ec2 authorize-security-group-ingress \
   --group-id $CRUD_SERVICE_SG \
   --protocol tcp \
-  --port 80 \
+  --port 4567 \
   --cidr 0.0.0.0/0
 ```
 23. create Fargate service in the AWS ECS console (GUI)
@@ -348,7 +348,7 @@ sudo dpkg -i session-manager-plugin.deb
 aws ecs execute-command  \
 --region $AWS_DEFAULT_REGION \
 --cluster cruddur \
---task 72e839665f8b4d33af8cac238f92a78a \
+--task b1391cf064974eb3b66ff3a33f13a399 \
 --container backend-flask \
 --command "/bin/bash" \
 --interactive
@@ -429,7 +429,7 @@ root@ip-xxx-xx-xx-xxx:/backend-flask# ./bin/flask/health-check
 [OK] Flask server is running
 root@ip-xxx-xx-xx-xxx:/backend-flask# 
 ```
-40. create a new script 'connect-to-service 'in bin/ecs folder: 
+40. create a new script 'connect-to-service 'in bin/ecs folder and make it executable with chmod u+x: 
 ```bash
 #! /usr/bin/bash
 if [ -z "$1" ]; then
@@ -530,7 +530,107 @@ File "/usr/local/lib/python3.10/site-packages/urllib3/connection.py", line 174, 
 
 2023-04-11T19:12:31.879+10:00	self.connect()
 ```
-	
+42. I had to comment out xray lines in app.py
+43. updated ecs security group to have inbound port 4567 instead of 80
+44. fixed path for health-check CMD command in task definition
+45. rebuilt backend-flask image, pushed it to ECR, ran command to create a new task revision in ECS
+46. ran command to create an ECS service via CLI
+47. the task appeared to be healthy! 
+48. Commamd for listing tasks: ```aws ecs list-tasks --cluster cruddur```
+49. go to EC2 -> security groups and select default security group
+50. update inbound rules and add 5432 PostgreSQL port to be allowed for crud-srv-sg that we use for ECS
+51. connect to container from Gitpod and when inside run this command: ```./bin/db/test```
+52. expected reult from terminal shall show that connection was successful:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ ./backend-flask/bin/ecs/connect-to-service a029820332714163b5249cc11cb6ba61TASK ID : a029820332714163b5249cc11cb6ba61
+Container Name: backend-flask
+
+The Session Manager plugin was installed successfully. Use the AWS CLI to start a session.
+
+
+Starting session with SessionId: ecs-execute-command-07923b45efddc5250
+root@ip-172-31-41-113:/backend-flask# ./bin/db/test
+attempting connection
+Connection successful!
+root@ip-172-31-41-113:/backend-flask# 
+```
+53. go back to ECS task and copy its public IP. append it with :4567/api/activities/home
+54. hooray, we are getting raw data from production RDS database: 
+```json
+[
+  {
+    "created_at": "2023-04-03T09:10:58.968124",
+    "display_name": "Olley T",
+    "expires_at": "2023-04-10T09:10:58.935268",
+    "handle": "olleyt",
+    "likes_count": 0,
+    "message": "Crud button only works from home page",
+    "replies_count": 0,
+    "reply_to_activity_uuid": null,
+    "reposts_count": 0,
+    "uuid": "64596a14-552d-4ccb-9c10-3bce87998130"
+  }
+]
+```
+The endpoint is not secured and everyone cah hit it but we are one step closer with implementing Cruddur
+55. go back to ECS console and delte the service
+56. recreate it manually with 'Turn on Service Connect' option, map all fields except port to backend-flask and port to 4567
+57. we will have a nice service url to connect to but for now let's delete this service
+58. now we will restore deleted code for service connect in service-backend-flask.json
+59. then create ECS service with CLI command: 
+```
+aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.json
+```
+60. grab publick IP of the task and check the health check still returns success
+61. create ALB in AWS Console (GUI), service connect is able to work with ALB
+    * name: cruddur-alb
+    * select all subnets for the default VPC
+    * create new security group: cruddur-alb-sg and add inbound rules for ports 80 and 443 for all IPv4 addresses (temporarily can add your own IP address)
+    * deviation: set outbound rule to crud-srv-sg security group
+
+62. go back to crud-srv-sg security group and update inbound rule on port 4567 to allow only the ALB security group
+63. create a new target group
+    * target type: IP addresses
+    * name: cruddur-backend-flask-tg
+    * port: 4567
+    * health check protocol: HTTP
+    * health check path: /api/health-check
+    * threshold: 3
+    * click next
+    * create without associating targets
+
+64. go back to the page where we create the load balancer
+65. in 'Listeners and routing', choose port 4567 and choose the just created target group
+66. add listener for the frontend and add a new target group:
+    * target type: IP addresses
+    * name: cruddur-frontend-react-js-tg
+    * port: 3000
+    * health check protocol: HTTP
+    * health check path: /
+    * threshold: 3
+    * click next
+    * create without associating targets
+67. review and create the load-balancer
+68. go back to service-backend-flask.json to add load balancer
+69. create ECS service via CLI again
+```
+aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.json
+```
+70. temporarily add port 4567 and 3000 from anywhere inbound rule on the ALB security group
+71. now errors on ALB listeners shall disappear
+72. check that ECS task is healthy and related target group is healthy
+73. copy ALB DNS name and post it to a browser and append it with :4567/api/health-check
+74. web page shall return 
+```
+{
+  "success": true
+}
+```
+75. go to S3 console
+76. create a public S3 bucket in the same region as CloudWatch for this project
+77. turn on access logs for the ALB on tab Attributes
+
+
 ## Create ECR repo and push image for fronted-react-js	
   https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
   
