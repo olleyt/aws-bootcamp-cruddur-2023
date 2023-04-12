@@ -128,3 +128,14 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+#docker
+docker/**/*
+
+#cruddur
+frontend-react-js/build/*
+frontend-react-js/package-lock.json
+frontend-react-js/package.json
+
+#ssm
+session-manager-plugin.deb
