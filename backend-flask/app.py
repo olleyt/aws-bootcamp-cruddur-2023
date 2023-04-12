@@ -59,13 +59,13 @@ trace.set_tracer_provider(provider)
 tracer = trace.get_tracer(__name__)
 
 # XRAY recorder
-xray_url = os.getenv("AWS_XRAY_URL")
-xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
+#xray_url = os.getenv("AWS_XRAY_URL")
+#xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 
 
 # Initialize automatic instrumentation with Flask
 app = Flask(__name__)
-XRayMiddleware(app, xray_recorder)
+#XRayMiddleware(app, xray_recorder)
 FlaskInstrumentor().instrument_app(app)
 RequestsInstrumentor().instrument()
 frontend = os.getenv('FRONTEND_URL')
@@ -203,7 +203,7 @@ def data_create_message():
     return {}, 401
 
 @app.route("/api/activities/home", methods=['GET'])
-@xray_recorder.capture('home_trace')
+#@xray_recorder.capture('home_trace')
 def data_home():
   access_token = extract_access_token(request.headers)
   try:
@@ -221,13 +221,13 @@ def data_home():
   return data, 200
 
 @app.route("/api/activities/notifications", methods=['GET'])
-@xray_recorder.capture('notifications')
+#@xray_recorder.capture('notifications')
 def data_notifications():
   data = NotificationsActivities.run()
   return data, 200  
 
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
-@xray_recorder.capture('user_activities')
+#@xray_recorder.capture('user_activities')
 def data_handle(handle):
   user_activities = UserActivities(request)
   model = user_activities.run(handle)
