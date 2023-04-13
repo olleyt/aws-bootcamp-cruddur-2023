@@ -867,6 +867,9 @@ def health_check():
 16. go to backend Dockerfile non-prod and change debugging flag to ```--no-debug```, run docker-compose up
 17. evidence that ```/api/health-check``` now throws ```Internal Server Error```. That proves that we secured flask app so no-one can tamper with it in debug mode.
 18. run docker-compose down and fix app.py
+19. continue with [part 2 of securing flask](https://www.youtube.com/watch?v=eaeEbeEVNMk)
+20. run ```./bin/docker/build/backend-flask-prod```
+21. create folder push inside docker folder and create scripts backend-flask-prod and frontend-react-js-prod scripts. Add tag and push commands for each and make these scripts executable, add path variables for that too. See stream at 6:58 point
 
 ## Implement Refresh Token for Amazon Cognito	
 https://www.youtube.com/watch?v=LNLP2dxa5EQ&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=63
