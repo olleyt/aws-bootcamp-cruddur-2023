@@ -731,7 +731,7 @@ My domain was bought via Amazon Route 53 service, and AWS automatically created 
 1. go to AWS console and navigate to Certificate manager
 2. request public certificate
 3. enter fully qualified domain name
-4. add *.<your fully qualified domain name> as another domain for the certificate
+4. add ```*.<your fully qualified domain name>``` as another domain for the certificate
 5. choose DNS validation
 6. click Request	
 7. the certificate will be in pending validation state
@@ -744,7 +744,7 @@ My domain was bought via Amazon Route 53 service, and AWS automatically created 
 14. add a new listener for port 443 and a forward rule to frontend target group. Choose default SSL/TLS certificate
 15. delete listeners for ports 4567 and 3000
 16. choose listener for port 443 and click on Actions and select Manage Rules
-17. add a rule under host header and put value api.<yourdomain> in field 'is' and forward traffic to backend target group
+17. add a rule under host header and put value ```api.<yourdomain>``` in field 'is' and forward traffic to backend target group
 	
 ## Setup a record set for naked domain to point to frontend-react-js :white_check_mark:
 [stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
@@ -770,8 +770,41 @@ returns:
 ```
 	
 	
-## Configure CORS to only permit traffic from our domain	
-https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
+## Configure CORS to only permit traffic from our domain :white_check_mark:	
+[stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
+1. go to backend-flask.json task definition and change these two lines to specifc domains:
+```
+          {"name": "FRONTEND_URL", "value": "https://architectingonaws.link"},
+          {"name": "BACKEND_URL", "value": "https://api.architectingonaws.link"},	
+```	
+2. run command to create a new revision for this task definition:
+```
+aws ecs register-task-definition --cli-input-json file://aws/task-definitions/backend-flask.json
+```	
+3. login to ECR
+4. build front-end image and change ```REACT_APP_BACKEND_URL="https://api.architectingonaws.link"```
+```
+docker build \
+--build-arg REACT_APP_BACKEND_URL="https://api.architectingonaws.link" \
+--build-arg REACT_APP_AWS_PROJECT_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_COGNITO_REGION="$AWS_DEFAULT_REGION" \
+--build-arg REACT_APP_AWS_USER_POOLS_ID="us-east-1_vBKMcxpJ9" \
+--build-arg REACT_APP_CLIENT_ID="7tp9c32crfu6hk1rdk43qiah33" \
+-t frontend-react-js \
+-f Dockerfile.prod \
+.	
+```
+5. tag and push this image
+6. update backend ECS service with the latest task definition revision (AWS Console)	
+7. force update existing frontend ECS service
+8. check that both targets groups are healthy
+9. check backend health-check in the browser: ```https://api.architectingonaws.link/api/health-check```	
+10. check web-site: ```https://architectingonaws.link```
+11. we can see CORS errors in Network tab of developer tools in Chrome
+12. connect to ECS service from the terminal in Gitpod, type env to check environment variables
+13. Andrew added protocol ```https://``` in 	FRONTEND_URL and BACKEND_URL in backend-flask.json task definition as attempt to rectify CORS issue. He updated task definition and updated the back-end service. It worked for him so I updated step 1 of this section.
+14. sign in into Cruddur and try to create a Crud
+15. go to messages and create a new message appending ```/messages/new/@handleofuser```. Andrew hit the 500 error but it worked for me.	
 	
 ## Secure Flask by not running in debug mode	
 https://www.youtube.com/watch?v=9OQZSBKzIgs&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=60
