@@ -137,5 +137,8 @@ frontend-react-js/build/*
 frontend-react-js/package-lock.json
 frontend-react-js/package.json
 
+
 #ssm
 session-manager-plugin.deb
+frontend-react-js/package.json
+frontend-react-js/package-lock.json
