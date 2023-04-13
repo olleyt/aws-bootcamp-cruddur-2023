@@ -7,7 +7,20 @@ Contents:
 4. [Create ECR repo and push image for backend-flask](#create-ecr-repo-and-push-image-for-backend-flask)
 
 ## ECS Security Considerations
-  Watch ECS Security by Ashish	https://www.youtube.com/watch?v=zz2FQAk1I28&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=57
+[Watched ECS Security by Ashish](https://www.youtube.com/watch?v=zz2FQAk1I28&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=57)
+Best practice:
+* scan on push
+* enable tag immutability
+* enable encryption with KMS
+* access control following the least privilege principle
+* use VPC endpoints
+* granular access in security groups only for those who need access
+* ensure compliance standard
+* apply Organization SCPs for stricter access
+* enable CloudTrail and Container insights
+* enable Config rules (no GuardDuty for ECS?)
+* only use safe images withought critical / high vulnerabilities
+* do not store passwords in task definitions, use Secrets Manager instead
 
 ## Fargate Technical Questions
   Watch Fargate Technical Questions with Maish (Not yet uploaded)
@@ -772,15 +785,15 @@ returns:
 	
 ## Configure CORS to only permit traffic from our domain :white_check_mark:	
 [stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
-1. go to backend-flask.json task definition and change these two lines to specifc domains:
-```
-          {"name": "FRONTEND_URL", "value": "https://architectingonaws.link"},
-          {"name": "BACKEND_URL", "value": "https://api.architectingonaws.link"},	
-```	
+
+1. go to ```backend-flask.json``` task definition and change these two lines to specifc domains:
+```{"name": "FRONTEND_URL", "value": "https://architectingonaws.link"},```
+```{"name": "BACKEND_URL", "value": "https://api.architectingonaws.link"}```
+	
 2. run command to create a new revision for this task definition:
 ```
 aws ecs register-task-definition --cli-input-json file://aws/task-definitions/backend-flask.json
-```	
+```
 3. login to ECR
 4. build front-end image and change ```REACT_APP_BACKEND_URL="https://api.architectingonaws.link"```
 ```
@@ -799,15 +812,61 @@ docker build \
 7. force update existing frontend ECS service
 8. check that both targets groups are healthy
 9. check backend health-check in the browser: ```https://api.architectingonaws.link/api/health-check```	
-10. check web-site: ```https://architectingonaws.link```
+10. check website: ```https://architectingonaws.link```
 11. we can see CORS errors in Network tab of developer tools in Chrome
 12. connect to ECS service from the terminal in Gitpod, type env to check environment variables
-13. Andrew added protocol ```https://``` in 	FRONTEND_URL and BACKEND_URL in backend-flask.json task definition as attempt to rectify CORS issue. He updated task definition and updated the back-end service. It worked for him so I updated step 1 of this section.
+13. Andrew added protocol ```https://``` in FRONTEND_URL and BACKEND_URL in backend-flask.json task definition as attempt to rectify the CORS issue. He updated task definition and updated the back-end service. It worked for him so I updated step 1 of this section.
 14. sign in into Cruddur and try to create a Crud
 15. go to messages and create a new message appending ```/messages/new/@handleofuser```. Andrew hit the 500 error but it worked for me.	
 	
-## Secure Flask by not running in debug mode	
-https://www.youtube.com/watch?v=9OQZSBKzIgs&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=60
+## Secure Flask by not running in debug mode :white_check_mark:	
+[stream link](https://www.youtube.com/watch?v=9OQZSBKzIgs&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=60)
+1. go to EC2 in AWS Console, navigate to ALB security group
+2. delete inbound rules for ports 3000, 4567
+3. change Source to My IP for both 80 and 443 ports
+4. go to GitPod and create a Dockerfile.prod for backend container
+5. Create a new folder ecr in bin directory and create a new script ```login``` inside of it
+6. ```chmod u+x ./ecr/login```
+7. login to ECR: ```./ecr/login``` from backend-flask/bin directory```
+8. buid new image: ```docker build -f Dockerfile.prod -t backend-flask-prod .```
+9. Andrew tested new image locally with docker run command which he put as a script named backend-flask-prod in a new folder ```/bin/docker```:
+```
+docker run --rm \
+-p 4567:4567 \
+--env AWS_ENDPOINT_URL="http://dynamodb-local:8000" \
+#--env CONNECTION_URL="postgresql://postgres:password@db:5432/cruddur" \
+--env CONNECTION_URL="${PROD_CONNECTION_URL}"
+--env FRONTEND_URL="https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}" \
+--env BACKEND_URL="https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}" \
+--env OTEL_SERVICE_NAME='backend-flask' \
+--env OTEL_EXPORTER_OTLP_ENDPOINT="https://api.honeycomb.io" \
+--env OTEL_EXPORTER_OTLP_HEADERS="x-honeycomb-team=${HONEYCOMB_API_KEY}" \
+--env AWS_XRAY_URL="*4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}*" \
+--env AWS_XRAY_DAEMON_ADDRESS="xray-daemon:2000" \
+--env AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}" \
+--env AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+--env AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+--env ROLLBAR_ACCESS_TOKEN="${ROLLBAR_ACCESS_TOKEN}" \
+--env AWS_COGNITO_USER_POOL_ID="${AWS_COGNITO_USER_POOL_ID}" \
+--env AWS_COGNITO_USER_POOL_CLIENT_ID="5b6ro31g97urk767adrbrdj1g5" \   
+-it backend-flask-prod
+```
+Note: links to local databases need a revision on my side
+10. create subfolders run and build inside docker folder. put backend-flask-prod script into build folder. Create a new script for command in step 8 and call it backend-flask-prod. Also create a script in build folder called frontend-react-js
+11. run container from GitPod : ```./backend-flask-prod```
+12. temporarily cause an error in app.py in health-check path with calling non-existent function:
+```
+@app.route('/api/health-check')
+def health_check():
+  hello()
+  return {'success': True}, 200
+``` 
+13. run docker-compose up and see if we see error in a debugging mode and if we can tamper with it
+14. open Cruddur app from backend in the browser and append url with ```/api/health-check```
+15. we get error ```NameError: name 'hello' is not defined``` as expected, however we don't want to show error stack trace in browser
+16. go to backend Dockerfile non-prod and change debugging flag to ```--no-debug```, run docker-compose up
+17. evidence that ```/api/health-check``` now throws ```Internal Server Error```. That proves that we secured flask app so no-one can tamper with it in debug mode.
+18. run docker-compose down and fix app.py
 
 ## Implement Refresh Token for Amazon Cognito	
 https://www.youtube.com/watch?v=LNLP2dxa5EQ&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=63
