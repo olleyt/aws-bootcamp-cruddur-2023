@@ -112,7 +112,6 @@ def after_request(response):
 
 @app.route('/api/health-check')
 def health_check():
-  hello()
   return {'success': True}, 200
 
 @app.route('/rollbar/test')
