@@ -709,27 +709,66 @@ aws ecs create-service --cli-input-json file://aws/json/service-frontend-react-j
 98. NOT REQUIRED: go to the frontend target group and override port for health check to 3000 - no need for that
 99. add port 3000 for inbound rule for crud-srv-sg security group allowing ALB security group to access it on port 3000
 100. create ECS frontend service again via CLI
-101. now we see both services running healthy: [ecs_2_services](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/374f1d75359de55034a3bbf3e4d482b5c34792e8/_docs/assets/ecs_2_service_running.png)
-102. go to the load balancer and copy its DNS name
-103. copy the DNS name to Chrome and append with :3000
-104. woohoo! Cruddur web site is now loaded with data!
-[cruddur_behind_alb](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/374f1d75359de55034a3bbf3e4d482b5c34792e8/_docs/assets/cruddur_fargate.png)
+101. now we see both services running healthy: 
+102. ![ecs_2_services](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/374f1d75359de55034a3bbf3e4d482b5c34792e8/_docs/assets/ecs_2_service_running.png)
+103. go to the load balancer and copy its DNS name
+104. copy the DNS name to Chrome and append with :3000
+105. woohoo! Cruddur web site is now loaded with data!
+![cruddur_behind_alb](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/374f1d75359de55034a3bbf3e4d482b5c34792e8/_docs/assets/cruddur_fargate.png)
 105. tear down ALB and ECS tasks for cost savings. stop RDS
 
-## Provision and configure Application Load Balancer along with target groups
-https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
+## Provision and configure Application Load Balancer along with target groups :white_check_mark:	
+[stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
+was done in previous section from step 61
 	
-## Manage your domain useing Route53 via hosted zone	
-https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
+## Manage your domain useing Route53 via hosted zone :white_check_mark:		
+[stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
+My domain was bought via Amazon Route 53 service, and AWS automatically created a hosted zone with NS and SOA records
 	
-## Create an SSL cerificate via ACM	
-https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
+## Create an SSL cerificate via ACM :white_check_mark:	
+[stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
+
+1. go to AWS console and navigate to Certificate manager
+2. request public certificate
+3. enter fully qualified domain name
+4. add *.<your fully qualified domain name> as another domain for the certificate
+5. choose DNS validation
+6. click Request	
+7. the certificate will be in pending validation state
+8. click on the created certificate and on Domains frame click 'Create records in Route 53'
+9. in the new window, click 'Create Records' button
+10. go back to Route 53 , and see that CNAME record was added to the hosted zone
+11. wait a little while and see that records have 'Success' status on the certificate
+12. we probably shall enable DNSSSEC at some point
+13. go back to our load balancer, and create a new listener on port 80 and add redirect it to 443
+14. add a new listener for port 443 and a forward rule to frontend target group. Choose default SSL/TLS certificate
+15. delete listeners for ports 4567 and 3000
+16. choose listener for port 443 and click on Actions and select Manage Rules
+17. add a rule under host header and put value api.<yourdomain> in field 'is' and forward traffic to backend target group
 	
-## Setup a record set for naked domain to point to frontend-react-js
-https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
+## Setup a record set for naked domain to point to frontend-react-js :white_check_mark:
+[stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
+1. go to Route 53, choose our hosted zone
+2. add A record for naked domain routing to ALB
 	
-## Setup a record set for api subdomain to point to the backend-flask
+	
+## Setup a record set for api subdomain to point to the backend-flask :white_check_mark:
 https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
+1. go to Route 53, choose our hosted zone
+2. add A record for api sub domain routing to ALB
+3. run curl command
+```
+curl api.architectingonaws.link/api/health-check
+
+```
+or post in the browser: https://api.architectingonaws.link/api/health-check
+returns:
+```
+{
+  "success": true
+}
+```
+	
 	
 ## Configure CORS to only permit traffic from our domain	
 https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
