@@ -889,7 +889,27 @@ def health_check():
 
 
 ## Implement Refresh Token for Amazon Cognito	
-https://www.youtube.com/watch?v=LNLP2dxa5EQ&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=63
+[stream link](https://www.youtube.com/watch?v=LNLP2dxa5EQ&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=63)
+
+*Problem:* CheckAuth.js is not attempting to refresh token
+
+*Solution*: Andrew was looking how to do that at Amplify Dev Center, react-native-sample example but it was not giving a Cognito example.
+We need to get Auth.currentSession() to get the refreshed token from Amplify.
+We will wrap each of our API calls in getting refreshed token from new function getAccessToken() defined in CheckAuth.js.
+Changed code units:
+* CheckAuth.js
+* HomeFeed.js
+* MessageForm.js
+* MessageGroupNewPage.js
+* MessageGroupPage.js
+* MessageGroupsPage.js
+
+*Testing:*
+* spin up GitPod
+* run /bun/ecr/login script
+* run docker-compose up
+* run db scripts: db/setup, /ddb/schema-load and seed data to local databases (PostgreSQL and DynamoDB)
+* login to Cruddur and do overall test. Perhaps implementing Cypress e2e tests could be a good idea
 	
 ## Configure task defintions to contain x-ray and turn on Container Insights
 https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
