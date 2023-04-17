@@ -873,7 +873,8 @@ def health_check():
 22. create backend-flask/bin/ecs/force-deploy-backend-flask with updating ecs task definition for backend-flask. (Video stream point is at at 15th min). Andrew noted that last describe command is not that useful because we want to continiuosly monitor created services.
 	
 ## Refactor bin directory to be top level	
-https://www.youtube.com/watch?v=HyJOjBjieb4&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=62
+[stream link](https://www.youtube.com/watch?v=HyJOjBjieb4&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=62)
+
 23. create 'bin' directory at the top level of the workspace
 24. move /backend-flask/bin/rds into /bin/rds and rename script rds-update-sg-rule to update-sg-rule. Update gitpod.yml accordingly.
 25. move all directories from /backend-flask/bin/ to /bin except /flask because we need to keep health-check in backend-flask folder
