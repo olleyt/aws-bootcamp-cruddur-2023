@@ -867,12 +867,28 @@ def health_check():
 16. go to backend Dockerfile non-prod and change debugging flag to ```--no-debug```, run docker-compose up
 17. evidence that ```/api/health-check``` now throws ```Internal Server Error```. That proves that we secured flask app so no-one can tamper with it in debug mode.
 18. run docker-compose down and fix app.py
-
-## Implement Refresh Token for Amazon Cognito	
-https://www.youtube.com/watch?v=LNLP2dxa5EQ&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=63
+19. continue with [part 2 of securing flask](https://www.youtube.com/watch?v=eaeEbeEVNMk)
+20. run ```./bin/docker/build/backend-flask-prod```
+21. create folder push inside docker folder and create scripts backend-flask-prod and frontend-react-js-prod scripts. Add tag and push commands for each and make these scripts executable, add path variables for that too. (See stream at 6:58 point)
+22. create backend-flask/bin/ecs/force-deploy-backend-flask with updating ecs task definition for backend-flask. (Video stream point is at at 15th min). Andrew noted that last describe command is not that useful because we want to continiuosly monitor created services.
 	
 ## Refactor bin directory to be top level	
 https://www.youtube.com/watch?v=HyJOjBjieb4&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=62
+23. create 'bin' directory at the top level of the workspace
+24. move /backend-flask/bin/rds into /bin/rds and rename script rds-update-sg-rule to update-sg-rule. Update gitpod.yml accordingly.
+25. move all directories from /backend-flask/bin/ to /bin except /flask because we need to keep health-check in backend-flask folder
+26. refactor db utility scripts that connectingto RDS / local PostgreSQL container to use absolute path
+27. refactor docker biold scripts for backend and front end to use absolute path. (Stream point: 31:20)
+28. further refctor db setup, update_cognito_user_ids, seed and seed.sql scripts following the video stream. Note: I don't use mock data because those users are not in my cognito pool and I am not listing my users in public repository for security reasons
+29. refactor bin directory and have explicit folders for frontend and backend with build, run, deploy, connect scripts for easier use
+30. [not yet done]: delete existing ECS servies
+31. rebuild and push frontend and backend services
+32. using new scripts, create ECS services
+33. check ECS task health, ALB target health, login to Cruddur and try to create new messages
+
+
+## Implement Refresh Token for Amazon Cognito	
+https://www.youtube.com/watch?v=LNLP2dxa5EQ&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=63
 	
 ## Configure task defintions to contain x-ray and turn on Container Insights
 https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
