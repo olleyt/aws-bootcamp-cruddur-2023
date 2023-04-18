@@ -882,11 +882,16 @@ def health_check():
 27. refactor docker biold scripts for backend and front end to use absolute path. (Stream point: 31:20)
 28. further refctor db setup, update_cognito_user_ids, seed and seed.sql scripts following the video stream. Note: I don't use mock data because those users are not in my cognito pool and I am not listing my users in public repository for security reasons
 29. refactor bin directory and have explicit folders for frontend and backend with build, run, deploy, connect scripts for easier use
-30. [not yet done]: delete existing ECS servies
-31. rebuild and push frontend and backend services
+30. delete existing ECS servies in AWS console
+31. login to ECR from the Gitpod terminal then rebuild and push frontend and backend services
 32. using new scripts, create ECS services
 33. check ECS task health, ALB target health, login to Cruddur and try to create new messages
 
+## Create Dockerfile specfically for production use case
+[stream link](https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64)
+Those files were added during implementing front-end image and securing Flask application homework tasks. 
+[backend Dockerfile.prod](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/d8fe2966aa059bd692c4a0d456827f117c5926e7/backend-flask/Dockerfile.prod)
+[frontend Dockerfile.prod](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/d8fe2966aa059bd692c4a0d456827f117c5926e7/frontend-react-js/Dockerfile.prod)
 
 ## Implement Refresh Token for Amazon Cognito	
 [stream link](https://www.youtube.com/watch?v=LNLP2dxa5EQ&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=63)
@@ -908,20 +913,45 @@ Changed code units:
 * spin up GitPod
 * run /bun/ecr/login script
 * run docker-compose up
-* run db scripts: db/setup, /ddb/schema-load and seed data to local databases (PostgreSQL and DynamoDB)
-* login to Cruddur and do overall test. Perhaps implementing Cypress e2e tests could be a good idea
+* run db scripts: db/setup, /ddb/schema-load and seed data to local databases (PostgreSQL and DynamoDB). Note: I still need to add my own users to seed script with handles and emails as I set up in Cognito user pool
+* login to Cruddur and do overall test and create some messages. Perhaps implementing Cypress e2e tests could be a good idea
 	
 ## Configure task defintions to contain x-ray and turn on Container Insights
+[stream link](https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64)
+
+1. add these lines into aws/task-definitions/backend-flask.json:
+```json
+    {
+      "name": "xray",
+      "image": "public.ecr.aws/xray/aws-xray-daemon" ,
+      "essential": true,
+      "user": "1337",
+      "portMappings": [
+        {
+          "name": "xray",
+          "containerPort": 2000,
+          "protocol": "udp"
+        }
+      ]
+    },
+```
+2. create new scripts called 'register' for backend and frontend to register updated task definitions
+3. workflow when the backend code changes
+    * ./bin/ecr/login
+    * ./bin/backend/register - when task definition got updated
+    * ./bin/backend/build
+    * ./bin/backend/push
+    * ./bin/backend/deploy
+    * ./bin/backend/run - for local debugging
+4. login to AWS Console and navigate to ECS, services, go to backend task and see xray container is running    
+5. note: I have previously commented out X-Ray code in app.py and user_activities.py as my docker images were not building
+
+## Using ruby generate out env dot files for docker using erb templates
 https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
-	
+
 ## Change Docker Compose to explicitly use a user-defined network
 https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
 	
-## Create Dockerfile specfically for production use case
-https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
-	
-## Using ruby generate out env dot files for docker using erb templates
-https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
 
 ## Resources
 - [AWS Samples Git Repo](https://github.com/orgs/aws-samples/repositories?language=&page=2&q=cloudformati&sort=&type=all)
@@ -933,3 +963,5 @@ https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgN
 - [Tutorial: Creating a cluster with a Fargate Linux task using the AWS CLI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_AWSCLI_Fargate.html#ECS_AWSCLI_Fargate_register_task_definition)
 - [CLI register task definition](https://docs.aws.amazon.com/cli/latest/reference/ecs/register-task-definition.html)
 -  Amazon ECS Workshop > Introduction > ECS Overview > [Task Definitions](https://ecsworkshop.com/introduction/ecs_basics/task_definition/)
+- [How to remove multiple docker images with the same imageID?](https://stackoverflow.com/questions/32944391/how-to-remove-multiple-docker-images-with-the-same-imageid)
+- [How to remove docker images based on name?](https://stackoverflow.com/questions/40084044/how-to-remove-docker-images-based-on-name)
