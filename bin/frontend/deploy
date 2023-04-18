@@ -16,4 +16,5 @@ aws ecs update-service \
 --cluster $CLUSTER_NAME \
 --service $SERVICE_NAME \
 --task-definition $LATEST_TASK_DEFINITION_ARN \
+--desired-count 1 \
 --force-new-deployment
