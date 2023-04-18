@@ -19,17 +19,19 @@ tasks:
   - name: Customising Workspace
     env:
       AWS_CLI_AUTO_PROMPT: on-partial
-    init: |
+    before: |
+      source "$THEIA_WORKSPACE_ROOT/bin/backend/generate-env"
       # install Python libraries for Flask backend app on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/backend-flask
       pip3 install -r requirements.txt
       # install npm libraries for frontend on local GitPod environment
+      source "$THEIA_WORKSPACE_ROOT/bin/frontend/generate-env"
       cd $THEIA_WORKSPACE_ROOT/frontend-react-js
       npm i
       npm i aws-amplify --save
       cd $THEIA_WORKSPACE_ROOT 
   - name: postgres
-    init: |
+    before: |
       curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
       echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
       sudo apt update
