@@ -16,7 +16,7 @@ github:
     addComment: false
 
 tasks:
-  - name: Customising Workspace
+  - name: AWS_CLI_backend
     env:
       AWS_CLI_AUTO_PROMPT: on-partial
     before: |
@@ -24,6 +24,8 @@ tasks:
       # install Python libraries for Flask backend app on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/backend-flask
       pip3 install -r requirements.txt
+  - name: frontend
+    before: |    
       # install npm libraries for frontend on local GitPod environment
       source "$THEIA_WORKSPACE_ROOT/bin/frontend/generate-env"
       cd $THEIA_WORKSPACE_ROOT/frontend-react-js
