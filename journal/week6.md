@@ -973,14 +973,19 @@ Changed code units:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
 ```
 7. even after implementing environment files and streamlining docker-compose file, we could not get health check on Xray working. Andrew tried netstat suggestion from StackOverflow but unfortunately it did not work out, so we left Xray health-check not implemented for now. He removed health check from backend-flask.json task definition and re-registered the task.
-8. then run deploy of the backend task, login to AWS ECS console and see that backend is now healthy and we can access the app
-9. add same xray container definition to frontend ECS task definition json, run register and deploy scripts for it
+8. I have reverted changes in app.py at the end of the implementation of week 6-7 as X-ray will work
+9. then run deploy of the backend task, login to AWS ECS console and see that backend is now healthy and we can access the app
+10. add same xray container definition to frontend ECS task definition json, run register and deploy scripts for it
+11. re-build backend image, push to ECR, register backend task and deploy.
+12. navigate to AWS Console -> X-ray -> traces and evidence that X-ray successfully creates segments and subsegments:
+![week6-7_xray_subseg_works](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/a8547d0f985c12c335bd020fac11cf42abc6b3a3/_docs/assets/week7/week6-7_xray_subseg_works.png)
 
 ### Turning on Container Insights
 1. login to AWS Console -> ECS -> select cruddur cluster
-2. go to monitor tab and turn on container insights
+2. go to monitor tab and turn on container insights: ![turn_on_container_insights](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/a8547d0f985c12c335bd020fac11cf42abc6b3a3/_docs/assets/week7/turn_on_container_insights.png)
 3. login to Cruddur, check and post messages
-4. go to CloudWatch and select 'Container insights' on left hand pane. Now we shall see container insights logs 
+4. go to CloudWatch and select 'Container insights' on left hand pane. Now we shall see container insights logs:
+[https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/a8547d0f985c12c335bd020fac11cf42abc6b3a3/_docs/assets/week7/container_insights.png] 
 
 ## Using ruby generate out env dot files for docker using erb templates
 [stream link](https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64)
@@ -1081,7 +1086,8 @@ docker run --rm \
 17. run the script and also add /bin/bash to get into the container
 18. Andrew tried to ping google and it was succesful, but then he figured out that environment file for docker run command shall not have quotation marks for surrounding environment variables values
 19. remove quotation marks in erb templates
-20. run docker-compose up and it shall work
+20. run docker-compose up and the app shall work successfully:
+![final_test_gitpod](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/a8547d0f985c12c335bd020fac11cf42abc6b3a3/_docs/assets/week7/final_test_gitpod.png)
 
 ## Change Docker Compose to explicitly use a user-defined network
 [stream link](https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64)
@@ -1136,7 +1142,11 @@ networks:
     driver: bridge
     name: cruddur-net
 ```    
-	
+5. For the final clean test for this week: rebuild backend and frontend images, push and register ECS task definitions, deploy the tasks
+6. Login to AWS ECS and observe that tasks are healthy but we still need to implement X-Ray health check at some point:
+![ecs_final_test](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/a8547d0f985c12c335bd020fac11cf42abc6b3a3/_docs/assets/week7/ecs_test_after_gen_env.png)	
+7. login to the Cruddur app and send Londo another message about our success:
+![final_test_prod](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/a8547d0f985c12c335bd020fac11cf42abc6b3a3/_docs/assets/week7/final_test_prod.png)
 
 ## Resources
 - [AWS Samples Git Repo](https://github.com/orgs/aws-samples/repositories?language=&page=2&q=cloudformati&sort=&type=all)
