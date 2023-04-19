@@ -41,7 +41,7 @@ Best practice:
 * do not store passwords in task definitions, use Secrets Manager instead
 
 ## Fargate Technical Questions
-  Watch Fargate Technical Questions with Maish (Not yet uploaded)
+  Watched Fargate Technical Questions with Maish: [stream link](https://www.youtube.com/watch?v=w_YcwJxvoHQ&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=68)
   
 ## Provision ECS Cluster
 [stream link](https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
