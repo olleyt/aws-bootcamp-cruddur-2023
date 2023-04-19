@@ -2,9 +2,27 @@
 
 Contents:
 1. [ECS Security Considerations](#ecs-security-considerations)
-2. [Fargate Technical Questions]
+2. [Fargate Technical Questions](#fargate-technical-questions)
 3. [Provision ECS Cluster](#provision-ecs-cluster)
 4. [Create ECR repo and push image for backend-flask](#create-ecr-repo-and-push-image-for-backend-flask)
+5. [Deploy Backend Flask app as a service to Fargate](#deploy-backend-flask-app-as-a-service-to-fargate)
+6. [Create ECR repo and push image for fronted-react-js](#create-ecr-repo-and-push-image-for-fronted-react-js)
+7. [Deploy Frontend React JS app as a service to Fargate](#deploy-frontend-react-js-app-as-a-service-to-fargate)
+8. [Provision and configure Application Load Balancer along with target groups](#provision-and-configure-application-load-balancer-along-with-target-groups)
+9. [Manage your domain useing Route53 via hosted zone](#manage-your-domain-useing-route53-via-hosted-zone)
+10. [Create an SSL cerificate via ACM](#create-an-ss-cerificate-via-acm)
+11. [Setup a record set for naked domain to point to frontend-react-js](#setup-a-record-set-for-naked-domain-to-point-to-frontend-react-js)
+12. [Setup a record set for api subdomain to point to the backend-flask](#setup-a-record-set-for-api-subdomain-to-point-to-the-backend-flask)
+13. [Configure CORS to only permit traffic from our domain](#configure-cors-to-only-permit-traffic-from-our-domain)
+14. [Secure Flask by not running in debug mode](#secure-flask-by-not-running-in-debug-mode)
+15. [Refactor bin directory to be top level](#refactor-bin-directory-to-be-top-level)
+16. [Create Dockerfile specfically for production use case](#create-dockerfile-specfically-for-production-use-case)
+17. [Implement Refresh Token for Amazon Cognito](#implement-refresh-token-for-amazon-cognito)
+18. [Configure task defintions to contain x-ray and turn on Container Insights](#configure-task-defintions-to-contain-x-ray-and-turn-on-container-insights)
+19. [Using ruby generate out env dot files for docker using erb templates](#using-ruby-generate-out-env-dot-files-for-docker-using-erb-templates)
+20. [Change Docker Compose to explicitly use a user-defined network](#change-docker-compose-to-explicitly-use-a-user-defined-network)
+21. [Resources](#resources)
+	
 
 ## ECS Security Considerations
 [Watched ECS Security by Ashish](https://www.youtube.com/watch?v=zz2FQAk1I28&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=57)
@@ -61,7 +79,7 @@ Connection successful!
 ```
 
 
-### Implement health check for backend container :white_check_mark:
+### Implement health check for backend container 
 1. go to app.py
 2. add these lines above rollbar test:
 ```python
@@ -100,7 +118,7 @@ gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ ./bin/flask/h
 gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ 
 ```
 
-### Create CloudWatch Log Group :white_check_mark:
+### Create CloudWatch Log Group 
 
 1. got to AWS CloudWatch console
 2. run these commands in CLI (or CloudShell):
@@ -111,7 +129,7 @@ aws logs put-retention-policy --log-group-name "/cruddur/fargate-cluster" --rete
 3. retention days set to 1 for the cost reason. The lowest it can be!
 4. go back to the AWS CloudWatch console and check that '/cruddur/fargate-cluster' log group appeared
 
-### Create ECS Cluster :white_check_mark:
+### Create ECS Cluster 
 1. run these commands in CLI (CloudShell):
 ```
 aws ecs create-cluster \
@@ -123,11 +141,11 @@ aws ecs create-cluster \
 
 
 	
-## Create ECR repo and push image for backend-flask  :white_check_mark:
+## Create ECR repo and push image for backend-flask 
 [stream link] (https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
 We are going to create 3 repos:
 
-#### Base Image Python :white_check_mark:
+### Base Image Python :white_check_mark:
 1. create a repository for base python image
 ```
 aws ecr create-repository \
@@ -182,7 +200,7 @@ docker.io/library/python:3.10-slim-buster
 }
 ```
 
-#### Flask image :white_check_mark:
+### Flask image :white_check_mark:
 
 1.create Repo
 ```
@@ -210,7 +228,7 @@ docker push $ECR_BACKEND_FLASK_URL:latest
 6. Fargate will look for 'latest' tag but we probably shall use tags in real DevOps life
 
 	
-## Deploy Backend Flask app as a service to Fargate :white_check_mark:	
+## Deploy Backend Flask app as a service to Fargate 	
 [stream link](https://www.youtube.com/watch?v=QIZx2NhdCMI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=58)
 1. Login to the AWS ECS console
 2. go to our cruddur cluster. You'll see tabs 'Services' and 'Tasks'. The difference is that service is continiously running whereas tasks kills itself when it finished its job (better suited for batch jobs). We want a service because we are running a web application.
@@ -644,7 +662,7 @@ aws ecs create-service --cli-input-json file://aws/json/service-backend-flask.js
 77. turn on access logs for the ALB on tab Attributes
 
 
-## Create ECR repo and push image for fronted-react-js	:white_check_mark:
+## Create ECR repo and push image for fronted-react-js	
 [stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
 78. create file frontend-react-js.json in task-definitions folder (GitPod) - get one from Andrews week6-fargate branch
 79. create Dockerfile.prod for frontend-react-js container. We will be using multi-stage build for frontend container
@@ -730,15 +748,15 @@ aws ecs create-service --cli-input-json file://aws/json/service-frontend-react-j
 ![cruddur_behind_alb](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/374f1d75359de55034a3bbf3e4d482b5c34792e8/_docs/assets/cruddur_fargate.png)
 105. tear down ALB and ECS tasks for cost savings. stop RDS
 
-## Provision and configure Application Load Balancer along with target groups :white_check_mark:	
+## Provision and configure Application Load Balancer along with target groups	
 [stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
 was done in previous section from step 61
 	
-## Manage your domain useing Route53 via hosted zone :white_check_mark:		
+## Manage your domain useing Route53 via hosted zone	
 [stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
 My domain was bought via Amazon Route 53 service, and AWS automatically created a hosted zone with NS and SOA records
 	
-## Create an SSL cerificate via ACM :white_check_mark:	
+## Create an SSL cerificate via ACM	
 [stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
 
 1. go to AWS console and navigate to Certificate manager
@@ -759,13 +777,13 @@ My domain was bought via Amazon Route 53 service, and AWS automatically created 
 16. choose listener for port 443 and click on Actions and select Manage Rules
 17. add a rule under host header and put value ```api.<yourdomain>``` in field 'is' and forward traffic to backend target group
 	
-## Setup a record set for naked domain to point to frontend-react-js :white_check_mark:
+## Setup a record set for naked domain to point to frontend-react-js 
 [stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
 1. go to Route 53, choose our hosted zone
 2. add A record for naked domain routing to ALB
 	
 	
-## Setup a record set for api subdomain to point to the backend-flask :white_check_mark:
+## Setup a record set for api subdomain to point to the backend-flask 
 https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59
 1. go to Route 53, choose our hosted zone
 2. add A record for api sub domain routing to ALB
@@ -783,7 +801,7 @@ returns:
 ```
 	
 	
-## Configure CORS to only permit traffic from our domain :white_check_mark:	
+## Configure CORS to only permit traffic from our domain 	
 [stream link](https://www.youtube.com/watch?v=HHmpZ5hqh1I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=59)
 
 1. go to ```backend-flask.json``` task definition and change these two lines to specifc domains:
@@ -819,7 +837,7 @@ docker build \
 14. sign in into Cruddur and try to create a Crud
 15. go to messages and create a new message appending ```/messages/new/@handleofuser```. Andrew hit the 500 error but it worked for me.	
 	
-## Secure Flask by not running in debug mode :white_check_mark:	
+## Secure Flask by not running in debug mode 	
 [stream link](https://www.youtube.com/watch?v=9OQZSBKzIgs&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=60)
 1. go to EC2 in AWS Console, navigate to ALB security group
 2. delete inbound rules for ports 3000, 4567
@@ -919,6 +937,7 @@ Changed code units:
 ## Configure task defintions to contain x-ray and turn on Container Insights
 [stream link](https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64)
 
+### X-Ray containers
 1. add these lines into aws/task-definitions/backend-flask.json:
 ```json
     {
@@ -945,12 +964,178 @@ Changed code units:
     * ./bin/backend/run - for local debugging
 4. login to AWS Console and navigate to ECS, services, go to backend task and see xray container is running    
 5. note: I have previously commented out X-Ray code in app.py and user_activities.py as my docker images were not building
+6.  after implementing custom network and generating environment variables (follow 2 sections below first), add hostname in docker-compose file:
+```bash
+  xray-daemon:
+    hostname: xray-daemon
+    image: "amazon/aws-xray-daemon"
+    environment:
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+```
+7. even after implementing environment files and streamlining docker-compose file, we could not get health check on Xray working. Andrew tried netstat suggestion from StackOverflow but unfortunately it did not work out, so we left Xray health-check not implemented for now. He removed health check from backend-flask.json task definition and re-registered the task.
+8. then run deploy of the backend task, login to AWS ECS console and see that backend is now healthy and we can access the app
+9. add same xray container definition to frontend ECS task definition json, run register and deploy scripts for it
+
+### Turning on Container Insights
+1. login to AWS Console -> ECS -> select cruddur cluster
+2. go to monitor tab and turn on container insights
+3. login to Cruddur, check and post messages
+4. go to CloudWatch and select 'Container insights' on left hand pane. Now we shall see container insights logs 
 
 ## Using ruby generate out env dot files for docker using erb templates
-https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
+[stream link](https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64)
+
+1. Initially Andrew created env files at the root of the workspace with copying env variables as they were defined in docker compose file.
+2. However, docker run scripts were not parsing variables correctly.
+3. Note: Andrew used CONNECTION_URL set to local PostgreSQL whereas I set CONNECTION_URL = PROD_CONNECTION_URL since I have not used the mock data in order to save on GitPod credits and hence didn'y run local psql container.
+4. we observed that ```--env``` in docker run scripts did not resolve environment variables referencing such as ```${GITPOD}``` but left this text as is.
+5. Hence, Andrew decided to create scripts that will transform environment variables reference and create ```.env``` files by creating Ruby scripts named ```generate-env``` in  ```bin/backend``` folder:
+```bash
+#!/usr/bin/env ruby
+
+require 'erb'
+
+template = File.read 'erb/backend-flask.env.erb'
+content = ERB.new(template).result(binding)
+filename = "backend-flask.env"
+File.write(filename, content)
+```
+6. and for ```bin/frontend``` folder:
+```bash
+#!/usr/bin/env ruby
+
+require 'erb'
+
+template = File.read 'erb/frontend-react-js.env.erb'
+content = ERB.new(template).result(binding)
+filename = "frontend-react-js.env"
+File.write(filename, content)
+```
+7. make both of the scripts executable with ```chmod u+x command```
+8. then we had to create erb templates that were placed in erb folder which was created at the root of the workspace: ```backend-flask.env.erb``` and ```frontend-react-js.env.erb```
+9. add the generated ```*.env``` files to ```.gitignore``` so passwords and secrets are not published in GitHub.
+10. change ```.gitpod.yaml``` *init* tasks to *before* tasks and add generating env files for backend:
+``` source "$THEIA_WORKSPACE_ROOT/bin/backend/generate-env" ```
+and for frontend:
+```
+source "$THEIA_WORKSPACE_ROOT/bin/frontend/generate-env"
+```
+11. edit docker run files to implement env file referencing:
+12. frontend run script:
+```bash
+#! /usr/bin/bash
+
+ABS_PATH=$(readlink -f "$0")
+BACKEND_PATH=$(dirname $ABS_PATH)
+BIN_PATH=$(dirname $BACKEND_PATH)
+PROJECT_PATH=$(dirname $BIN_PATH)
+ENVFILE_PATH="$PROJECT_PATH/frontend-react-js.env"
+
+docker run --rm \
+  --env-file $ENVFILE_PATH \
+  --network cruddur-net \
+  --publish 4567:4567 \
+  -it frontend-react-js-prod
+```
+13. backend run script:
+```bash
+#! /usr/bin/bash
+
+# I am using production RDS and DynamoDB, local databases are empty
+#--env AWS_ENDPOINT_URL="http://dynamodb-local:8000" \
+
+ABS_PATH=$(readlink -f "$0")
+BACKEND_PATH=$(dirname $ABS_PATH)
+BIN_PATH=$(dirname $BACKEND_PATH)
+PROJECT_PATH=$(dirname $BIN_PATH)
+ENVFILE_PATH="$PROJECT_PATH/backend-flask.env"
+
+docker run --rm \
+  --env-file $ENVFILE_PATH \
+  --network cruddur-net \
+  --publish 4567:4567 \
+  -it backend-flask-prod
+```
+14. run generate-env scripts
+15. specify env files in docker-compose.yml:
+```
+....
+  backend-flask:
+    env_file:
+      - backend-flask.env
+....      
+  frontend-react-js:
+    env_file:
+      - frontend-react-js.env
+....
+```
+16. create busybox script in ./bin directory, make it executable:
+```
+#! /usr/bin/bash
+
+docker run --rm \
+  --network cruddur-net \
+  --publish 4567:4567 \
+  -it busybox
+```
+17. run the script and also add /bin/bash to get into the container
+18. Andrew tried to ping google and it was succesful, but then he figured out that environment file for docker run command shall not have quotation marks for surrounding environment variables values
+19. remove quotation marks in erb templates
+20. run docker-compose up and it shall work
 
 ## Change Docker Compose to explicitly use a user-defined network
-https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64
+[stream link](https://www.youtube.com/watch?v=G_8_xtS2MsY&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=64)
+
+1. Looking at the Docker docs, it seems that we need to use [network in bridge mode](https://docs.docker.com/network/bridge/).
+2. We can see list of networks for our project by typing this command in GitPod terminal:
+```docker network list```
+3. Andrew used this sequence to see which network our container are connected to:
+```bash
+docker-compose up
+bin/db/setup
+bin/backend/run
+docker network list
+```
+4. We need to create our own network ```cruddur-net``` in docker-compose.yml so container services can communicate. Make sure all services connetced to this network:
+```
+...
+    build: ./backend-flask
+    ports:
+      - "4567:4567"
+    volumes:
+      - ./backend-flask:/backend-flask
+    networks:
+      - cruddur-net
+ ...
+ build: ./frontend-react-js
+    ports:
+      - "3000:3000"
+    networks:
+      - cruddur-net
+ ...
+ container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    networks:
+      - cruddur-net
+ ...
+ ports:
+      - '5432:5432'
+    networks:
+      - cruddur-net
+ ...
+       - "xray -o -b xray-daemon:2000"
+    ports:
+      - 2000:2000/udp
+    networks:
+      - cruddur-net
+# the name flag is a hack to change the default prepend folder
+# name when outputting the image names
+networks: 
+  cruddur-net:
+    driver: bridge
+    name: cruddur-net
+```    
 	
 
 ## Resources
