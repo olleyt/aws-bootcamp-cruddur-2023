@@ -20,14 +20,15 @@ tasks:
     env:
       AWS_CLI_AUTO_PROMPT: on-partial
     before: |
-      source "$THEIA_WORKSPACE_ROOT/bin/backend/generate-env"
+      bash bin/ecr/login
+      ruby "$THEIA_WORKSPACE_ROOT/bin/backend/generate-env"
       # install Python libraries for Flask backend app on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/backend-flask
       pip3 install -r requirements.txt
   - name: frontend
     before: |    
       # install npm libraries for frontend on local GitPod environment
-      source "$THEIA_WORKSPACE_ROOT/bin/frontend/generate-env"
+      ruby "$THEIA_WORKSPACE_ROOT/bin/frontend/generate-env"
       cd $THEIA_WORKSPACE_ROOT/frontend-react-js
       npm i
       npm i aws-amplify --save
@@ -48,7 +49,11 @@ tasks:
       sudo dpkg -i session-manager-plugin.deb
       cd $THEIA_WORKSPACE_ROOT
       cd backend-flask      
-
+  - name: cdk
+    before: |
+      npm install aws-cdk -g
+      cd thumbing-serverless-cdk
+      npm i
 vscode:
   extensions:
     - 42Crunch.vscode-openapi
