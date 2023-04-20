@@ -1,6 +1,6 @@
 # Week 8 — Serverless Image Processing
 
-## main stream
+## Implement CDK Stack
 
 During main stream the instructors dicussed CDK constructs:
 * L1 - primitive rocks, like cfnBucket
@@ -19,7 +19,8 @@ npm install aws-cdk -g
 ```
 cdk init app --language typescript
 ```
-3. see that aws-cdk is version 2 in package.json
+![cdk_init](../_docs/assets/week8/cdk_install_init.png)
+3. see that aws-cdk is version 2 in package.json: ![cdk_pakage_json](../_docs/assets/week8/cdk_pakage_json.png)
 4. meat of this project will be sitting in ./lib folder
 5. found the boiler plate thumbing-serverless-cdk-stack.ts script inside:
 ```ts
@@ -52,6 +53,9 @@ Using default execution policy of 'arn:aws:iam::aws:policy/AdministratorAccess'.
 ```
 8. Go to AWS Console -> CloudFormation -> Stacks and find stack CDKToolkit which is created for CDK itself
 9. run command ```cdk deploy``` and this will generate ClodFormation template for our project. Note that cdk synth runs in background
+![cdk_stack](../_docs/assets/week8/cdk_created_stacks.png)
+we can also check the S3 bucket in on Resources tab:
+![s3_bucket](../_docs/assets/week8/cdk_deployed_s3_bucket.png)
 10. next we will create Lambda function for image processing
 11. add ```.env``` for our environmnet variables but change name of the bucket name:
 ```
@@ -68,3 +72,12 @@ dotenv.config()
 ```
 13. run ```npm i dotenv``` - add this to gitpod.yml
 14. run ```cdk synth```
+
+Now we are continuiling on [video 72](https://www.youtube.com/watch?v=jyUpZP2knBI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=72)
+
+## Serve Avatars via CloudFront
+
+[Stream Video 73](https://www.youtube.com/watch?v=Hl5XVb7dL6I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=75)
+
+We will create CloudFront distribution manually this time in AWS Console.
+1. origin domain: assets s3 bucket. Shall I create this bucket before?
