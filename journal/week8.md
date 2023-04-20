@@ -83,9 +83,24 @@ Now we are continuiling on [video 72](https://www.youtube.com/watch?v=jyUpZP2knB
 ```      
 17. we want to persist environment variables for CDK, so we will create .env.example file because .env is ignored by Git:
 ```
-
+THUMBING_BUCKET_NAME='assets.architectingonaws.link'
+THUMBING_FUNCTION_PATH='/workspace/aws-bootcamp-cruddur-2023/aws/lambdas/process-images'
+THUMBING_S3_FOLDER_INPUT='avatar/original'
+THUMBING_S3_FOLDER_OUTPUT='avatar/processed'
+THUMBING_WEBHOOK_URL='api.architectingonaws.link/webhooks/avatar'
+THUMBING_TOPIC_NAME='cruddur-assets'
 ```
 Note that we are naming our S3 bucket specifically linked to our domain for CloudFront puprposes
+18. copy files [from Andrew's repo](https://github.com/omenking/aws-bootcamp-cruddur-2023/tree/week-8-serverless-cdk/aws/lambdas/process-images) to GitPod environment
+19. ```cd ../aws/lambdas/process-images/```
+20. ```npm init -y```
+21. ```npm install sharp```
+22. ```npm i @aws-sdk/client-s3``` - CDK is broken into individual packages
+23. Now it is time to try to deploy updated CDK stack, navigate back to the thumbing-serveress-cdk-stacks folder and run:
+```
+cdk synth
+cdk deploy
+```
 
 ## Serve Avatars via CloudFront
 
