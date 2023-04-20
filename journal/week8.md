@@ -74,6 +74,18 @@ dotenv.config()
 14. run ```cdk synth```
 
 Now we are continuiling on [video 72](https://www.youtube.com/watch?v=jyUpZP2knBI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=72)
+15. Andrew tried to delete our stack but it failed because the S3 bucket was not empty. He had to manually delete items in the bucket and then deleted our project stack. Leave CDKToolkit stack - do not delete it!
+16. add 'before' task in gitpod.yml:
+```yml
+  - name: cdk
+    before: |
+      npm install aws-cdk -g
+```      
+17. we want to persist environment variables for CDK, so we will create .env.example file because .env is ignored by Git:
+```
+
+```
+Note that we are naming our S3 bucket specifically linked to our domain for CloudFront puprposes
 
 ## Serve Avatars via CloudFront
 
