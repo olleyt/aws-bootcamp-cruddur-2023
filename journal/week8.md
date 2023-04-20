@@ -104,6 +104,13 @@ cdk deploy
 24. navigate to AWS CloudFormation and observe that lambda was deployed:
 ![updated_cdk_stack](../_docs/assets/week8/updated_thumbing_cdk.png)
 
+25. We need to run these commands to make sure sharp library works with AWS Lambda correctly. Add these lines into /bin/avatar/build script and make it executable:
+```
+npm install
+rm -rf node_modules/sharp
+SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install --arch=x64 --platform=linux --libc=glibc sharp
+```
+
 ## Serve Avatars via CloudFront
 
 [Stream Video 73](https://www.youtube.com/watch?v=Hl5XVb7dL6I&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=75)
