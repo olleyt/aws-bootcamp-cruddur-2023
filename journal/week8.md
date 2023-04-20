@@ -101,6 +101,8 @@ Note that we are naming our S3 bucket specifically linked to our domain for Clou
 cdk synth
 cdk deploy
 ```
+24. navigate to AWS CloudFormation and observe that lambda was deployed:
+![updated_cdk_stack](../_docs/assets/week8/updated_thumbing_cdk.png)
 
 ## Serve Avatars via CloudFront
 
