@@ -36,6 +36,10 @@ export class ThumbingServerlessCdkStack extends cdk.Stack {
     
     this.createS3NotifyToLambda(folderInput,lambda,assetsBucket)
     //this.createS3NotifyToSns(folderOutput,snsTopic,bucket)
+
+    const s3ReadWritePolicy = this.createPolicyBucketAccess(assetsBucket.bucketArn)
+    lambda.addToRolePolicy(s3ReadWritePolicy);
+    //lambda.addToRolePolicy(snsPublishPolicy);
   }
 
   createBucket(bucketName: string):s3.IBucket {
@@ -82,5 +86,18 @@ export class ThumbingServerlessCdkStack extends cdk.Stack {
   importBucket(bucketName: string): s3.IBucket {
     const bucket = s3.Bucket.fromBucketName(this,"AssetsBucket",bucketName);
     return bucket;
+  }
+
+  createPolicyBucketAccess(bucketArn: string){
+    const s3ReadWritePolicy = new iam.PolicyStatement({
+      actions: [
+        's3:GetObject',
+        's3:PutObject',
+      ],
+      resources: [
+        `${bucketArn}/*`,
+      ]
+    });
+    return s3ReadWritePolicy;
   }
 }
