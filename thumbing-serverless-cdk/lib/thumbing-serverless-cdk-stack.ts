@@ -30,15 +30,16 @@ export class ThumbingServerlessCdkStack extends cdk.Stack {
     console.log('topicName',topicName)
     console.log('functionPath',functionPath)
 
-    const bucket = this.createBucket(bucketName);
+    //const bucket = this.createBucket(bucketName);
+    const assetsBucket = this.importBucket(bucketName)
     const lambda = this.createlambda(functionPath, bucketName, folderInput, folderOutput) 
     
-    this.createS3NotifyToLambda(folderInput,laombda,bucket)
-    this.createS3NotifyToSns(folderOutput,snsTopic,bucket)
+    this.createS3NotifyToLambda(folderInput,lambda,assetsBucket)
+    //this.createS3NotifyToSns(folderOutput,snsTopic,bucket)
   }
 
   createBucket(bucketName: string):s3.IBucket {
-    const bucket = new s3.Bucket(this, 'ThumbingBucket', {
+    const bucket = new s3.Bucket(this, 'AssetsBucket', {
       bucketName: bucketName,
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
@@ -77,5 +78,9 @@ export class ThumbingServerlessCdkStack extends cdk.Stack {
       {prefix: prefix}
     );
   }
-
+  
+  importBucket(bucketName: string): s3.IBucket {
+    const bucket = s3.Bucket.fromBucketName(this,"AssetsBucket",bucketName);
+    return bucket;
+  }
 }
