@@ -2,7 +2,7 @@ import './ProfileHeading.css';
 import EditProfileButton from '../components/EditProfileButton';
 
 export default function ProfileHeading(props) {
-  const backgroundImage = 'url("https://assets.architectingonaws.link/banners//banner.jpg")';
+  const backgroundImage = 'url("https://assets.architectingonaws.link/banners/banner.jpeg")';
   const styles = {
     backgroundImage: backgroundImage,
     backgroundSize: 'cover',
