@@ -22,8 +22,8 @@ class UserActivities:
         'errors': None,
         'data': None
       }
-      # delete line below
-      #now = datetime.now(timezone.utc).astimezone()
+      # need this for X-Ray
+      now = datetime.now(timezone.utc).astimezone()
 
       # Add metadata or annotation here if necessary
       xray_dict = {'now': now.isoformat()}
