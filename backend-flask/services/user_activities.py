@@ -39,7 +39,7 @@ class UserActivities:
           subsegment = xray_recorder.begin_subsegment('user_activities_nested_subsegment')
 
           print("else:")
-          sql = db.template('users','show')
+          sql = db.load_template('users','show')
           results = db.query_object_json(sql,{'handle': user_handle})
           model['data'] = results
           
