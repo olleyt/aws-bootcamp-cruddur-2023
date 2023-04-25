@@ -13,3 +13,4 @@ python-jose
 psycopg[binary]
 psycopg[pool]
 boto3
+toml
