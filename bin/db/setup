@@ -1,5 +1,5 @@
 #! /usr/bin/bash
--e # stop if it fails at any point
+set -e # stop if it fails at any point
 
 #echo "==== db-setup"
 CYAN='\033[1;36m'
@@ -8,8 +8,20 @@ LABEL="db-setup"
 printf "${CYAN}==== ${LABEL}${NO_COLOR}\n"
 
 ABS_PATH=$(readlink -f "$0")
-DB_PATH=$(dirname $ABS_PATH)
-COGNITO_PATH="$(dirname $DB_PATH)/cognito"
+
+if [ -z "$1" ]; then
+#if [ "$1" = "external" ]; then
+  echo "this is setup script"
+  DB_PATH=$(dirname $ABS_PATH)
+  COGNITO_PATH="$(dirname $DB_PATH)/cognito"
+else 
+  echo "this is from prepare script"
+  DB_PATH="$1"
+  echo "±±±±±±±±"
+  echo $DB_PATH
+  echo "±±±±±±±±"
+  COGNITO_PATH="$(dirname $DB_PATH)/cognito"
+fi 
 
 source "$DB_PATH/drop"
 source "$DB_PATH/create"
