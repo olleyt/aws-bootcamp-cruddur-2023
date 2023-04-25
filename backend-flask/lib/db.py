@@ -38,10 +38,11 @@ class Db():
         template_content = template_path.read_text()
         return template_content
 
-    def query_commit(self, sql, params):
+    def query_commit(self, sql, params, verbose=True):
         # change to CloudWatch logging later on
-        self.print_sql('query_commit', sql, params)
-        print(f"THIS IS HANDLE: {params}")
+        if verbose:
+            self.print_sql('query_commit', sql, params)
+            print(f"THIS IS HANDLE: {params}")
 
         pattern = r"\bRETURNING\b"
         is_returning_id = re.search(pattern, sql)
@@ -61,13 +62,14 @@ class Db():
         finally:
             print('query_commit finished')
 
-    def query_object_json(self, sql, params):
+    def query_object_json(self, sql, params, ,verbose=True):
         """
         when we want to return a json object
         """
-        self.print_sql('query_object_json', sql, params)
-        print('PARAMS: ')
-        print(params)
+        if verbose:
+            self.print_sql('query_object_json', sql, params)
+            print('PARAMS: ')
+            print(params)
 
         wrapped_sql = self.query_wrap_object(sql)
         with self.pool.connection() as conn:
@@ -80,11 +82,13 @@ class Db():
                 else:
                     return json[0]
 
-    def query_array_json(self, sql, params):
+    def query_array_json(self, sql, params, ,verbose=True):
         """
         when we want to return and array of json objects
         """
-        self.print_sql('query_array_json', sql, params)
+        if verbose:
+            self.print_sql('query_array_json', sql, params)
+        
         wrapped_sql = self.query_wrap_array(sql)
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
@@ -138,11 +142,13 @@ class Db():
             """
         return sql
     
-    def query_value(self,sql,params={}):
+    def query_value(self,sql,params={} ,verbose=True):
         """ 
         returns single value
-        """    
-        self.print_sql('value',sql,params)
+        """ 
+        if verbose:   
+            self.print_sql('value',sql,params)
+        
         with self.pool.connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(sql,params)
