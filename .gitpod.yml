@@ -32,7 +32,7 @@ tasks:
       cd $THEIA_WORKSPACE_ROOT/frontend-react-js
       npm i
       npm i aws-amplify --save
-      cd $THEIA_WORKSPACE_ROOT 
+      cd $THEIA_WORKSPACE_ROOT
   - name: postgres
     before: |
       curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
@@ -40,7 +40,9 @@ tasks:
       sudo apt update
       sudo apt install -y postgresql-client-13 libpq-dev
     command: |
+      cd $THEIA_WORKSPACE_ROOT
       export GITPOD_IP=$(curl ifconfig.me)
+      bash bin/rds/update-sg-rule
       source "$THEIA_WORKSPACE_ROOT/bin/rds/update-sg-rule"
   - name: fargate
     before: |
@@ -55,13 +57,14 @@ tasks:
       cd thumbing-serverless-cdk
       cp .env.example .env
       npm i
+      cd $THEIA_WORKSPACE_ROOT
 vscode:
   extensions:
     - 42Crunch.vscode-openapi
     - ms-azuretools.vscode-docker
     - cweijan.vscode-postgresql-client2
-
     - dendron.dendron-markdown-preview-enhanced
+    - dendron.dendron
 
 ports:
   - name: frontend
