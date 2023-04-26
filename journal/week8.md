@@ -234,3 +234,10 @@ P.S. I still need to test rollback script
 
 Now it is time to test our application!
 run ```docker compose up```
+
+login to Cruddur, go to Profile, edit & save bio.
+
+## Uploading Avatar from client side
+
+spin up Gitpod
+install s3 sdk client: ```npm i @aws-sdk/client-s3 --save```
