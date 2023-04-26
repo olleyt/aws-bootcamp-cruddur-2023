@@ -117,3 +117,120 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install --arch=x64 --platform=linux --libc=gli
 
 We will create CloudFront distribution manually this time in AWS Console.
 1. origin domain: assets s3 bucket. Shall I create this bucket before?
+
+
+## Implement DB Migration
+
+Draft:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ echo $CONNECTION_URL
+postgresql://postgres:password@localhost:5432/cruddur
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ chmod u+x ./bin/db/migrate
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ chmod u+x ./bin/db/rollback
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ chmod u+x ./bin/generate/migration 
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ ./bin/generate/migration
+pass a filename: eg. ./bin/generate/migration add_bio_column
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ ./bin/generate/migration add_bio_column
+/workspace/aws-bootcamp-cruddur-2023/backend-flask/db/migrations/16824671670803838_add_bio_column.py
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ 
+```
+
+open the generate file and add ALTER SQL staments like below:
+```python
+from lib.db import db
+class AddBioColumnMigration:
+  def migrate_sql():
+    data = """
+    ALTER TABLE public.users ADD COLUMN bio text;
+    """
+    return data
+  def rollback_sql():
+    data = """
+    ALTER TABLE public.users DROP COLUMN bio;
+    """
+    return data
+  def migrate():
+    db.query_commit(AddBioColumnMigration.migrate_sql(),{
+    })
+  def rollback():
+    db.query_commit(AddBioColumnMigration.rollback_sql(),{
+    })
+migration = AddBioColumnMigration
+```
+
+Run Docker compose with selected backend and db services and connect to db locally :
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023 (main) $ echo $CONNECTION_URL
+postgresql://postgres:password@localhost:5432/cruddur
+psql $CONNECTION_URL
+```
+
+We need to create schema information table and add an initial entry for bin/migrate script to work.
+We only want to do this once as initiliazation. 
+
+Run these commands when connected to local database:
+```sql
+CREATE TABLE IF NOT EXISTS public.schema_information (
+  id integer UNIQUE,
+  last_successful_run text
+);
+INSERT INTO public.schema_information (id, last_successful_run)
+VALUES(1, '0')
+ON CONFLICT (id) DO NOTHING;
+
+```
+
+now generate migration:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/bin/generate (main) $ ./migration add_bio_column
+```
+add alter statements in the generated file
+
+ran into error:
+gitpod /workspace/aws-bootcamp-cruddur-2023/bin (main) $ ./db/migrate 
+=== running migration:  16824671670803838_add_bio_column
+ SQL STATEMENT--query_commit-------
+
+    ALTER TABLE public.users ADD COLUMN bio text;
+     {} 
+
+THIS IS HANDLE: {}
+query_commit finished
+query_commit finished
+Traceback (most recent call last):
+  File "./db/migrate", line 45, in <module>
+    if last_successful_run <= file_time:
+TypeError: '<=' not supported between instances of 'str' and 'int'
+
+required fix for bin/db/migrate/script to convert file_time to int:
+```python
+  if match:
+    file_time = int(match.group())
+    print('±±±±±±±')
+    print(last_successful_run)
+    print(type(last_successful_run))
+    print('±±±±±±±')
+    if last_successful_run <= int(file_time):
+```
+
+run this script again and observe that bio column was added:
+```
+cruddur=# \d users;
+                                   Table "public.users"
+     Column      |            Type             | Collation | Nullable |      Default       
+-----------------+-----------------------------+-----------+----------+--------------------
+ uuid            | uuid                        |           | not null | uuid_generate_v4()
+ display_name    | text                        |           | not null | 
+ handle          | text                        |           | not null | 
+ email           | text                        |           | not null | 
+ cognito_user_id | text                        |           | not null | 
+ created_at      | timestamp without time zone |           | not null | CURRENT_TIMESTAMP
+ bio             | text                        |           |          | 
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (uuid)
+```
+
+P.S. I still need to test rollback script
+
+Now it is time to test our application!
+run ```docker compose up```

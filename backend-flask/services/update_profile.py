@@ -25,14 +25,14 @@ class UpdateProfile:
     if bio == None:    
       bio = ''
 
-    sql = db.template('users','update')
+    sql = db.load_template('users','update')
     handle = db.query_commit(sql,{
       'cognito_user_id': cognito_user_id,
       'bio': bio,
       'display_name': display_name
     })
   def query_users_short(handle):
-    sql = db.template('users','short')
+    sql = db.load_template('users','short')
     data = db.query_object_json(sql,{
       'handle': handle
     })

@@ -62,7 +62,7 @@ class Db():
         finally:
             print('query_commit finished')
 
-    def query_object_json(self, sql, params, ,verbose=True):
+    def query_object_json(self, sql, params, verbose=True):
         """
         when we want to return a json object
         """
@@ -82,7 +82,7 @@ class Db():
                 else:
                     return json[0]
 
-    def query_array_json(self, sql, params, ,verbose=True):
+    def query_array_json(self, sql, params, verbose=True):
         """
         when we want to return and array of json objects
         """
