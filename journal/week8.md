@@ -241,3 +241,64 @@ login to Cruddur, go to Profile, edit & save bio.
 
 spin up Gitpod
 install s3 sdk client: ```npm i @aws-sdk/client-s3 --save```
+
+
+## Lambda to Upload Avatar
+
+Create Lambda function in AWS console manually
+
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/backend-flask (main) $ cd ../aws/lambdas/cruddur-upload-avatar/
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar (main) $ bundle init
+Gemfile already exists at /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar/Gemfile
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar (main) $ bundle init
+Writing new Gemfile to /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar/Gemfile
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar (main) $ bundle install
+The Gemfile specifies no dependencies
+Resolving dependencies...
+Bundle complete! 0 Gemfile dependencies, 1 gem now installed.
+Use `bundle info [gemname]` to see where a bundled gem is installed.
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar (main) $ 
+```
+
+set environment variables:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar (main) $ export UPLOADS_BUCKET_NAME="cruddur-uploaded-avatars-ot"
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar (main) $ gp env  UPLOADS_BUCKET_NAME="cruddur-uploaded-avatars-ot"
+UPLOADS_BUCKET_NAME=cruddur-uploaded-avatars-ot
+```
+
+Next run these commands: 
+```
+bundle init
+bundle install
+bundle exec ruby function.rb
+```
+Output:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar (main) $ bundle exec ruby test.rb
+{}
+{:statusCode=>200, :body=>"{\"url\":\"https://cruddur-uploaded-avatars-ot.s3.amazonaws.com/mock.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=...&X-Amz-Date=20230428T065753Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=...\"}"}
+```
+We could not set lifecycle rule on our S3 bucket because we needed a folder :
+![s3_lifecycle rule](../_docs/assets/week8/S3_bucket_lifecycle_rule.png)
+
+go back to AWS Lambda console and copy over function.rb code from the git repo
+change runtime to function.handler
+
+go to IAM and create policy PresignedUrlAvatarPolicy with this [json code](../aws/policies/s3-upload-avatar-presigned-url-policy.json)
+
+attach to the lambda fucntion execution role
+
+add UPLOADS_BUCKET_NAME as environment variable directly on the lambda function
+
+## API Gateway
+
+HTTP API
+create a custom api.<my.domain>
+do not set CORS on the API
+Lambda integration: CruddurUploadAvatar
+
+## Lambda Authorizer
+
+We will use Lambda authorizer based on request, so we will need to pass headers.
