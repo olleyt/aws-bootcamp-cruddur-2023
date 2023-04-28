@@ -302,3 +302,20 @@ Lambda integration: CruddurUploadAvatar
 ## Lambda Authorizer
 
 We will use Lambda authorizer based on request, so we will need to pass headers.
+
+install aws-jwt-verify in lambda-autorizer folder:
+```
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/cruddur-upload-avatar (main) $ cd ../lambda-authorizer/
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/lambda-authorizer (main) $ npm install aws-jwt-verify --save
+
+added 1 package, and audited 2 packages in 441ms
+
+found 0 vulnerabilities
+gitpod /workspace/aws-bootcamp-cruddur-2023/aws/lambdas/lambda-authorizer (main) $ 
+```
+zip Lambda authorizer:
+```
+cd
+zip -r ../lambda-authorizer.zip .
+unzip -l lambda-authorizer.zip
+```
