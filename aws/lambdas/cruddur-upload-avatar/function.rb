@@ -15,6 +15,7 @@ def handler(event:, context:)
         "Access-Control-Allow-Methods": "OPTIONS,GET,POST"
       },
       statusCode: 200
+      body: body
     }
   else
     token = event['headers']['authorization'].split(' ')[1]
