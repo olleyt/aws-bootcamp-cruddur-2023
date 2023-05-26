@@ -25,6 +25,11 @@ tasks:
       # install Python libraries for Flask backend app on local GitPod environment
       cd $THEIA_WORKSPACE_ROOT/backend-flask
       pip3 install -r requirements.txt
+  - name: cfn
+    before: |
+      pip install cfn-lint
+      cargo install cfn-guard
+      gem install cfn-toml
   - name: frontend
     before: |    
       # install npm libraries for frontend on local GitPod environment

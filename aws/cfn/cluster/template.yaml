@@ -4,3 +4,7 @@ Description: |
 Resources:
   ECSCluster: # Logical Name
     Type: 'AWS::ECS::Cluster'
+    Properties:
+      CapacityProviders:
+        - FARGATE
+      ClusterName: MyCluster1 
