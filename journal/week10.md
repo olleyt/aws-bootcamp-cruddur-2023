@@ -33,3 +33,7 @@ source: https://docs.aws.amazon.com/cfn-guard/latest/ug/cfn-guard-validate.html
 ### S3 bucket
 create bucket named cfn-artifacts-<unique_id>
 option  --s3-bucket $BUCKET will enable AWS to put the template file to the S3 bucket
+
+
+## Networking Diagram
+![physical_networking_diagram](../_docs/assets/week10/Cruddur-Networking-Page-2.drawio.svg)
