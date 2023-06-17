@@ -36,4 +36,4 @@ option  --s3-bucket $BUCKET will enable AWS to put the template file to the S3 b
 
 
 ## Networking Diagram
-![physical_networking_diagram](../_docs/assets/week10/Cruddur-Networking-Page-2.drawio.svg)
+![physical_networking_diagram](https://github.com/olleyt/aws-bootcamp-cruddur-2023/blob/2f0cd35679570fdf0f41f384249dabd6e1806c6c/_docs/assets/week10/week-10-92-Page-2.drawio.svg)
