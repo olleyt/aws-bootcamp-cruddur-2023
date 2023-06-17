@@ -1,0 +1,7 @@
+{
+    "Environment": "dev",
+    "ArtifactsBucketName": "cfn-artifacts-ot",
+    "ApplicationName": "cruddur",
+    "bucket": "cfn-artifacts-ot",
+    "region": "us-east-1"
+}
