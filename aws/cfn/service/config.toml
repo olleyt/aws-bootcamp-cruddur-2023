@@ -1,0 +1,9 @@
+[deploy]
+bucket = 'cfn-artifacts'
+region = 'us-east-1'
+stack_name = 'CrdSrvBackendFlask'
+
+[parameters]
+EnvFrontendUrl = 'https://architectingonaws.link/'
+EnvBackendUrl = 'https://api.architectingonaws.link/'
+DDBMessageTable = 'CrdDdb-DynamoDBTable-G12N0ET4TBR0'

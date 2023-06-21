@@ -6,3 +6,4 @@ stack_name = 'CrdCluster'
 [parameters]
 CertificateArn = 'arn:aws:acm:us-east-1:467465007086:certificate/89747f0e-75b4-4621-953d-ab9407219a3b'
 NetworkingStack = 'CrdNet'
+TestParameter = 'TestValue'
